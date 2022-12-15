@@ -1,0 +1,16 @@
+﻿{
+  "stepDefinitions": [],
+  "sourceFiles": {},
+  "typeNames": {},
+  "analyticsProperties": {
+    "Connector": "<connector>",
+    "ImageRuntimeVersion": "v4.0.30319",
+    "SFFile": "TechTalk.SpecFlow.dll",
+    "SFFileVersion": "4.0.16.30680",
+    "SFProductVersion": "4.0.16-beta+77d8ad7f17",
+    "SourcePaths": "1",
+    "StepDefinitions": "3",
+    "TargetFramework": ".NETCoreApp,Version=v6.0",
+    "TypeNames": "0"
+  }
+}
