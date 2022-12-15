@@ -2,6 +2,7 @@
 
 * Support for .NET 7 projects
 * Support for Arm64
+* Improve step definition discovery
 
 # v2022.1.75 - 2022-07-08
 
@@ -19,7 +20,7 @@
 # v2022.1.56 - 2022-05-05
 
 * Fix: Binding discovery fails for SpecFlow v3.10 beta
-* Improove step definition discovery
+* Improve step definition discovery
 
 # v2022.1.9 - 2022-04-11
 
