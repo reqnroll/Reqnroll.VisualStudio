@@ -272,7 +272,7 @@ public abstract class ProjectGenerator : IProjectGenerator
         ExecNuGetInstall("MSTest.TestAdapter", packagesFolder);
 
         var projectChanger = CreateProjectChanger(projectFilePath);
-        InstallNuGetPackage(projectChanger, packagesFolder, "MSTest.TestFramework");
+        InstallNuGetPackage(projectChanger, packagesFolder, "MSTest.TestFramework", "net462");
         InstallNuGetPackage(projectChanger, packagesFolder, "MSTest.TestAdapter");
         projectChanger.Save();
     }
