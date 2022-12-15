@@ -12,6 +12,7 @@ public class TargetFrameworkMoniker
     private const string NetFrameworkShortValuePrefix = "net";
     private const string Net5ShortValuePrefix = "net5";
     private const string Net6ShortValuePrefix = "net6";
+    private const string Net7ShortValuePrefix = "net7";
 
     private TargetFrameworkMoniker(string value)
     {
@@ -33,6 +34,7 @@ public class TargetFrameworkMoniker
     }
 
     // e.g.
+    // * .NET 7:    .NETCoreApp,Version=v7.0
     // * .NET 6:    .NETCoreApp,Version=v6.0
     // * .NET 5:    .NETCoreApp,Version=v5.0
     // * .NET Core: .NETCoreApp,Version=v2.1
@@ -62,7 +64,11 @@ public class TargetFrameworkMoniker
         }
         else if (shortValue.StartsWith(Net6ShortValuePrefix))
         {
-            value = $".NETCoreApp,Version=v{shortValue.Substring(Net5ShortValuePrefix.Length - 1)}";
+            value = $".NETCoreApp,Version=v{shortValue.Substring(Net6ShortValuePrefix.Length - 1)}";
+        }
+        else if (shortValue.StartsWith(Net7ShortValuePrefix))
+        {
+            value = $".NETCoreApp,Version=v{shortValue.Substring(Net7ShortValuePrefix.Length - 1)}";
         }
         else if (shortValue.StartsWith(NetFrameworkShortValuePrefix))
         {

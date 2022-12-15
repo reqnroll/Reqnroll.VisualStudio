@@ -1,5 +1,6 @@
 ﻿# v$vNext$ - $buildDate$
 
+* Support for .NET 7 projects
 * Support for Arm64
 
 # v2022.1.75 - 2022-07-08

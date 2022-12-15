@@ -2,7 +2,8 @@
 
 public class GenericOutProcSpecFlowConnector : OutProcSpecFlowConnector
 {
-    private const string Connector = @"Generic-net6.0\specflow-vs.dll";
+    private const string ConnectorNet60 = @"Generic-net6.0\specflow-vs.dll";
+    private const string ConnectorNet70 = @"Generic-net7.0\specflow-vs.dll";
 
     public GenericOutProcSpecFlowConnector(
         DeveroomConfiguration configuration,
@@ -25,7 +26,14 @@ public class GenericOutProcSpecFlowConnector : OutProcSpecFlowConnector
 
     protected override string GetConnectorPath(List<string> arguments)
     {
+        var connector = ConnectorNet60;
+        if (_targetFrameworkMoniker.IsNetCore && _targetFrameworkMoniker.HasVersion &&
+            _targetFrameworkMoniker.Version.Major >= 7)
+        {
+            connector = ConnectorNet70;
+        }
+
         var connectorsFolder = GetConnectorsFolder();
-        return GetDotNetExecCommand(arguments, connectorsFolder, Connector);
+        return GetDotNetExecCommand(arguments, connectorsFolder, connector);
     }
 }

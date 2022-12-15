@@ -16,7 +16,7 @@ public class OutProcSpecFlowConnector
     private readonly IMonitoringService _monitoringService;
     private readonly ProcessorArchitectureSetting _processorArchitecture;
     private readonly NuGetVersion _specFlowVersion;
-    private readonly TargetFrameworkMoniker _targetFrameworkMoniker;
+    protected readonly TargetFrameworkMoniker _targetFrameworkMoniker;
 
     public OutProcSpecFlowConnector(DeveroomConfiguration configuration, IDeveroomLogger logger,
         TargetFrameworkMoniker targetFrameworkMoniker, string extensionFolder,
