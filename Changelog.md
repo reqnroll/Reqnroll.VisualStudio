@@ -1,5 +1,9 @@
 ﻿# v$vNext$ - $buildDate$
 
+# v2022.1.76 - 2022-11-14
+
+* Feature: Arm64 Visual Studio 2022 Extension 
+
 # v2022.1.75 - 2022-07-08
 
 * Hotfix for loading SpecFlow v4 beta projects

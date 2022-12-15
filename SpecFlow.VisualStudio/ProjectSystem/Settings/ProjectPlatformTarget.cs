@@ -5,5 +5,6 @@ public enum ProjectPlatformTarget
     Unknown,
     AnyCpu,
     x86,
-    x64
+    x64,
+    Arm64
 }

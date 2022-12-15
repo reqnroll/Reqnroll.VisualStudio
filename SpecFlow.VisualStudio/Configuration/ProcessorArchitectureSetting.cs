@@ -5,5 +5,6 @@ public enum ProcessorArchitectureSetting
     AutoDetect,
     UseSystem,
     X86,
-    X64
+    X64,
+    Arm64
 }

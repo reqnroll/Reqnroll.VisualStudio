@@ -53,7 +53,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.Designer.Interfaces" Version="17.0.31902.203" />
-    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.0.5232">
+    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.4.2119">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
@@ -103,22 +103,9 @@
       <VsChangeLog Include="$(MSBuildThisFileDirectory)..\Changelog.md" />
     </ItemGroup>
 
-    <WriteLinesToFile
-      File="%(TemplateFiles.FullPath)"
-      Lines="$([System.Text.RegularExpressions.Regex]::Replace(
-         $([System.IO.File]::ReadAllText(%(TemplateFiles.FullPath))), 
-         'Version=(\d+).(\d+).(\d+).(\d+),', 
-         'Version=$(AssemblyVersion),'))"
-      Overwrite="true"
-      Encoding="UTF-8"/>
+    <WriteLinesToFile File="%(TemplateFiles.FullPath)" Lines="$([System.Text.RegularExpressions.Regex]::Replace(&#xD;&#xA;         $([System.IO.File]::ReadAllText(%(TemplateFiles.FullPath))), &#xD;&#xA;         'Version=(\d+).(\d+).(\d+).(\d+),', &#xD;&#xA;         'Version=$(AssemblyVersion),'))" Overwrite="true" Encoding="UTF-8" />
 
-    <WriteLinesToFile
-      Condition=" '$(Configuration)' == 'Release' "
-      File="%(VsChangeLog.FullPath)"
-      Lines="$([System.IO.File]::ReadAllText(%(VsChangeLog.FullPath)).Replace('$vNext$','$(BuildVersionSimple)')
-        .Replace('$buildDate$','$([System.DateTime]::Now.ToString('yyyy-MM-dd'))'))"
-      Overwrite="true"
-      Encoding="UTF-8"/>
+    <WriteLinesToFile Condition=" '$(Configuration)' == 'Release' " File="%(VsChangeLog.FullPath)" Lines="$([System.IO.File]::ReadAllText(%(VsChangeLog.FullPath)).Replace('$vNext$','$(BuildVersionSimple)')&#xD;&#xA;        .Replace('$buildDate$','$([System.DateTime]::Now.ToString('yyyy-MM-dd'))'))" Overwrite="true" Encoding="UTF-8" />
 
   </Target>
 </Project>

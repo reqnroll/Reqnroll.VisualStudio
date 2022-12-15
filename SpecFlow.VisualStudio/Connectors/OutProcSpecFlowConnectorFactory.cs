@@ -43,6 +43,8 @@ public static class OutProcSpecFlowConnectorFactory
             return ProcessorArchitectureSetting.X86;
         if (projectSettings.PlatformTarget == ProjectPlatformTarget.x64)
             return ProcessorArchitectureSetting.X64;
+        if (projectSettings.PlatformTarget == ProjectPlatformTarget.Arm64)
+            return ProcessorArchitectureSetting.Arm64;
         return ProcessorArchitectureSetting.UseSystem;
     }
 }
