@@ -34,6 +34,7 @@ public class GeneratedProjectTests : ApprovalTestBase
     [InlineData("DS_3.9.40_nunit_nprj_netcoreapp31_bt_992117478")]
     [InlineData("DS_3.9.40_nunit_nprj_net5.0_bt_992117478")]
     [InlineData("DS_3.9.40_nunit_nprj_net6.0_bt_992117478")]
+    [InlineData("DS_3.9.40_nunit_nprj_net7.0_bt_992117478")]
     [InlineData("DS_3.9.40_nunit_nprj_net6.0_extbnd_bt_992117478")]
     [InlineData("DS_3.9.40_nunit_nprj_net6.0_plug(r)_bt_992117478")]
     [InlineData("DS_3.9.22_nunit_nprj_net6.0_bt_992117478")]
