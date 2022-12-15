@@ -1,8 +1,6 @@
 ﻿# v$vNext$ - $buildDate$
 
-# v2022.1.76 - 2022-11-14
-
-* Feature: Arm64 Visual Studio 2022 Extension 
+* Support for Arm64
 
 # v2022.1.75 - 2022-07-08
 
