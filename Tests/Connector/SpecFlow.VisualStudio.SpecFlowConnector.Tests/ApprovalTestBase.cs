@@ -124,7 +124,7 @@ public class ApprovalTestBase
                 .Map(dr => dr with {StepDefinitions = ImmutableArray<StepDefinition>.Empty})
                 .Map(dr => dr with {SourceFiles = ImmutableSortedDictionary<string, string>.Empty})
                 .Map(dr => dr with {TypeNames = ImmutableSortedDictionary<string, string>.Empty})
-                .Map(JsonSerialization.SerializeObject)
+                .Map(dr => JsonSerialization.SerializeObject(dr))
                 .Reduce($"Cannot deserialize:{r}"));
     }
 }

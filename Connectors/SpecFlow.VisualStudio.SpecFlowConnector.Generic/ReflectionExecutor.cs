@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Versioning;
+using TechTalk.SpecFlow.CommonModels;
 
 namespace SpecFlowConnector;
 
@@ -22,29 +23,28 @@ public class ReflectionExecutor
             .Map(CreateInstance)
             .Map(instance => instance.ReflectionCallMethod<string>(
                     nameof(Execute),
-                    JsonSerialization.SerializeObject(options), testAssemblyContext.TestAssembly, testAssemblyContext,
+                    JsonSerialization.SerializeObject(options, _log), testAssemblyContext.TestAssembly, testAssemblyContext,
                     analytics)
-                .Map(s => JsonSerialization.DeserializeObject<RunnerResult>(s)
-                    .Reduce(new RunnerResult(_log.ToString()!, analytics.ToImmutable(), null!, $"Unable to parse JSON text:{s}")))
-                .Map(result =>
-                {
-                    var (log, analyticsProperties, discoveryResult, errorMessage) = result;
-                    _log.Info(log);
-                    if (discoveryResult != null)
+                .Map(s => JsonSerialization.DeserializeObjectRunnerResult(s, _log)
+                    .Map(result =>
                     {
-                        return new ConnectorResult(
-                            discoveryResult.StepDefinitions,
-                            discoveryResult.SourceFiles,
-                            discoveryResult.TypeNames,
-                            analyticsProperties,
-                            errorMessage);
-                    }
-                    return new ConnectorResult(ImmutableArray<StepDefinition>.Empty,
-                        ImmutableSortedDictionary<string, string>.Empty,
-                        ImmutableSortedDictionary<string, string>.Empty,
-                        analytics.ToImmutable(),
-                        log);
-                }))
+                        var (log, analyticsProperties, discoveryResult, errorMessage) = result;
+                        _log.Info(log);
+                        if (discoveryResult != null)
+                        {
+                            return new ConnectorResult(
+                                discoveryResult.StepDefinitions,
+                                discoveryResult.SourceFiles,
+                                discoveryResult.TypeNames,
+                                analyticsProperties,
+                                errorMessage);
+                        }
+                        return new ConnectorResult(ImmutableArray<StepDefinition>.Empty,
+                            ImmutableSortedDictionary<string, string>.Empty,
+                            ImmutableSortedDictionary<string, string>.Empty,
+                            analytics.ToImmutable(),
+                            errorMessage != null ? $"{errorMessage}{Environment.NewLine}{log}" : log);
+                    })))
             .Reduce(new ConnectorResult(ImmutableArray<StepDefinition>.Empty,
                 ImmutableSortedDictionary<string, string>.Empty,
                 ImmutableSortedDictionary<string, string>.Empty,
@@ -64,7 +64,18 @@ public class ReflectionExecutor
     {
         var analytics = new AnalyticsContainer(analyticsProperties);
         var log = new StringWriterLogger();
-        return JsonSerialization.DeserializeObject<DiscoveryOptions>(optionsJson)
+        DiscoveryOptions discoveryOptions;
+        try
+        {
+            discoveryOptions = JsonSerialization.DeserializeDiscoveryOptions(optionsJson, log);
+        }
+        catch (Exception ex)
+        {
+            return JsonSerialization.SerializeRunnerResult(new RunnerResult(log.ToString(), analytics, null,
+                $"Unable to deserialize discovery options:  {ex.Message} ({optionsJson})"));
+        }
+
+        return discoveryOptions
             .Map(options => EitherAdapters.Try(
                     () => new CommandFactory(log, options, testAssembly, analytics)
                         .Map(factory => factory.CreateCommand())
@@ -83,8 +94,7 @@ public class ReflectionExecutor
                 })
                 
             )
-            .Reduce(new RunnerResult(log.ToString(), analytics, null, $"Unable to deserialize discovery options:  {optionsJson}"))
-            .Map(JsonSerialization.SerializeObject);
+            .Map(result => JsonSerialization.SerializeRunnerResult(result, log));
     }
     public record RunnerResult(string Log, ImmutableSortedDictionary<string, string> AnalyticsProperties, DiscoveryResult? DiscoveryResult, string? errorMessage);
 }

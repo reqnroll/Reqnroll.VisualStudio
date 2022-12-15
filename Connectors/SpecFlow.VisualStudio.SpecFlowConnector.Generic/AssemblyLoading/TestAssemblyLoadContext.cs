@@ -178,7 +178,10 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
     {
         var assemblies = new List<string>();
         _assemblyResolver.TryResolveAssemblyPaths(library, assemblies);
-        return assemblies.FirstOrDefault(a => !IsRefsPath(a));
+        var resolveAssemblyPath = assemblies.FirstOrDefault(a => !IsRefsPath(a));
+        if (!File.Exists(resolveAssemblyPath))
+            return None.Value;
+        return resolveAssemblyPath;
     }
 
     private static bool IsRefsPath(string resolvedAssemblyPath)

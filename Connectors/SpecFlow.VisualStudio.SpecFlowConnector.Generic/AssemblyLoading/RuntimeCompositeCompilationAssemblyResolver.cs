@@ -19,7 +19,8 @@ public class RuntimeCompositeCompilationAssemblyResolver : ICompilationAssemblyR
                 if (resolver.TryResolveAssemblyPaths(library, assemblies) &&
                     assemblies.Any(a => !IsRefsPath(a)))
                 {
-                    _log.Info($"Resolved with {resolver}");
+                    var resolveAssemblyPath = assemblies.FirstOrDefault(a => !IsRefsPath(a));
+                    _log.Info($"Resolved with {resolver} from {resolveAssemblyPath}");
                     return true;
                 }
             }

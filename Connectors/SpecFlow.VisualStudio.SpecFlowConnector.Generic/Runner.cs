@@ -25,9 +25,10 @@ public class Runner
         {
             return args
                 .Map(ConnectorOptions.Parse)
+                .Tie(DebugBreak)
                 .Tie(DumpOptions)
                 .Map(options => ExecuteDiscovery((DiscoveryOptions)options, testAssemblyFactory))
-                .Map(JsonSerialization.SerializeObject)
+                .Map(result => JsonSerialization.SerializeObject(result, _log))
                 .Map(JsonSerialization.MarkResult)
                 .Tie(PrintResult)
                 .Map(_=>ExecutionResult.Succeed);
@@ -36,6 +37,11 @@ public class Runner
         {
             return HandleException(ex);
         }
+    }
+    public void DebugBreak(ConnectorOptions options)
+    {
+        if (options.DebugMode)
+            Debugger.Launch();
     }
 
     public void DumpOptions(ConnectorOptions options) => _log.Info(options.ToString());
