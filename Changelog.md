@@ -1,5 +1,7 @@
 ﻿# v$vNext$ - $buildDate$
 
+# v2022.1.89 - 2022-12-15
+
 * Support for .NET 7 projects
 * Support for Arm64
 * Improve step definition discovery
