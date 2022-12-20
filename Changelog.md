@@ -1,5 +1,7 @@
 ﻿# v$vNext$ - $buildDate$
 
+# v2022.1.91 - 2022-12-20
+
 * Improve step definition discovery for .NET 7
 
 # v2022.1.89 - 2022-12-15
