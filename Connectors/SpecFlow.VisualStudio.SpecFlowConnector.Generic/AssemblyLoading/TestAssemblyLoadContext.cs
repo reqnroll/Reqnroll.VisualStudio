@@ -96,8 +96,7 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
             .Or(() =>
             {
                 if (assemblyName.Name != null &&
-                    (assemblyName.Name.StartsWith("System.", StringComparison.InvariantCultureIgnoreCase) ||
-                    assemblyName.Name.StartsWith("Microsoft.", StringComparison.InvariantCultureIgnoreCase)))
+                    assemblyName.Name.StartsWith("System.", StringComparison.InvariantCultureIgnoreCase))
                     return None.Value;
                 return _dependencyContext.CompileLibraries.Where(
                         compileLibrary =>
