@@ -8,9 +8,9 @@
     "SFFile": "TechTalk.SpecFlow.dll",
     "SFFileVersion": "3.9.40.46609",
     "SFProductVersion": "3.9.40+11b6bbec89",
-    "SourcePaths": "2",
-    "StepDefinitions": "82",
-    "TargetFramework": ".NETFramework,Version=v4.8.1",
-    "TypeNames": "7"
+    "SourcePaths": "1",
+    "StepDefinitions": "3",
+    "TargetFramework": ".NETCoreApp,Version=v8.0",
+    "TypeNames": "0"
   }
 }

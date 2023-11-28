@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommandLineParser" Version="2.8.0" />
-    <PackageReference Include="NuGet.CommandLine" Version="5.11.3" CopyTools="true" CopyToolsTarget="Tools-NuGet">
+    <PackageReference Include="CommandLineParser" Version="2.9.1" />
+    <PackageReference Include="NuGet.CommandLine" Version="6.8.0" CopyTools="true" CopyToolsTarget="Tools-NuGet">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

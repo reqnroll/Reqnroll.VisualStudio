@@ -18,8 +18,8 @@ public class ConnectorInvestigation : ApprovalTestBase
         4 - run or debug the test
     There is a sample "SpecFlow.VisualStudio.Specs.json" file in the folder which points to the solution's tests
     */
-    [Theory]
-    //[Theory(Skip = "Use for investigation")]
+    //[Theory]
+    [Theory(Skip = "Use for investigation")]
     //[InlineData("SpecFlow.VisualStudio.Specs")]
     [InlineData("Microsoft.AspNetCore.Mvc.Core")]
     public void Approval(string testName)

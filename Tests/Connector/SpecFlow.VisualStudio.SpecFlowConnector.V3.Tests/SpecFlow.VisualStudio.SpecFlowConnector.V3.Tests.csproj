@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\..\Key.snk</AssemblyOriginatorKeyFile>
@@ -14,24 +14,21 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
-    <PackageReference Include="FluentAssertions" Version="6.2.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="FluentAssertions" Version="6.12.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="SpecFlow.$(TestedSpecFlowTestFramework)" Version="$(TestedSpecFlowVersion)" />
-    <PackageReference Condition="'$(TestedSpecFlowTestFramework)' == 'mstest'" Include="MSTest.TestFramework"
-                      version="2.2.5" />
+    <PackageReference Condition="'$(TestedSpecFlowTestFramework)' == 'mstest'" Include="MSTest.TestFramework" version="2.2.5" />
     <PackageReference Condition="'$(TestedSpecFlowTestFramework)' == 'nunit'" Include="nunit" version="3.13.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference
-      Include="..\..\..\Connectors\SpecFlow.VisualStudio.SpecFlowConnector.Models\SpecFlow.VisualStudio.SpecFlowConnector.Models.csproj" />
-    <ProjectReference
-      Include="..\..\..\Connectors\SpecFlow.VisualStudio.SpecFlowConnector.V3\SpecFlow.VisualStudio.SpecFlowConnector.V3.csproj" />
+    <ProjectReference Include="..\..\..\Connectors\SpecFlow.VisualStudio.SpecFlowConnector.Models\SpecFlow.VisualStudio.SpecFlowConnector.Models.csproj" />
+    <ProjectReference Include="..\..\..\Connectors\SpecFlow.VisualStudio.SpecFlowConnector.V3\SpecFlow.VisualStudio.SpecFlowConnector.V3.csproj" />
   </ItemGroup>
 
 </Project>

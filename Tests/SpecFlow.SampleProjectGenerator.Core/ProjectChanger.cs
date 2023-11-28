@@ -41,7 +41,7 @@ public abstract class ProjectChanger
     public abstract void SetPlatformTarget(string platformTarget);
 
     public abstract NuGetPackageData InstallNuGetPackage(string packagesFolder, string packageName,
-        string sourcePlatform = "net45", string packageVersion = null, bool dependency = false);
+        string sourcePlatform = "net462", string packageVersion = null, bool dependency = false);
 
     public virtual void SetSpecFlowConfig(string name, string attr, string value)
     {

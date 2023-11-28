@@ -1,6 +1,7 @@
 ﻿#nullable disable
 
 using System.Net;
+using System.Net.Http;
 
 namespace SpecFlow.VisualStudio.Notifications;
 

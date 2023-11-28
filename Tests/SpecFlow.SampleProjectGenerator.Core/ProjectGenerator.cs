@@ -186,7 +186,7 @@ public abstract class ProjectGenerator : IProjectGenerator
         if (otherArgs != null)
             args = args.Concat(otherArgs);
         if (_options.FallbackNuGetPackageSource != null)
-            args = args.Concat(new[] {"-FallbackSource", _options.FallbackNuGetPackageSource});
+            args = args.Concat(new[] { "-FallbackSource", _options.FallbackNuGetPackageSource });
         ExecNuGet(args.ToArray());
     }
 
@@ -194,7 +194,7 @@ public abstract class ProjectGenerator : IProjectGenerator
     {
         ExecNuGetInstall(_options.ExternalBindingPackageName, packagesFolder);
         var projectChanger = CreateProjectChanger(projectFilePath);
-        InstallNuGetPackage(projectChanger, packagesFolder, _options.ExternalBindingPackageName, packageVersion:"1.0.0");
+        InstallNuGetPackage(projectChanger, packagesFolder, _options.ExternalBindingPackageName, packageVersion: "1.0.0", sourcePlatform: "net45");
         projectChanger.SetSpecFlowConfig("stepAssemblies/stepAssembly", "assembly",
             _options.ExternalBindingPackageName);
         projectChanger.Save();
@@ -204,7 +204,7 @@ public abstract class ProjectGenerator : IProjectGenerator
     {
         ExecNuGetInstall(_options.PluginName, packagesFolder);
         var projectChanger = CreateProjectChanger(projectFilePath);
-        InstallNuGetPackage(projectChanger, packagesFolder, _options.PluginName, packageVersion: "1.0.0");
+        InstallNuGetPackage(projectChanger, packagesFolder, _options.PluginName, packageVersion: "1.0.0", sourcePlatform: "net45");
         if (_options.SpecFlowVersion.Major < 3)
         {
             projectChanger.SetSpecFlowConfig("plugins/add", "name", _options.PluginName.Replace(".SpecFlowPlugin", ""));
@@ -239,16 +239,52 @@ public abstract class ProjectGenerator : IProjectGenerator
 
     private void InstallNUnit(string packagesFolder, string projectFilePath)
     {
-        if (_options.SpecFlowVersion >= new Version("2.0"))
+        if (IsTargetFrameworkTooOldForNUnit4(_options.TargetFramework) || _options.SpecFlowVersion < new Version("2.0"))
+        {
+            ExecNuGetInstall("NUnit", packagesFolder, "-Version", "3.14.0"); //Latest major 3 version
+        }
+        else
+        {
             ExecNuGetInstall("NUnit", packagesFolder);
-        else //v1.9
-            ExecNuGetInstall("NUnit", packagesFolder, "-Version", "3.0.0");
+        }
+
         ExecNuGetInstall("NUnit3TestAdapter", packagesFolder);
 
         var projectChanger = CreateProjectChanger(projectFilePath);
-        InstallNuGetPackage(projectChanger, packagesFolder, "NUnit");
+
+        if (IsTargetFrameworkTooOldForNUnit4(_options.TargetFramework) || _options.SpecFlowVersion < new Version("2.0"))
+        {
+            InstallNuGetPackage(projectChanger, packagesFolder, "NUnit", packageVersion: "3.14.0", sourcePlatform: "netstandard2.0");
+        }
+        else
+        {
+            InstallNuGetPackage(projectChanger, packagesFolder, "NUnit");
+        }
+
         InstallNuGetPackage(projectChanger, packagesFolder, "NUnit3TestAdapter", "net35");
         projectChanger.Save();
+    }
+
+    /// <summary>
+    /// NUnit 4 only supports >= .net6.0  & >= net462
+    /// </summary>
+    private bool IsTargetFrameworkTooOldForNUnit4(string framework)
+    {
+        return framework switch
+        {
+            "netcoreapp20" => true,
+            "netcoreapp2.0" => true,
+            "netcoreapp2.1" => true,
+            "netcoreapp21" => true,
+            "netcoreapp2.2" => true,
+            "netcoreapp22" => true,
+            "netcoreapp3.0" => true,
+            "netcoreapp30" => true,
+            "netcoreapp3.1" => true,
+            "netcoreapp31" => true,
+            "net5.0" => true,
+            _ => false
+        };
     }
 
     private void InstallXUnit(string packagesFolder, string projectFilePath)
@@ -261,7 +297,7 @@ public abstract class ProjectGenerator : IProjectGenerator
         InstallNuGetPackage(projectChanger, packagesFolder, "xunit.abstractions", "net35");
         InstallNuGetPackage(projectChanger, packagesFolder, "xunit.assert", "netstandard1.1");
         InstallNuGetPackage(projectChanger, packagesFolder, "xunit.extensibility.core", "netstandard1.1");
-        InstallNuGetPackage(projectChanger, packagesFolder, "xunit.extensibility.execution", "net452");
+        InstallNuGetPackage(projectChanger, packagesFolder, "xunit.extensibility.execution", "netstandard1.1");
         InstallNuGetPackage(projectChanger, packagesFolder, "xunit.runner.visualstudio", "net462");
         projectChanger.Save();
     }
@@ -316,15 +352,15 @@ public abstract class ProjectGenerator : IProjectGenerator
         if (_options.SpecFlowVersion >= new Version("3.1"))
         {
             InstallNuGetPackage(projectChanger, packagesFolder, "Cucumber.Messages", dependency: true,
-                packageVersion: "6.0.1");
+                packageVersion: "6.0.1", sourcePlatform: "netstandard2.0");
             InstallNuGetPackage(projectChanger, packagesFolder, "Google.Protobuf", dependency: true,
-                packageVersion: "3.7.0");
+                packageVersion: "3.7.0", sourcePlatform: "netstandard1.0");
         }
 
         if (_options.SpecFlowVersion >= new Version("3.7"))
         {
-            InstallNuGetPackage(projectChanger, packagesFolder, "BoDi", dependency: true, packageVersion: "1.5.0");
-            InstallNuGetPackage(projectChanger, packagesFolder, "Gherkin", dependency: true, packageVersion: "6.0.0");
+            InstallNuGetPackage(projectChanger, packagesFolder, "BoDi", dependency: true, packageVersion: "1.5.0", sourcePlatform: "netstandard2.0");
+            InstallNuGetPackage(projectChanger, packagesFolder, "Gherkin", dependency: true, packageVersion: "6.0.0", sourcePlatform: "netstandard2.0");
             InstallNuGetPackage(projectChanger, packagesFolder, "Utf8Json", "net45", dependency: true,
                 packageVersion: "1.3.7");
             InstallNuGetPackage(projectChanger, packagesFolder, "System.ValueTuple", "netstandard1.0",
@@ -332,8 +368,8 @@ public abstract class ProjectGenerator : IProjectGenerator
         }
         else if (_options.SpecFlowVersion >= new Version("3.0.188"))
         {
-            InstallNuGetPackage(projectChanger, packagesFolder, "BoDi", dependency: true, packageVersion: "1.4.1");
-            InstallNuGetPackage(projectChanger, packagesFolder, "Gherkin", dependency: true, packageVersion: "6.0.0");
+            InstallNuGetPackage(projectChanger, packagesFolder, "BoDi", dependency: true, packageVersion: "1.4.1", sourcePlatform: "netstandard2.0");
+            InstallNuGetPackage(projectChanger, packagesFolder, "Gherkin", dependency: true, packageVersion: "6.0.0", sourcePlatform: "netstandard2.0");
             InstallNuGetPackage(projectChanger, packagesFolder, "Utf8Json", "net45", dependency: true,
                 packageVersion: "1.3.7");
             InstallNuGetPackage(projectChanger, packagesFolder, "System.ValueTuple", "netstandard1.0",
@@ -352,7 +388,7 @@ public abstract class ProjectGenerator : IProjectGenerator
         }
         else if (_options.SpecFlowVersion >= new Version("2.3"))
         {
-            InstallNuGetPackage(projectChanger, packagesFolder, "Newtonsoft.Json", dependency: true);
+            InstallNuGetPackage(projectChanger, packagesFolder, "Newtonsoft.Json", dependency: true, sourcePlatform: "netstandard1.0");
             InstallNuGetPackage(projectChanger, packagesFolder, "System.ValueTuple", "netstandard1.0",
                 dependency: true);
         }
@@ -368,7 +404,7 @@ public abstract class ProjectGenerator : IProjectGenerator
     }
 
     protected void InstallNuGetPackage(ProjectChanger projectChanger, string packagesFolder, string packageName,
-        string sourcePlatform = "net45", string packageVersion = null, bool dependency = false)
+        string sourcePlatform = "net462", string packageVersion = null, bool dependency = false)
     {
         var package =
             projectChanger.InstallNuGetPackage(packagesFolder, packageName, sourcePlatform, packageVersion, dependency);

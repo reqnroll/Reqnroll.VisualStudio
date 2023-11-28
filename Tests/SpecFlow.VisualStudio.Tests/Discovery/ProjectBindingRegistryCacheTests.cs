@@ -176,7 +176,7 @@ public class ProjectBindingRegistryCacheTests
             await Task.Yield();
 
             if (stubLogger.Logs.Any(log => log.Message.Contains("in 2 iteration")))
-                cts.Cancel();
+                await cts.CancelAsync();
         }
     }
 

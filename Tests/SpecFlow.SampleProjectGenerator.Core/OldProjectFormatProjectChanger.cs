@@ -83,7 +83,7 @@ public class OldProjectFormatProjectChanger : ProjectChanger
     }
 
     public override NuGetPackageData InstallNuGetPackage(string packagesFolder, string packageName,
-        string sourcePlatform = "net45", string packageVersion = null, bool dependency = false)
+        string sourcePlatform = "net462", string packageVersion = null, bool dependency = false)
     {
         string packageFolder;
         if (packageVersion == null)

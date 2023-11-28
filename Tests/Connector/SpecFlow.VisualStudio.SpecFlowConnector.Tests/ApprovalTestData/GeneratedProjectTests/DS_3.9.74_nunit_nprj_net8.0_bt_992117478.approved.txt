@@ -6,11 +6,11 @@
     "Connector": "<connector>",
     "ImageRuntimeVersion": "v4.0.30319",
     "SFFile": "TechTalk.SpecFlow.dll",
-    "SFFileVersion": "3.9.40.46609",
-    "SFProductVersion": "3.9.40+11b6bbec89",
+    "SFFileVersion": "3.9.74.14555",
+    "SFProductVersion": "3.9.74+db38782399",
     "SourcePaths": "1",
     "StepDefinitions": "3",
-    "TargetFramework": ".NETFramework,Version=v4.6.1",
+    "TargetFramework": ".NETCoreApp,Version=v8.0",
     "TypeNames": "0"
   }
 }

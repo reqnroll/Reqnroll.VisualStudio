@@ -24,7 +24,7 @@ public class NewProjectFormatProjectGenerator : ProjectGenerator
 
     protected override void InstallSpecFlowPackages(string packagesFolder, ProjectChanger projectChanger)
     {
-        InstallNuGetPackage(projectChanger, packagesFolder, "SpecFlow.Tools.MsBuild.Generation", "net45",
+        InstallNuGetPackage(projectChanger, packagesFolder, "SpecFlow.Tools.MsBuild.Generation", "net462",
             _options.SpecFlowPackageVersion);
     }
 
@@ -32,7 +32,7 @@ public class NewProjectFormatProjectGenerator : ProjectGenerator
     {
         if (_options.SpecFlowVersion >= new Version("3.0.0"))
         {
-            InstallNuGetPackage(projectChanger, packagesFolder, $"SpecFlow.{_options.UnitTestProvider}", "net45",
+            InstallNuGetPackage(projectChanger, packagesFolder, $"SpecFlow.{_options.UnitTestProvider}", "net462",
                 _options.SpecFlowPackageVersion);
             return;
         }

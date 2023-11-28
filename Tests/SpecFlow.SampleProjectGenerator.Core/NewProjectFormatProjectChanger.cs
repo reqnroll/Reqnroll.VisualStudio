@@ -28,7 +28,7 @@ public class NewProjectFormatProjectChanger : ProjectChanger
     }
 
     public override NuGetPackageData InstallNuGetPackage(string packagesFolder, string packageName,
-        string sourcePlatform = "net45", string packageVersion = null, bool dependency = false)
+        string sourcePlatform = "net462", string packageVersion = null, bool dependency = false)
     {
         if (dependency)
             return null;
@@ -40,7 +40,7 @@ public class NewProjectFormatProjectChanger : ProjectChanger
                 .OrderByDescending(d => new Version(Path.GetFileName(d))).First();
             packageVersion = Path.GetFileName(folder);
             if (packageVersion == null)
-                throw new Exception($"Unable to detect version for package {packageName}");
+                throw new InvalidOperationException($"Unable to detect version for package {packageName}");
         }
 
         var packageFolder = Path.Combine(packagesFolder, packageName, packageVersion);

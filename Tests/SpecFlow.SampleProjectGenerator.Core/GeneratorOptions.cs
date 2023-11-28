@@ -5,7 +5,7 @@ namespace SpecFlow.SampleProjectGenerator;
 
 public class GeneratorOptions
 {
-    private const string LatestSpecFlowVersion = "2.3.2";
+    private const string LatestSpecFlowVersion = "3.9.74";
     public const string SpecFlowV3Version = "3.6.23";
     public const string UnicodeBindingRegex = "Unicode Алло Χαίρετε Árvíztűrő tükörfúrógép";
     public const string DefaultTargetFramework = "net48";

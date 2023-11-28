@@ -1,4 +1,6 @@
 ﻿#nullable enable
+using System.Net.Http;
+
 namespace SpecFlow.VisualStudio.Analytics;
 
 [Export(typeof(IAnalyticsTransmitter))]
