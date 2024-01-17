@@ -128,10 +128,10 @@
 
   <Symbols>
     <!-- This is the package guid. -->
-    <GuidSymbol name="guidReqnrollPackage" value="{71341911-fe1a-4053-a844-01a60e093453}" />
+    <GuidSymbol name="guidReqnrollPackage" value="{2875ec2c-c929-4bfb-8e1f-a7cd5d0e31db}" />
 
     <!-- This is the guid used to group the menu commands together -->
-    <GuidSymbol name="guidReqnrollPackageCmdSet" value="{7b9f385f-5db1-4fc3-9202-064b4a3fa987}">
+    <GuidSymbol name="guidReqnrollPackageCmdSet" value="{7fd3ed5d-2cf1-4200-b28b-cf1cc6b00c5a}">
       <IDSymbol name="EditorContextMenuGroup" value="0x1020" />
       <IDSymbol name="ProjectContextMenuGroup" value="0x1021" />
 
@@ -141,7 +141,7 @@
       <IDSymbol name="RenameStepCommandId" value="0x0103" />
     </GuidSymbol>
 
-    <GuidSymbol name="guidImages" value="{431d2fc7-c080-497c-b6a6-e20dd51260ea}" >
+    <GuidSymbol name="guidImages" value="{027c70d2-dbf1-49ee-ba67-c4796aa26a87}" >
       <IDSymbol name="bmpReqnroll" value="1" />
       <IDSymbol name="bmpImgUnused1" value="2" />
       <IDSymbol name="bmpImgUnused2" value="3" />

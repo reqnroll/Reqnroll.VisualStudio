@@ -35,7 +35,7 @@ public sealed class ReqnrollVsPackage : AsyncPackage
     /// <summary>
     ///     ReqnrollVsPackage GUID string.
     /// </summary>
-    public const string PackageGuidString = "71341911-fe1a-4053-a844-01a60e093453";
+    public const string PackageGuidString = "2875ec2c-c929-4bfb-8e1f-a7cd5d0e31db";
 
     #region Package Members
 

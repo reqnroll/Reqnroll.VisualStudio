@@ -8,5 +8,5 @@ public static class ReqnrollVsCommands
     public const int FindStepDefinitionUsagesCommandId = 0x0101;
     public const int RegenerateAllFeatureFileCodeBehindCommandId = 0x0102;
     public const int RenameStepCommandId = 0x0103;
-    public static readonly Guid DefaultCommandSet = new("7b9f385f-5db1-4fc3-9202-064b4a3fa987");
+    public static readonly Guid DefaultCommandSet = new("7fd3ed5d-2cf1-4200-b28b-cf1cc6b00c5a");
 }

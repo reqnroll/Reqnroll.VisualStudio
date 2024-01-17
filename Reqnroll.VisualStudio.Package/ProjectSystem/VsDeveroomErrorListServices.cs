@@ -59,7 +59,7 @@ public class VsDeveroomErrorListServices : VsServiceBase, IDeveroomErrorListServ
         var errorListProvider = new ErrorListProvider(vsIdeScope.ServiceProvider)
         {
             ProviderName = "Reqnroll",
-            ProviderGuid = new Guid("{886045DC-B789-4428-86D3-A90E13B6E11F}")
+            ProviderGuid = new Guid("{A874372D-0AE1-46D9-88C7-0AAF7DDBACDF}")
         };
         errorListProvider.Subcategories.AddRange(Enum.GetNames(typeof(DeveroomUserErrorCategory)));
         return errorListProvider;

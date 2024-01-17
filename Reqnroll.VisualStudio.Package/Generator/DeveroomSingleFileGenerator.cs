@@ -5,7 +5,7 @@ using VSLangProj80;
 namespace Reqnroll.VisualStudio.Generator;
 
 [ComVisible(true)]
-[Guid("58D27450-CAE5-4472-84B2-EF19E3485770")]
+[Guid("C8411636-497A-471A-B9B9-78CDBA2318D7")]
 [CodeGeneratorRegistration(typeof(DeveroomSingleFileGenerator), Description, vsContextGuids.vsContextGuidVCSProject,
     GeneratesDesignTimeSource = true, GeneratorRegKeyName = Name)]
 [CodeGeneratorRegistration(typeof(DeveroomSingleFileGenerator), Description, vsContextGuids.vsContextGuidVBProject,
