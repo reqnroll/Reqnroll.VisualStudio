@@ -23,18 +23,7 @@ public class DiscoveryProcessor
     private IRemotingReqnrollDiscoverer GetDiscoverer()
     {
         var versionNumber = GetReqnrollVersion();
-
-        if (versionNumber >= 3_07_013)
-            return new ReqnrollVLatestDiscoverer();
-        if (versionNumber >= 3_00_000)
-            return new ReqnrollV30Discoverer();
-        if (versionNumber >= 2_02_000)
-            return new ReqnrollV22Discoverer();
-        if (versionNumber >= 2_01_000)
-            return new ReqnrollV21Discoverer();
-        if (versionNumber >= 2_00_000)
-            return new ReqnrollV20Discoverer();
-        return new ReqnrollV19Discoverer();
+        return new ReqnrollVLatestDiscoverer();
     }
 
     private int GetReqnrollVersion()

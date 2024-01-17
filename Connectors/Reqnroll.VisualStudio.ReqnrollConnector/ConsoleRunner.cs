@@ -8,7 +8,7 @@ public class ConsoleRunner
     {
         try
         {
-            string result = null;
+            string result;
 
             var connectorOptions = ConnectorOptions.Parse(args, out var commandArgs);
 
@@ -22,17 +22,9 @@ public class ConsoleRunner
                     result = DiscoveryCommand.Execute(commandArgs);
                     break;
                 }
-                case GeneratorCommand.CommandName:
-                {
-                    result = GeneratorCommand.Execute(commandArgs);
-                    break;
-                }
                 default:
                     throw new ArgumentException($"Invalid command: {connectorOptions.Command}");
             }
-
-            if (result == null)
-                return 1;
 
             Console.WriteLine(JsonSerialization.MarkResult(result));
 
