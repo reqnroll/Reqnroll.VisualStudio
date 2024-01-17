@@ -574,7 +574,7 @@ public class ProjectSystemSteps : Steps
     }
 
     [Then(@"the source file of the ""(.*)"" ""(.*)"" step definition is opened")]
-    public void ThenTheSourceFileOfTheStepDefinitionIsOpened(string stepRegex, ScenarioBlock stepType)
+    public void ThenTheSourceFileOfTheStepDefinitionIsOpened(string stepRegex, Reqnroll.VisualStudio.Editor.Services.Parser.ScenarioBlock stepType)
     {
         _stepDefinitionBinding = _discoveryService.BindingRegistryCache.Value.StepDefinitions
             .FirstOrDefault(b => b.StepDefinitionType == stepType && b.Regex.ToString().Contains(stepRegex));
@@ -627,7 +627,7 @@ public class ProjectSystemSteps : Steps
 
     [Then(@"invoking the first item from the jump list navigates to the ""(.*)"" ""(.*)"" step definition")]
     public void ThenInvokingTheFirstItemFromTheJumpListNavigatesToTheStepDefinition(string stepRegex,
-        ScenarioBlock stepType)
+        Reqnroll.VisualStudio.Editor.Services.Parser.ScenarioBlock stepType)
     {
         InvokeFirstContextMenuItem();
 

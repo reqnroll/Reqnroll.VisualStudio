@@ -1,6 +1,7 @@
 #nullable disable
 using System.Reflection;
 using System.Text.RegularExpressions;
+using CucumberExpressions;
 using FluentAssertions;
 using Reqnroll.VisualStudio.ReqnrollConnector.Discovery;
 using Reqnroll.VisualStudio.ReqnrollConnector.Models;
@@ -30,8 +31,8 @@ public class BaseDiscovererTests
         BindingScope scope = null)
     {
         var methodInfo = GetMethodInfo(method);
-        _bindingRegistry.RegisterStepDefinitionBinding(new StepDefinitionBinding(type, regex,
-            new RuntimeBindingMethod(methodInfo), scope));
+        _bindingRegistry.RegisterStepDefinitionBinding(new StepDefinitionBinding(type, 
+            new RuntimeBindingMethod(methodInfo), scope, StepDefinitionExpressionTypes.RegularExpression, regex, new RegularExpression(new Regex(regex))));
     }
 
     private void RegisterStepDefinitionBindingWithSourceAndError(string regex = "I press add",
@@ -407,8 +408,8 @@ public class BaseDiscovererTests
     public class StepDefinitionBindingWithSourceAndError : StepDefinitionBinding
     {
         public StepDefinitionBindingWithSourceAndError(StepDefinitionType stepDefinitionType, string regexString,
-            IBindingMethod bindingMethod, BindingScope bindingScope) : base(stepDefinitionType, regexString,
-            bindingMethod, bindingScope)
+            IBindingMethod bindingMethod, BindingScope bindingScope) : base(stepDefinitionType, bindingMethod, bindingScope,
+            StepDefinitionExpressionTypes.RegularExpression, regexString, new RegularExpression(new Regex(regexString)))
         {
         }
 

@@ -258,7 +258,7 @@ public class DeveroomSteps : Steps
     }
 
     [Then(@"there is a ""(.*)"" step with regex ""(.*)""")]
-    public void ThenThereIsAStepWithRegex(ScenarioBlock stepType, string stepDefRegex)
+    public void ThenThereIsAStepWithRegex(Reqnroll.VisualStudio.Editor.Services.Parser.ScenarioBlock stepType, string stepDefRegex)
     {
         _bindingRegistry.Should().NotBeNull();
         _bindingRegistry.StepDefinitions.Should().Contain(sd =>
@@ -291,7 +291,7 @@ public class DeveroomSteps : Steps
     }
 
     [Then(@"there is a ""(.*)"" step with source file containing ""(.*)""")]
-    public void ThenThereIsAStepWithSourceFileContaining(ScenarioBlock stepType, string expectedPathPart)
+    public void ThenThereIsAStepWithSourceFileContaining(Reqnroll.VisualStudio.Editor.Services.Parser.ScenarioBlock stepType, string expectedPathPart)
     {
         _bindingRegistry.Should().NotBeNull();
         _bindingRegistry.StepDefinitions.Should().Contain(sd =>
