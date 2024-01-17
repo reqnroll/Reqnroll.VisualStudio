@@ -2,9 +2,9 @@ namespace Reqnroll.VisualStudio.Connectors;
 
 public class GenericOutProcReqnrollConnector : OutProcReqnrollConnector
 {
-    private const string ConnectorNet60 = @"Generic-net6.0\reqnroll-vs.dll";
-    private const string ConnectorNet70 = @"Generic-net7.0\reqnroll-vs.dll";
-    private const string ConnectorNet80 = @"Generic-net8.0\reqnroll-vs.dll";
+    private const string ConnectorNet60 = @"Reqnroll-Generic-net6.0\reqnroll-vs.dll";
+    private const string ConnectorNet70 = @"Reqnroll-Generic-net7.0\reqnroll-vs.dll";
+    private const string ConnectorNet80 = @"Reqnroll-Generic-net8.0\reqnroll-vs.dll";
 
     public GenericOutProcReqnrollConnector(
         DeveroomConfiguration configuration,

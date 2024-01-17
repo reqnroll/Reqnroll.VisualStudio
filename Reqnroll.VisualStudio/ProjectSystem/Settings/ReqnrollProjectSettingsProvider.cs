@@ -103,11 +103,12 @@ public class ReqnrollProjectSettingsProvider
         NuGetVersion reqnrollVersion, ReqnrollProjectTraits reqnrollProjectTraits,
         string reqnrollGeneratorFolder, string reqnrollConfigFilePath)
     {
-        if (reqnrollVersion.Version < new Version(3, 0) &&
-            !reqnrollProjectTraits.HasFlag(ReqnrollProjectTraits.MsBuildGeneration) &&
-            !reqnrollProjectTraits.HasFlag(ReqnrollProjectTraits.XUnitAdapter) &&
-            reqnrollGeneratorFolder != null)
-            reqnrollProjectTraits |= ReqnrollProjectTraits.DesignTimeFeatureFileGeneration;
+        //TODO
+        //if (reqnrollVersion.Version < new Version(3, 0) &&
+        //    !reqnrollProjectTraits.HasFlag(ReqnrollProjectTraits.MsBuildGeneration) &&
+        //    !reqnrollProjectTraits.HasFlag(ReqnrollProjectTraits.XUnitAdapter) &&
+        //    reqnrollGeneratorFolder != null)
+        //    reqnrollProjectTraits |= ReqnrollProjectTraits.DesignTimeFeatureFileGeneration;
 
         return new ReqnrollSettings(reqnrollVersion, reqnrollProjectTraits, reqnrollGeneratorFolder,
             reqnrollConfigFilePath);
@@ -139,7 +140,7 @@ public class ReqnrollProjectSettingsProvider
 
     private bool IsImplicitMsBuildGeneration(ReqnrollPackageDetector detector, Version reqnrollVersion,
         NuGetPackageReference[] packageReferencesArray) =>
-        reqnrollVersion >= new Version(3, 3, 57) &&
+        //TODO: reqnrollVersion >= new Version(3, 3, 57) &&
         detector.IsReqnrollTestFrameworkPackagesUsed(packageReferencesArray);
 
     private string GetReqnrollConfigFilePath(IProjectScope projectScope)

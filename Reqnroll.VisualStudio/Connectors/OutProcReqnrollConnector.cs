@@ -3,10 +3,10 @@ namespace Reqnroll.VisualStudio.Connectors;
 
 public class OutProcReqnrollConnector
 {
-    private const string ConnectorV1AnyCpu = @"V1\reqnroll-vs.exe";
-    private const string ConnectorV1X86 = @"V1\reqnroll-vs-x86.exe";
-    private const string ConnectorV2Net60 = @"V2-net6.0\reqnroll-vs.dll";
-    private const string ConnectorV3Net60 = @"V3-net6.0\reqnroll-vs.dll";
+    private const string ConnectorV1AnyCpu = @"Reqnroll-V1\reqnroll-vs.exe";
+    private const string ConnectorV1X86 = @"Reqnroll-V1\reqnroll-vs-x86.exe";
+    private const string ConnectorV2Net60 = @"Reqnroll-V2-net6.0\reqnroll-vs.dll";
+    private const string ConnectorV3Net60 = @"Reqnroll-V3-net6.0\reqnroll-vs.dll";
     private const string GenerationCommandName = "generation";
     private const string BindingDiscoveryCommandName = "binding discovery";
 
@@ -172,9 +172,11 @@ public class OutProcReqnrollConnector
 
         if (_targetFrameworkMoniker.IsNetCore)
         {
-            if (_reqnrollVersion != null && _reqnrollVersion.Version >= new Version(3, 9, 22))
-                return GetDotNetExecCommand(arguments, connectorsFolder, ConnectorV3Net60);
-            return GetDotNetExecCommand(arguments, connectorsFolder, ConnectorV2Net60);
+            //TODO
+            //if (_reqnrollVersion != null && _reqnrollVersion.Version >= new Version(3, 9, 22))
+            //    return GetDotNetExecCommand(arguments, connectorsFolder, ConnectorV3Net60);
+            //return GetDotNetExecCommand(arguments, connectorsFolder, ConnectorV2Net60);
+            //throw new NotSupportedException("This connector is not supported!");
         }
 
         //V1

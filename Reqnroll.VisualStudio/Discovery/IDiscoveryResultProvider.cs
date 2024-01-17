@@ -18,7 +18,7 @@ public class DiscoveryResultProvider : IDiscoveryResultProvider
 
     public DiscoveryResult RunDiscovery(string testAssemblyPath, string configFilePath, ProjectSettings projectSettings)
     {
-        if (projectSettings.ReqnrollVersion.Version > new Version(3, 0, 225) )
+        //TODO: if (projectSettings.ReqnrollVersion.Version > new Version(3, 0, 225) )
         {
             DiscoveryResult genericConnectorResult = RunDiscovery(testAssemblyPath, configFilePath, projectSettings,
                 OutProcReqnrollConnectorFactory.CreateGeneric(_projectScope));
@@ -39,7 +39,7 @@ public class DiscoveryResultProvider : IDiscoveryResultProvider
             return retryResult;
         }
 
-        return RunDiscovery(testAssemblyPath, configFilePath, projectSettings, GetConnector(projectSettings));
+        //TODO: return RunDiscovery(testAssemblyPath, configFilePath, projectSettings, GetConnector(projectSettings));
     }
 
     public DiscoveryResult RunDiscovery(string testAssemblyPath, string configFilePath, ProjectSettings projectSettings,
