@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>0ca5992a-e95e-472f-90cf-36be75a6cede</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>SpecFlow.VisualStudio.Common</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AssemblyExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DebuggableCancellationTokenSource.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DeveroomConfigurationException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DiscoveryException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FileDetails.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FileSystemHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implicitusings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JsonSerialization.cs" />
+  </ItemGroup>
+</Project>

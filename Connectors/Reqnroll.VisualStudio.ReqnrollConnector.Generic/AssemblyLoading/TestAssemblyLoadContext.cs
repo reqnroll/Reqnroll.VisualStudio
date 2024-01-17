@@ -1,4 +1,4 @@
-using RuntimeEnvironment = Microsoft.DotNet.PlatformAbstractions.RuntimeEnvironment;
+//TODO: using RuntimeEnvironment = Microsoft.DotNet.PlatformAbstractions.RuntimeEnvironment;
 
 namespace ReqnrollConnector.AssemblyLoading;
 
@@ -45,7 +45,9 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
             ? _dependencyContext.RuntimeGraph
             : DependencyContext.Default.RuntimeGraph;
 
-        var rid = RuntimeEnvironment.GetRuntimeIdentifier();
+        //TODO: var rid = RuntimeEnvironment.GetRuntimeIdentifier();
+        var rid = Environment.OSVersion.Platform.ToString();
+
         var fallbackRid = GetFallbackRid();
         var fallbackGraph = ridGraph.FirstOrDefault(g => g.Runtime == rid)
                             ?? ridGraph.FirstOrDefault(g => g.Runtime == fallbackRid)

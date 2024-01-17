@@ -44,7 +44,7 @@ public class ReqnrollVLatestDiscoverer : RemotingBaseDiscoverer
         var testRunnerManager = (TestRunnerManager) Resolve<ITestRunnerManager>(globalContainer);
 
         testRunnerManager.Initialize(testAssembly);
-        testRunnerManager.CreateTestRunner(0);
+        testRunnerManager.CreateTestRunner();
 
         return Resolve<IBindingRegistry>(globalContainer);
     }

@@ -1,5 +1,4 @@
 using Reqnroll.Configuration;
-using Reqnroll.Configuration.AppConfig;
 using Reqnroll.Configuration.JsonConfig;
 using Reqnroll.Tracing;
 
@@ -22,18 +21,6 @@ public class ReqnrollConfigurationLoader : IConfigurationLoader
             var configFileContent = File.ReadAllText(configFile);
             switch (extension)
             {
-                case ".config":
-                {
-                    var configDocument = new XmlDocument();
-                    configDocument.LoadXml(configFileContent);
-                    var reqnrollNode = configDocument.SelectSingleNode("/configuration/reqnroll");
-                    if (reqnrollNode == null)
-                        return LoadDefaultConfiguration(reqnrollConfiguration);
-
-                    var configSection = ConfigurationSectionHandler.CreateFromXml(reqnrollNode);
-                    var loader = new AppConfigConfigurationLoader();
-                    return loader.LoadAppConfig(reqnrollConfiguration, configSection);
-                }
                 case ".json":
                 {
                     configFileContent = ConvertToJsonSpecFlow3Style(configFileContent);
@@ -53,9 +40,6 @@ public class ReqnrollConfigurationLoader : IConfigurationLoader
 
     public ReqnrollConfiguration Load(ReqnrollConfiguration reqnrollConfiguration,
         IReqnrollConfigurationHolder reqnrollConfigurationHolder) => throw new NotSupportedException();
-
-    public ReqnrollConfiguration Update(ReqnrollConfiguration reqnrollConfiguration,
-        ConfigurationSectionHandler reqnrollConfigSection) => throw new NotSupportedException();
 
     protected virtual string ConvertToJsonSpecFlow3Style(string configFileContent) => configFileContent;
 

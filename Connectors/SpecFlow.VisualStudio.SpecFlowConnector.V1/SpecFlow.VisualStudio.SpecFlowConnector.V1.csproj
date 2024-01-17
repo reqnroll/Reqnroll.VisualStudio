@@ -1,0 +1,61 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <AssemblyName>specflow-vs</AssemblyName>
+    <Configurations>Debug;Release;Debug_x86;Release_x86</Configurations>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\Key.snk</AssemblyOriginatorKeyFile>
+    <PlatformTarget>anycpu</PlatformTarget>
+    <RootNamespace>SpecFlow.VisualStudio.SpecFlowConnector</RootNamespace>
+    <_OutputCopyLocation>$(SolutionDir)Connectors\bin\$(configuration)\V1</_OutputCopyLocation>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="dnlib" Version="3.3.5" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="SpecFlow.CustomPlugin" Version="3.9.40" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.2.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference
+      Include="..\SpecFlow.VisualStudio.SpecFlowConnector.Models\SpecFlow.VisualStudio.SpecFlowConnector.Models.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="ISymWrapper" />
+    <Reference Include="System.Configuration" />
+  </ItemGroup>
+
+  <Import Project="..\SpecFlow.VisualStudio.Common\SpecFlow.VisualStudio.Common.projitems" Label="Shared" />
+
+  <Import Project="..\SpecFlow.VisualStudio.SpecFlowConnector\SpecFlow.VisualStudio.SpecFlowConnector.projitems"
+          Label="Shared" />
+
+  <Target Name="CustomAfterBuild" AfterTargets="Build" Condition="$(configuration)=='Debug'">
+    <Message Text="$(OutputPath)" Importance="high" />
+
+    <ItemGroup>
+      <_FilesToCopy Include="$(OutputPath)\*"
+                    Exclude="$(OutputPath)\TechTalk.*;$(OutputPath)\System.*;$(OutputPath)\Gherkin.*;$(OutputPath)\*.exe.config" />
+    </ItemGroup>
+    <Message Text="$(configuration) _FilesToCopy: @(_FilesToCopy)" Importance="high" />
+
+    <Message
+      Text="DestFiles:&#xD;&#xA;        @(_FilesToCopy->'$(_OutputCopyLocation)\V1\%(RecursiveDir)%(Filename)%(Extension)')"
+      Importance="high" />
+
+    <Message
+      Text="Copying: @(_FilesToCopy)->'$(_OutputCopyLocation)\%(RecursiveDir)%(Filename)%(Extension)'"
+      Importance="high" />
+
+    <!-- We do not clean the output location before copying, because normal build does not produce
+	     x86 binaries, so we just keep what it is there. For a clean build or to test x86 connector, 
+		 run the Connectors\build.ps1 first. -->
+
+    <Copy SourceFiles="@(_FilesToCopy)"
+          DestinationFiles="$(_OutputCopyLocation)\%(RecursiveDir)%(Filename)%(Extension)" />
+  </Target>
+</Project>

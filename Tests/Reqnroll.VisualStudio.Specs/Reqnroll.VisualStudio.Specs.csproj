@@ -21,9 +21,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Reqnroll" Version="3.9.40" />
-    <PackageReference Include="Reqnroll.xUnit" Version="3.9.40" />
-    <PackageReference Include="CucumberExpressions.Reqnroll.3-9" Version="1.0.6" />
+    <PackageReference Include="Reqnroll" Version="1.0.24-beta" />
+    <PackageReference Include="Reqnroll.xUnit" Version="1.0.24-beta" />
 
 
     <!--TODO: fix Reqnroll.xUnitAdapter for sdk-style projects-->

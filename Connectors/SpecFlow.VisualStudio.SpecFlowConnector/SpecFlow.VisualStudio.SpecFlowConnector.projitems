@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>e0b508c5-c71f-43b2-a564-e2bb0cd92f7c</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>SpecFlow.VisualStudio.SpecFlowConnector</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AssemblyAttributes.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConnectorOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConsoleRunner.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DiscoveryCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Discovery\BaseDiscoverer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Discovery\DiscoveryOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Discovery\ISpecFlowDiscoverer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Discovery\NoInvokeDependencyProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Discovery\SpecFlow21ConfigurationLoader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Discovery\SpecFlowConfigurationLoader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImplicitUsings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ReflectionExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SourceDiscovery\DnLib\DnLibDeveroomSymbolReader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SourceDiscovery\IDeveroomSymbolReader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SourceDiscovery\NullDeveroomSymbolReader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SourceDiscovery\SequencePoint.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WarningCollector.cs" />
+  </ItemGroup>
+</Project>
