@@ -2,12 +2,12 @@
     "$schema": "http://json.schemastore.org/vsix-publish",
     "categories": [ "documentation", "testing", "team development" ],
     "identity": {
-        "internalName": "SpecFlowForVisualStudio2022"
+        "internalName": "ReqnrollForVisualStudio2022"
     },
     "overview": "overview.md",
     "priceCategory": "free",
-    "publisher": "techtalkspecflowteam",
+    "publisher": "techtalkreqnrollteam",
     "private": false,
     "qna": true,
-    "repo": "https://github.com/SpecFlowOSS/SpecFlow.VS"
+    "repo": "https://github.com/reqnroll/Reqnroll.VS"
 }

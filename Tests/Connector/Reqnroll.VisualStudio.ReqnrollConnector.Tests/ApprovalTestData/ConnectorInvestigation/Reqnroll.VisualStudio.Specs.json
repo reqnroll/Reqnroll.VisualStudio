@@ -1,0 +1,5 @@
+{
+  "TargetFolder": "..\\..\\..\\..\\Reqnroll.VisualStudio.Specs\\bin\\$(BuildConfiguration)\\net481",
+  "TestAssembly": "Reqnroll.VisualStudio.Specs.dll",
+  "ConfigFile": null
+}

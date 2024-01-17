@@ -10,7 +10,7 @@ mkdir $outputFolder
 
 # build V1 any cpu
 
-cd SpecFlow.VisualStudio.SpecFlowConnector.V1
+cd Reqnroll.VisualStudio.ReqnrollConnector.V1
 
 dotnet publish -c $configuration
 
@@ -23,16 +23,16 @@ Remove-Item bin\$configuration\net48\win-x86\publish -Recurse -Force -ErrorActio
 
 dotnet publish -r win-x86 -c $configuration /p:PlatformTarget=x86
 
-Rename-Item bin\$configuration\net48\win-x86\publish\specflow-vs.exe specflow-vs-x86.exe -Force
-Rename-Item bin\$configuration\net48\win-x86\publish\specflow-vs.pdb specflow-vs-x86.pdb -Force
+Rename-Item bin\$configuration\net48\win-x86\publish\reqnroll-vs.exe reqnroll-vs-x86.exe -Force
+Rename-Item bin\$configuration\net48\win-x86\publish\reqnroll-vs.pdb reqnroll-vs-x86.pdb -Force
 
-Copy-Item bin\$configuration\net48\win-x86\publish\specflow-vs-x86.* $outputFolder\V1\
+Copy-Item bin\$configuration\net48\win-x86\publish\reqnroll-vs-x86.* $outputFolder\V1\
 
 cd ..
 
 # build V2 any cpu
 
-cd SpecFlow.VisualStudio.SpecFlowConnector.V2
+cd Reqnroll.VisualStudio.ReqnrollConnector.V2
 
 dotnet publish -f net6.0 -c $configuration
 
@@ -42,7 +42,7 @@ cd ..
 
 # build V3 any cpu
 
-cd SpecFlow.VisualStudio.SpecFlowConnector.V3
+cd Reqnroll.VisualStudio.ReqnrollConnector.V3
 
 dotnet publish -f net6.0 -c $configuration
 
@@ -60,7 +60,7 @@ cd ..
 
 # build generic any cpu
 pushd
-cd SpecFlow.VisualStudio.SpecFlowConnector.Generic
+cd Reqnroll.VisualStudio.ReqnrollConnector.Generic
 
 dotnet publish -f net6.0 -c $configuration
 

@@ -1,0 +1,111 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net481</TargetFramework>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\Key.snk</AssemblyOriginatorKeyFile>
+    <AutoGenerateBindingRedirects>True</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <IsVsixProject>True</IsVsixProject>
+    <UseCodebase>True</UseCodebase>
+    <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
+
+    <GeneratePkgDefFile>true</GeneratePkgDefFile>
+    <DeployExtension>false</DeployExtension>
+    <IncludeAssemblyInVSIXContainer>true</IncludeAssemblyInVSIXContainer>
+    <IncludeDebugSymbolsInVSIXContainer>true</IncludeDebugSymbolsInVSIXContainer>
+    <IncludeDebugSymbolsInLocalVSIXDeployment>true</IncludeDebugSymbolsInLocalVSIXDeployment>
+    <CopyBuildOutputToOutputDirectory>true</CopyBuildOutputToOutputDirectory>
+    <CopyOutputSymbolsToOutputDirectory>false</CopyOutputSymbolsToOutputDirectory>
+    <RootNamespace>Reqnroll.VisualStudio</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DeployExtension>true</DeployExtension>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <VSIXSourceItem Include="..\Changelog.md">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <TargetPath>Changelog.txt</TargetPath>
+    </VSIXSourceItem>
+    <VSIXSourceItem Include="..\LICENSE">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <TargetPath>LICENSE.txt</TargetPath>
+    </VSIXSourceItem>
+    <Content Include="Package\Resources\ReqnrollIcon.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Package\Resources\gherkin_reqnrollvs.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <VSCTCompile Include="Commands\ReqnrollVsPackage.vsct">
+      <ResourceName>Menus.ctmenu</ResourceName>
+    </VSCTCompile>
+    <EmbeddedResource Include="Package\VSPackage.resx">
+      <MergeWithCTO>true</MergeWithCTO>
+      <ManifestResourceName>VSPackage</ManifestResourceName>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Designer.Interfaces" Version="17.0.31902.203" />
+    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.4.2119">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="NuGet.CommandLine" Version="6.8.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="NuGet.VisualStudio" Version="6.0.0" />
+    <PackageReference Include="NuGet.VisualStudio.Contracts" Version="6.0.0-preview.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Connectors\Reqnroll.VisualStudio.ReqnrollConnector.Models\Reqnroll.VisualStudio.ReqnrollConnector.Models.csproj" />
+    <ProjectReference Include="..\Reqnroll.VisualStudio.UI\Reqnroll.VisualStudio.UI.csproj" Name="Reqnroll.VisualStudio.UI" />
+    <ProjectReference Include="..\Reqnroll.VisualStudio\Reqnroll.VisualStudio.csproj" Name="Reqnroll.VisualStudio" />
+    <ProjectReference Include="..\Reqnroll.VisualStudio.ItemTemplates\Reqnroll.VisualStudio.ItemTemplates.csproj">
+      <Name>Reqnroll.VisualStudio.ItemTemplates</Name>
+      <VSIXSubPath>ItemTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
+    <ProjectReference Include="..\Reqnroll.VisualStudio.ProjectTemplate\Reqnroll.VisualStudio.ProjectTemplate.csproj">
+      <Name>Reqnroll.VisualStudio.ProjectTemplate</Name>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Design" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalDeveroomDependencies Include="Newtonsoft.Json.dll" />
+    <AdditionalDeveroomDependencies Include="Gherkin.dll" />
+    <AdditionalDeveroomDependencies Include="System.IO.Abstractions.dll" />
+    <AdditionalDeveroomDependencies Include="System.Threading.Channels.dll" />
+  </ItemGroup>
+
+  <Import Project="..\Connectors\DeploymentAssets.props" />
+
+  <Target Name="ReplaceVersions" AfterTargets="GetBuildVersion">
+    <ItemGroup>
+      <TemplateFiles Include="$(MSBuildThisFileDirectory)..\Reqnroll.VisualStudio.ItemTemplates\**\*.vstemplate" />
+      <TemplateFiles Include="$(MSBuildThisFileDirectory)..\Reqnroll.VisualStudio.ProjectTemplate\**\*.vstemplate" />
+      <VsChangeLog Include="$(MSBuildThisFileDirectory)..\Changelog.md" />
+    </ItemGroup>
+
+    <WriteLinesToFile File="%(TemplateFiles.FullPath)" Lines="$([System.Text.RegularExpressions.Regex]::Replace(&#xD;&#xA;         $([System.IO.File]::ReadAllText(%(TemplateFiles.FullPath))), &#xD;&#xA;         'Version=(\d+).(\d+).(\d+).(\d+),', &#xD;&#xA;         'Version=$(AssemblyVersion),'))" Overwrite="true" Encoding="UTF-8" />
+
+    <WriteLinesToFile Condition=" '$(Configuration)' == 'Release' " File="%(VsChangeLog.FullPath)" Lines="$([System.IO.File]::ReadAllText(%(VsChangeLog.FullPath)).Replace('$vNext$','$(BuildVersionSimple)')&#xD;&#xA;        .Replace('$buildDate$','$([System.DateTime]::Now.ToString('yyyy-MM-dd'))'))" Overwrite="true" Encoding="UTF-8" />
+
+  </Target>
+</Project>

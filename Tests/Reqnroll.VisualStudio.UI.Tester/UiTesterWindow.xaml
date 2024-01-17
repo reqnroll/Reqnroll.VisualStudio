@@ -1,0 +1,18 @@
+<Window x:Class="Reqnroll.VisualStudio.UI.Tester.UiTesterWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="UiTesterWindow" Height="450" Width="800">
+	<StackPanel>
+		<Button Click="Test_ContextMenu_DefaultLocation">Test context menu -- default location</Button>
+		<Button Click="Test_ContextMenu_At100x100">Test context menu -- at 100:100</Button>
+		<Button Click="Test_GenerateStepDefinitions">Test generate step definitions</Button>
+		<Button Click="Test_ReportError">Test report error</Button>
+		<Button Click="Test_WelcomeDialog">Test welcome dialog</Button>
+		<Button Click="Test_UpgradeDialog">Test upgrade dialog</Button>
+		<Button Click="Test_ProjectTemplateWizard">Test Project Template Wizard</Button>
+		<Button Click="Test_RenameStep">Test Rename Step</Button>
+	</StackPanel>
+</Window>

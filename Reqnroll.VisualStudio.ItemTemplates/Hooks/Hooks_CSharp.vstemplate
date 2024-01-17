@@ -1,0 +1,12 @@
+﻿<VSTemplate Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Item">
+	<TemplateData>
+		<DefaultName>Hooks.cs</DefaultName>
+		<Name>Reqnroll Hooks (event bindings)</Name>
+		<Description>Reqnroll Hooks (event bindings)</Description>
+		<ProjectType>CSharp</ProjectType>
+		<Icon>ReqnrollIcon.ico</Icon>
+	</TemplateData>
+	<TemplateContent>
+		<ProjectItem SubType="Code" TargetFileName="$fileinputname$.cs" ReplaceParameters="true">Hooks1.cs</ProjectItem>
+	</TemplateContent>
+</VSTemplate>

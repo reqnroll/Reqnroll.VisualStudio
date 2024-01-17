@@ -1,1 +1,0 @@
-﻿Left`2[System.Exception,SpecFlow.VisualStudio.SpecFlowConnector.ConnectorOptions]System.ArgumentException: Invalid command: xxx

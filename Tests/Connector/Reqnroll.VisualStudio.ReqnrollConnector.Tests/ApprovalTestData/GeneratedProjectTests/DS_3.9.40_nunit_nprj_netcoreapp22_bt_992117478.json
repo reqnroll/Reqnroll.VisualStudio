@@ -1,0 +1,9 @@
+{
+  "GeneratorOptions": {
+    "FeatureFileCount": 1,
+    "ScenarioPerFeatureFileCount": 1,
+    "NewProjectFormat": true,
+    "TargetFramework": "netcoreapp22",
+    "ReqnrollPackageVersion": "3.9.40"
+  }
+}

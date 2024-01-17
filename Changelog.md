@@ -1,4 +1,4 @@
-﻿# v$vNext$ - $buildDate$
+# v$vNext$ - $buildDate$
 
 # v2022.1.92 - 2023-11-17
 
@@ -57,7 +57,7 @@
 
 # v2021.2.1 - 2021-12-01
 
-* Fix: (#23) SpecFlow templates come first in the "Add New Item" dialog
+* Fix: (#23) Reqnroll templates come first in the "Add New Item" dialog
 * Feature: (#11) Update binding registry after define step
 
 # v2021.1.4 - 2021-11-25
@@ -69,9 +69,9 @@
 
 * Fix: (#20) 'GetDeveroomTagForCaret: Snapshot version mismatch' when tables are auto formatted
 * Fix: (#18) InvokeDiscovery: The project bindings (e.g. step definitions) could not be discovered. Navigation, step completion and other features are disabled
-* Feature: Update SpecFlow Project Templates for .NET 6 language features VS2022
+* Feature: Update Reqnroll Project Templates for .NET 6 language features VS2022
 * Fix: Resolve some compiler warnings caused by inconsistent nuget references
-* Fix: Warning about non-SpecFlow project is shown after every build
+* Fix: Warning about non-Reqnroll project is shown after every build
 
 # v2021.0.201 - 2021-11-15
 
@@ -93,7 +93,7 @@
 
 # v2021.0.191 - 2021-10-06
 
-* Fix: Support floating versions of SpecFlow package references
+* Fix: Support floating versions of Reqnroll package references
 * Fix: (#6) "Could not load file or assembly" by adding NugetCacheAssemblyResolver
 
 # v2021.0.187 - 2021-09-24
@@ -102,4 +102,4 @@
 
 # v2021.0.185 - 2021-09-21
 
-* Initial release based on v1.6.3 of the [Deveroom for SpecFlow](https://github.com/specsolutions/deveroom-visualstudio) Visual Studio extension.
+* Initial release based on v1.6.3 of the [Deveroom for Reqnroll](https://github.com/specsolutions/deveroom-visualstudio) Visual Studio extension.

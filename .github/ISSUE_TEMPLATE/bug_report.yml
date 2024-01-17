@@ -1,6 +1,6 @@
 ---
 name: Visual Studio Bug report
-description: Create a report to help us improve the SpecFlow Visual Studio Extension
+description: Create a report to help us improve the Reqnroll Visual Studio Extension
 body:
 - type: dropdown 
   attributes:
@@ -19,8 +19,8 @@ body:
     required: true
 - type: textarea
   attributes:
-    label: SpecFlow Section in app.config or content of specflow.json
-    placeholder: PLEASE COPY THE ENTIRE <SpecFlow> SECTION IN YOUR .config FILE or THE ENTIRE specflow.json
+    label: Reqnroll Section in app.config or content of reqnroll.json
+    placeholder: PLEASE COPY THE ENTIRE <Reqnroll> SECTION IN YOUR .config FILE or THE ENTIRE reqnroll.json
 - type: textarea
   attributes:
     label: Issue Description

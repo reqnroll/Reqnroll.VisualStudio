@@ -1,0 +1,1 @@
+Left`2[System.Exception,Reqnroll.VisualStudio.ReqnrollConnector.ConnectorOptions]System.ArgumentException: Command is missing!

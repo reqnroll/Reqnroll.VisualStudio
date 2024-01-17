@@ -1,5 +1,0 @@
-{
-  "TargetFolder": "..\\..\\..\\..\\SpecFlow.VisualStudio.Specs\\bin\\$(BuildConfiguration)\\net481",
-  "TestAssembly": "SpecFlow.VisualStudio.Specs.dll",
-  "ConfigFile": null
-}

@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net481</TargetFramework>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\Key.snk</AssemblyOriginatorKeyFile>
+    <AutoGenerateBindingRedirects>True</AutoGenerateBindingRedirects>
+    <ImplicitUsings>disable</ImplicitUsings>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GeneratePkgDefFile>false</GeneratePkgDefFile>
+    <CreateVsixContainer>false</CreateVsixContainer>
+    <DeployExtension>false</DeployExtension>
+    <DeployVSTemplates>false</DeployVSTemplates>
+    <CopyBuildOutputToOutputDirectory>false</CopyBuildOutputToOutputDirectory>
+    <CopyOutputSymbolsToOutputDirectory>false</CopyOutputSymbolsToOutputDirectory>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Hooks\Hooks1.cs" />
+    <None Include="Hooks\Hooks1.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <VSTemplate Include="ReqnrollConfig\ReqnrollConfig_VB.vstemplate">
+      <OutputSubPath>Reqnroll</OutputSubPath>
+    </VSTemplate>
+    <VSTemplate Include="ReqnrollConfig\ReqnrollConfig_CSharp.vstemplate">
+      <OutputSubPath>Reqnroll</OutputSubPath>
+    </VSTemplate>
+    <VSTemplate Include="FeatureFile\FeatureFile_CSharp.vstemplate">
+      <OutputSubPath>Reqnroll</OutputSubPath>
+    </VSTemplate>
+    <VSTemplate Include="FeatureFile\FeatureFile_VB.vstemplate">
+      <OutputSubPath>Reqnroll</OutputSubPath>
+    </VSTemplate>
+    <VSTemplate Include="Hooks\Hooks_CSharp.vstemplate">
+      <OutputSubPath>Reqnroll</OutputSubPath>
+    </VSTemplate>
+    <VSTemplate Include="Hooks\Hooks_VB.vstemplate">
+      <OutputSubPath>Reqnroll</OutputSubPath>
+    </VSTemplate>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.4.2119">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+</Project>

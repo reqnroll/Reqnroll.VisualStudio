@@ -1,0 +1,27 @@
+{
+  "$schema": "reqnroll-config-1.0.json",
+
+  "ide": {
+    "reqnroll": {
+      "isReqnrollProject": true,
+      "generatorFolder": "..\\MyDependencies\\Reqnroll.2.3.0\\tools",
+      "traits": [
+        "DesignTimeFeatureFileGeneration"
+      ]
+    },
+    "editor": {
+      "showStepCompletionAfterStepKeywords": true,
+      "gherkinFormat": {
+        "indentFeatureChildren": false,
+        "indentRuleChildren": false,
+        "indentSteps": true,
+        "indentAndSteps": false,
+        "indentDataTable": true,
+        "indentDocString": true,
+        "indentExamples": false,
+        "indentExamplesTable": true,
+        "tableCellPaddingSize": 1
+      }
+    }
+  }
+}

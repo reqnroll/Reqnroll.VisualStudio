@@ -268,5 +268,5 @@ Deveroom.VisualStudio.Package/Changelog.txt
 launchSettings.json
 /GitExtensions.settings.backup
 *.received.txt
-/Tests/ExternalPackages/PackagesForTests/SpecFlow*/*
+/Tests/ExternalPackages/PackagesForTests/Reqnroll*/*
 

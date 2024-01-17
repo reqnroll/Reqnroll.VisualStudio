@@ -1,0 +1,13 @@
+{
+	"ConfigFile": "DeveroomSample.dll.config",
+  "GeneratorOptions": {
+    "FeatureFileCount": 1,
+    "ScenarioPerFeatureFileCount": 1,
+    "NewProjectFormat": true,
+    "TargetFramework": "net6.0",
+    "ReqnrollPackageVersion": "3.9.40",
+    "AddExternalBindingPackage": true,
+    "ExternalBindingPackageName": "Deveroom.SampleSpecFlow3940.ExternalBindings",
+    "FallbackNuGetPackageSource": "{ExternalPackages}"
+  }
+}

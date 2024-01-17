@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>$dotnetframework$</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
+    <PackageReference Include="Reqnroll.Plus.LivingDocPlugin" Version="3.9.57" />$if$ ('$unittestframework$' == 'Reqnroll + Runner')
+    <PackageReference Include="SpecRun.Reqnroll" Version="3.9.7" />$endif$$if$ ('$unittestframework$' == 'xUnit')
+    <PackageReference Include="Reqnroll.xUnit" Version="3.9.40" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3" />$endif$$if$ ('$unittestframework$' == 'NUnit')
+    <PackageReference Include="Reqnroll.NUnit" Version="3.9.40" />
+    <PackageReference Include="nunit" Version="3.13.2" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.1.0" />$endif$$if$ ('$unittestframework$' == 'MSTest')
+    <PackageReference Include="Reqnroll.MsTest" Version="3.9.40" />
+    <PackageReference Include="MSTest.TestAdapter" Version="2.2.7" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.2.7" />$endif$$if$ ('$fluentassertionsincluded$' == 'True')
+    <PackageReference Include="FluentAssertions" Version="6.12.0" />$endif$
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Drivers\" />
+    <Folder Include="Support\" />
+  </ItemGroup>
+
+</Project>

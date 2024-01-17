@@ -56,7 +56,7 @@ steps:
   displayName: Run Unit Tests
   inputs:
     command: test
-    projects: '**/SpecFlow.VisualStudio.Tests/*.csproj'
+    projects: '**/Reqnroll.VisualStudio.Tests/*.csproj'
     arguments: '--configuration $(BuildConfiguration) --no-build --collect "Code coverage"'
     testRunTitle: Unit Tests
     publishTestResults: true
@@ -71,7 +71,7 @@ steps:
   condition: succeededOrFailed()
 
 - task: DotNetCoreCLI@2
-  displayName: Run SpecFlow Scenarios
+  displayName: Run Reqnroll Scenarios
   inputs:
     command: test
     projects: '**/*[Ss]pecs/*.csproj'

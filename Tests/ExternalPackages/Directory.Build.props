@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SpecFlow" Version="3.9.40" />
+    <PackageReference Include="Reqnroll" Version="3.9.40" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" Type="Item" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005">
+  <TemplateData>
+    <DefaultName>reqnroll.json</DefaultName>
+    <Name>Reqnroll configuration file</Name>
+    <Description>A json file containing Reqnroll configuration settings. Place it in the project root.</Description>
+    <ProjectType>CSharp</ProjectType>
+    <Icon>ReqnrollIcon.ico</Icon>
+  </TemplateData>
+  <TemplateContent>
+    <ProjectItem SubType="" TargetFileName="reqnroll.json" ReplaceParameters="true">reqnroll.json</ProjectItem>
+  </TemplateContent>
+  <WizardExtension>
+    <Assembly>Reqnroll.VisualStudio.Package, Version=2022.1.0.0, Culture=neutral, PublicKeyToken=0778194805d6db41</Assembly>
+    <FullClassName>Reqnroll.VisualStudio.Wizards.VsReqnrollConfigFileWizard</FullClassName>
+  </WizardExtension>
+</VSTemplate>

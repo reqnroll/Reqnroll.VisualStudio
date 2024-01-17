@@ -1,0 +1,12 @@
+global using BoDi;
+global using Reqnroll.VisualStudio.ReqnrollConnector.SourceDiscovery.DnLib;
+global using Reqnroll.VisualStudio.ReqnrollConnector.SourceDiscovery;
+global using Reqnroll.Bindings.Reflection;
+global using Reqnroll.Bindings;
+global using Reqnroll.Configuration;
+global using Reqnroll.Generator.Interfaces;
+global using Reqnroll.Infrastructure;
+global using Reqnroll.Plugins;
+global using Reqnroll.Tracing;
+global using System.Runtime.InteropServices;
+global using Reqnroll;

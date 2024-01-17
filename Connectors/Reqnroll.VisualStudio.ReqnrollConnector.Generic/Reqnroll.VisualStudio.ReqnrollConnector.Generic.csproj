@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>reqnroll-vs</AssemblyName>
+    <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\Key.snk</AssemblyOriginatorKeyFile>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <RootNamespace>ReqnrollConnector</RootNamespace>
+    <_OutputCopyLocation>$(SolutionDir)Connectors\bin\$(configuration)\Generic-$(TargetFramework)</_OutputCopyLocation>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="dnlib" Version="3.3.5" />
+    <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="2.1.0" />
+    <PackageReference Include="Reqnroll.CustomPlugin" Version="3.9.40" />
+    <PackageReference Include="System.Collections.Immutable" Version="6.0.0" />
+    <PackageReference Include="System.Security.Permissions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
+    <PackageReference Include="System.Text.Json" Version="7.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Reqnroll.VisualStudio.ReqnrollConnector.Models\Reqnroll.VisualStudio.ReqnrollConnector.Models.csproj" />
+  </ItemGroup>
+
+  <Target Name="CustomAfterBuild" AfterTargets="Build" Condition="$(configuration)=='Debug'">
+
+    <ItemGroup>
+      <_FilesToCopy Include="$(OutputPath)\*" />
+    </ItemGroup>
+
+    <Message Text="Copying: @(_FilesToCopy)-&gt;'$(_OutputCopyLocation)\%(RecursiveDir)%(Filename)%(Extension)'" Importance="high" />
+
+    <RemoveDir Directories="$(_OutputCopyLocation)" />
+
+    <Copy SourceFiles="@(_FilesToCopy)" DestinationFiles="$(_OutputCopyLocation)\%(RecursiveDir)%(Filename)%(Extension)" />
+  </Target>
+
+</Project>

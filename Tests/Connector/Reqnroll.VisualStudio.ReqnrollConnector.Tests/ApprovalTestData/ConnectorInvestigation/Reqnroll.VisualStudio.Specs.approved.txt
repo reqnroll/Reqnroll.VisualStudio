@@ -1,0 +1,16 @@
+{
+  "stepDefinitions": [],
+  "sourceFiles": {},
+  "typeNames": {},
+  "analyticsProperties": {
+    "Connector": "<connector>",
+    "ImageRuntimeVersion": "v4.0.30319",
+    "SFFile": "Reqnroll.dll",
+    "SFFileVersion": "3.9.40.46609",
+    "SFProductVersion": "3.9.40+11b6bbec89",
+    "SourcePaths": "2",
+    "StepDefinitions": "82",
+    "TargetFramework": ".NETFramework,Version=v4.8.1",
+    "TypeNames": "7"
+  }
+}
