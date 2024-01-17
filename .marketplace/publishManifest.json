@@ -6,8 +6,8 @@
     },
     "overview": "overview.md",
     "priceCategory": "free",
-    "publisher": "techtalkreqnrollteam",
+    "publisher": "reqnrollteam",
     "private": false,
     "qna": true,
-    "repo": "https://github.com/reqnroll/Reqnroll.VS"
+    "repo": "https://github.com/reqnroll/Reqnroll.VisualStudio"
 }

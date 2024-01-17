@@ -10,12 +10,11 @@ public interface IRegistryManager
 public class RegistryManager : IRegistryManager
 {
 #if DEBUG
-    private static string RegPath => @"Software\Tricentis\Reqnroll\Debug";
+    private static string RegPath => @"Software\Reqnroll\Debug";
 #else
-    private static string RegPath => @"Software\Tricentis\Reqnroll";
+    private static string RegPath => @"Software\Reqnroll";
 #endif
 
-    private static string RegPathFallback => @"Software\TechTalk\Reqnroll";
     private const string Version2019 = "version";
     private const string Version = "version.vs2022";
     private const string InstallDate = "installDate.vs2022";
@@ -29,8 +28,7 @@ public class RegistryManager : IRegistryManager
 
         try
         {
-            using var key = Registry.CurrentUser.OpenSubKey(RegPath, RegistryKeyPermissionCheck.ReadSubTree)
-                            ?? Registry.CurrentUser.OpenSubKey(RegPathFallback, RegistryKeyPermissionCheck.ReadSubTree);
+            using var key = Registry.CurrentUser.OpenSubKey(RegPath, RegistryKeyPermissionCheck.ReadSubTree);
 
             status.Installed2019Version = ReadVersion(key, Version2019);
             status.InstalledVersion = ReadVersion(key, Version);

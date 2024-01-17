@@ -234,7 +234,7 @@ public abstract class ProjectGenerator : IProjectGenerator
     private void GitCommitAll()
     {
         ExecGit("add", ".");
-        ExecGit("-c user.name='Reqnroll'", "-c user.email='reqnroll@tricentis.com'", "commit", "-q", "-m", "init");
+        ExecGit("-c user.name='Reqnroll'", "-c user.email='reqnroll@reqnroll.net'", "commit", "-q", "-m", "init");
     }
 
     private void InstallNUnit(string packagesFolder, string projectFilePath)

@@ -2,8 +2,8 @@
 
 ## IdeScope (IProjectSystem)
 
-Represents the IDE environment. It remains alive even if solution is cloded or reopened,
-(therefore not named SolutionScope), but it clears up pretty much everything on solution cloded. 
+Represents the IDE environment. It remains alive even if solution is closed or reopened,
+(therefore not named SolutionScope), but it clears up pretty much everything on solution closed. 
 
 ### IdeScope Events
 
@@ -17,15 +17,15 @@ Represents the IDE environment. It remains alive even if solution is cloded or r
 
 ## ProjectScope (IProjectScope)
 
-Represents a phisycal project within a solution (solution folders or temporary solutions do not 
+Represents a physical project within a solution (solution folders or temporary solutions do not 
 have project scope).
 
-From Deveroom's prespective the project can be of the following kinds.
+From Deveroom's perspective the project can be of the following kinds.
 
 * Reqnroll Test Project -- a project that is configured to use Reqnroll and contains feature 
   files (ie. there are tests to be run from the project).
 * Reqnroll Lib Project -- a project that is configured to use Reqnroll, but does not contain
-  feature files, but used to share step definitions or other bindigns for other Reqnroll Test 
+  feature files, but used to share step definitions or other bindings for other Reqnroll Test 
   Projects.
 * Feature File Container Project -- a project that contains feature files, but it is not 
   configured to use Reqnroll. It might use another BDD tool or Deveroom was not able to detect 
@@ -75,13 +75,13 @@ circular dependencies and updates.
 ### Configuration Events
 
 * ConfigurationChanged -- fired when the configuration has been changed, but not when it is 
-  initially gatehered.
+  initially gathered.
   * Fired on UI thread
 
 ## ProjectSettings
 
 A set of settings that represent the project's platform and the installed packages. Only those
-settigns are gathered that are relevant for Deveroom.
+settings are gathered that are relevant for Deveroom.
 
 The project settings currently contain:
 
@@ -102,7 +102,7 @@ The project settings are managed by the `ProjectSettingsProvider` attached to th
 
 The project settings is checked and loaded
 
-* Initially, when the project scope is created (it can happen that the settigns are not 
+* Initially, when the project scope is created (it can happen that the settings are not 
   available yet at that time).
 * A few seconds after the project scope is created (if it was not available). This repeats 
   a few times if necessary.
@@ -121,7 +121,7 @@ The project settings is checked and loaded
 
 ### Project Settings Events
 
-* SettingsInitialized -- fired when the project settings have been loaded successfuly for the 
+* SettingsInitialized -- fired when the project settings have been loaded successfully for the 
   first time.
   * Fired on UI thread
 
@@ -147,7 +147,7 @@ is triggered
 It can happen that the two events are triggered by the same build: when the project settings could 
 not be initialized normally, after the first build, the project settings will be initialized and 
 also the ProjectOutputsUpdated event will be fired. To avoid duplicated binding discovery, the 
-DiscoveryService will ignore bindign discovery requests when there is an ongoing discovery process 
+DiscoveryService will ignore binding discovery requests when there is an ongoing discovery process 
 active.
 
 ### Handling Load Errors

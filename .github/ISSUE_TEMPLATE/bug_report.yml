@@ -19,8 +19,8 @@ body:
     required: true
 - type: textarea
   attributes:
-    label: Reqnroll Section in app.config or content of reqnroll.json
-    placeholder: PLEASE COPY THE ENTIRE <Reqnroll> SECTION IN YOUR .config FILE or THE ENTIRE reqnroll.json
+    label: Content of reqnroll.json
+    placeholder: PLEASE COPY THE ENTIRE reqnroll.json
 - type: textarea
   attributes:
     label: Issue Description
