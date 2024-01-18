@@ -5,7 +5,7 @@
     <AssemblyName>specflow-vs</AssemblyName>
     <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\..\Key.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\reqnroll.snk</AssemblyOriginatorKeyFile>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <RootNamespace>SpecFlow.VisualStudio.SpecFlowConnector</RootNamespace>
     <DefineConstants>OLD_JSONNET_API</DefineConstants>

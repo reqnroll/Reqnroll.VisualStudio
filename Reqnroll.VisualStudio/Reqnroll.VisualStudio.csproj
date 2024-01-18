@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net481</TargetFramework>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\Key.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\reqnroll.snk</AssemblyOriginatorKeyFile>
     <DefineConstants>TRACE;</DefineConstants>
   </PropertyGroup>
 

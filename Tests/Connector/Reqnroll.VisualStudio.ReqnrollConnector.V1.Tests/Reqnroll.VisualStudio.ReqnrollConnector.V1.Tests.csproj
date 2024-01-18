@@ -4,7 +4,7 @@
     <TargetFramework>net48</TargetFramework>
     <IsPackable>false</IsPackable>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\..\..\Key.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\..\reqnroll.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>

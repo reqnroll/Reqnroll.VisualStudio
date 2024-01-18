@@ -6,7 +6,7 @@
     <AssemblyName>reqnroll-vs</AssemblyName>
     <Configurations>Debug;Release;Debug_x86;Release_x86</Configurations>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\..\Key.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\reqnroll.snk</AssemblyOriginatorKeyFile>
     <PlatformTarget>anycpu</PlatformTarget>
     <RootNamespace>Reqnroll.VisualStudio.ReqnrollConnector</RootNamespace>
     <_OutputCopyLocation>$(SolutionDir)Connectors\bin\$(configuration)\V1</_OutputCopyLocation>

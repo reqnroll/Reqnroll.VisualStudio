@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net481</TargetFramework>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\..\Key.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\reqnroll.snk</AssemblyOriginatorKeyFile>
     <VsEditorAssembliesLocation Condition="'$(VsEditorAssembliesLocation)' == ''">..\ExternalTestDependencies\VS\</VsEditorAssembliesLocation>
     <NoWarn>CS0067;VSTHRD200</NoWarn>
     <!--CS0067: The event 'xxx' is never used-->

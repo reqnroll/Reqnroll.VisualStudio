@@ -224,16 +224,15 @@
 							<ComboBox x:Name="DotNetFrameworkComboBox" SelectedValuePath="Tag" IsEditable="True" IsReadOnly="True"
 							          Margin="0,0,0,0" Padding="8,8,8,8" SelectedValue="{Binding DotNetFramework}"
 							          IsSynchronizedWithCurrentItem="True">
-								<ComboBoxItem Tag="netcoreapp2.1">.NET Core 2.1</ComboBoxItem>
-								<ComboBoxItem Tag="netcoreapp3.1">.NET Core 3.1</ComboBoxItem>
-								<ComboBoxItem Tag="net5.0">.NET 5.0</ComboBoxItem>
-								<ComboBoxItem Tag="net6.0" IsSelected="True">.NET 6.0</ComboBoxItem>
-								<ComboBoxItem Tag="net461">.NET Framework 4.6.1</ComboBoxItem>
-								<ComboBoxItem Tag="net462">.NET Framework 4.6.2</ComboBoxItem>
-								<ComboBoxItem Tag="net47">.NET Framework 4.7</ComboBoxItem>
-								<ComboBoxItem Tag="net471">.NET Framework 4.7.1</ComboBoxItem>
-								<ComboBoxItem Tag="net472">.NET Framework 4.7.2</ComboBoxItem>
-								<ComboBoxItem Tag="net48">.NET Framework 4.8</ComboBoxItem>
+                                <ComboBoxItem Tag="net462">.NET Framework 4.6.2</ComboBoxItem>
+                                <ComboBoxItem Tag="net47">.NET Framework 4.7</ComboBoxItem>
+                                <ComboBoxItem Tag="net471">.NET Framework 4.7.1</ComboBoxItem>
+                                <ComboBoxItem Tag="net472">.NET Framework 4.7.2</ComboBoxItem>
+                                <ComboBoxItem Tag="net48">.NET Framework 4.8</ComboBoxItem>
+                                <ComboBoxItem Tag="net48">.NET Framework 4.8.1</ComboBoxItem>
+								<ComboBoxItem Tag="net6.0">.NET 6.0</ComboBoxItem>
+								<ComboBoxItem Tag="net7.0">.NET 7.0</ComboBoxItem>
+								<ComboBoxItem Tag="net8.0" IsSelected="True">.NET 8.0</ComboBoxItem>
 							</ComboBox>
 						</StackPanel>
 

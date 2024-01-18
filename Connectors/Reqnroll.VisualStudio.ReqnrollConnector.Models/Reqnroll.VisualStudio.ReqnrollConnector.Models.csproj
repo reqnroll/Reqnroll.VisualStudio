@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>NETStandard2.0</TargetFramework>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\..\Key.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\reqnroll.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
 </Project>

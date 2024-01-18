@@ -18,27 +18,29 @@ public class DiscoveryResultProvider : IDiscoveryResultProvider
 
     public DiscoveryResult RunDiscovery(string testAssemblyPath, string configFilePath, ProjectSettings projectSettings)
     {
+        return RunDiscovery(testAssemblyPath, configFilePath, projectSettings,
+            OutProcReqnrollConnectorFactory.CreateGeneric(_projectScope));
+
         //TODO: if (projectSettings.ReqnrollVersion.Version > new Version(3, 0, 225) )
-        {
-            DiscoveryResult genericConnectorResult = RunDiscovery(testAssemblyPath, configFilePath, projectSettings,
-                OutProcReqnrollConnectorFactory.CreateGeneric(_projectScope));
+        //{
+        //    DiscoveryResult genericConnectorResult = RunDiscovery(testAssemblyPath, configFilePath, projectSettings,
+        //        OutProcReqnrollConnectorFactory.CreateGeneric(_projectScope));
 
-            if (!genericConnectorResult.IsFailed)
-                return genericConnectorResult;
+        //    if (!genericConnectorResult.IsFailed)
+        //        return genericConnectorResult;
 
-            var retryResult = RunDiscovery(testAssemblyPath, configFilePath, projectSettings, GetConnector(projectSettings));
+        //    var retryResult = RunDiscovery(testAssemblyPath, configFilePath, projectSettings, GetConnector(projectSettings));
 
-            if (retryResult.IsFailed)
-            {
-                // Fails both with the generic and with the Vx connector, so we should rather report the 
-                // error in the generic connector.
-                return genericConnectorResult;
-            }
+        //    if (retryResult.IsFailed)
+        //    {
+        //        // Fails both with the generic and with the Vx connector, so we should rather report the 
+        //        // error in the generic connector.
+        //        return genericConnectorResult;
+        //    }
 
-            Logger.LogInfo("The binding discovery has failed with the generic discovery connector, but succeeded with the legacy connectors.");
-            return retryResult;
-        }
-
+        //    Logger.LogInfo("The binding discovery has failed with the generic discovery connector, but succeeded with the legacy connectors.");
+        //    return retryResult;
+        //}
         //TODO: return RunDiscovery(testAssemblyPath, configFilePath, projectSettings, GetConnector(projectSettings));
     }
 

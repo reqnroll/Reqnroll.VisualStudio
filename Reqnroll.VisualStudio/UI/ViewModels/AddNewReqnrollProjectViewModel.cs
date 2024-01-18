@@ -3,18 +3,18 @@ namespace Reqnroll.VisualStudio.UI.ViewModels;
 
 public class AddNewReqnrollProjectViewModel : INotifyPropertyChanged
 {
-    private const string Runner = "Reqnroll + Runner";
-    private const string Net6 = "net6.0";
+    private const string MsTest = "MsTest";
+    private const string Net8 = "net8.0";
 
 #if DEBUG
     public static AddNewReqnrollProjectViewModel DesignData = new()
     {
-        DotNetFramework = Net6,
-        UnitTestFramework = Runner,
+        DotNetFramework = Net8,
+        UnitTestFramework = MsTest,
         FluentAssertionsIncluded = true
     };
 #endif
-    private string _dotNetFramework = Net6;
+    private string _dotNetFramework = Net8;
 
     public string DotNetFramework
     {
@@ -22,21 +22,13 @@ public class AddNewReqnrollProjectViewModel : INotifyPropertyChanged
         set
         {
             _dotNetFramework = value;
-            if (_dotNetFramework == Net6 && TestFrameworks.Contains(Runner))
-            {
-                TestFrameworks.Remove(Runner);
-                UnitTestFramework = TestFrameworks[0];
-                OnPropertyChanged(nameof(UnitTestFramework));
-            }
-
-            if (_dotNetFramework != Net6 && !TestFrameworks.Contains(Runner)) TestFrameworks.Add(Runner);
             OnPropertyChanged(nameof(TestFrameworks));
         }
     }
 
-    public string UnitTestFramework { get; set; } = Runner;
+    public string UnitTestFramework { get; set; } = MsTest;
     public bool FluentAssertionsIncluded { get; set; } = true;
-    public ObservableCollection<string> TestFrameworks { get; } = new(new List<string> {"NUnit", "xUnit", "MSTest"});
+    public ObservableCollection<string> TestFrameworks { get; } = new(new List<string> { "MSTest", "NUnit", "xUnit" });
 
     public event PropertyChangedEventHandler PropertyChanged;
 

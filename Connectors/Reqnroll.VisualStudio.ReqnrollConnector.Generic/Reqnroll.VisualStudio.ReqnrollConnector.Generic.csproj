@@ -5,7 +5,7 @@
     <AssemblyName>reqnroll-vs</AssemblyName>
     <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\..\Key.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\reqnroll.snk</AssemblyOriginatorKeyFile>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <RootNamespace>ReqnrollConnector</RootNamespace>
     <_OutputCopyLocation>$(SolutionDir)Connectors\bin\$(configuration)\Generic-$(TargetFramework)</_OutputCopyLocation>
