@@ -9,7 +9,7 @@
     <AssemblyOriginatorKeyFile>..\..\reqnroll.snk</AssemblyOriginatorKeyFile>
     <PlatformTarget>anycpu</PlatformTarget>
     <RootNamespace>Reqnroll.VisualStudio.ReqnrollConnector</RootNamespace>
-    <_OutputCopyLocation>$(SolutionDir)Connectors\bin\$(configuration)\V1</_OutputCopyLocation>
+    <_OutputCopyLocation>$(SolutionDir)Connectors\bin\$(configuration)\Reqnroll-V1</_OutputCopyLocation>
   </PropertyGroup>
 
   <ItemGroup>

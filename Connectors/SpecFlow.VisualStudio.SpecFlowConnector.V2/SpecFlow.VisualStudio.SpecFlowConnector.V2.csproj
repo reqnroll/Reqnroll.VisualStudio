@@ -9,7 +9,7 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <RootNamespace>SpecFlow.VisualStudio.SpecFlowConnector</RootNamespace>
     <DefineConstants>OLD_JSONNET_API</DefineConstants>
-    <_OutputCopyLocation>$(SolutionDir)Connectors\bin\$(configuration)\V2-$(TargetFramework)</_OutputCopyLocation>
+    <_OutputCopyLocation>$(SolutionDir)Connectors\bin\$(configuration)\SpecFlow-V2-$(TargetFramework)</_OutputCopyLocation>
   </PropertyGroup>
 
   <ItemGroup>

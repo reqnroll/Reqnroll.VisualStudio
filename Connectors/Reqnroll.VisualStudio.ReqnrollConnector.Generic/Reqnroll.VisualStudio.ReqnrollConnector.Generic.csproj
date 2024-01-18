@@ -8,7 +8,7 @@
     <AssemblyOriginatorKeyFile>..\..\reqnroll.snk</AssemblyOriginatorKeyFile>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <RootNamespace>ReqnrollConnector</RootNamespace>
-    <_OutputCopyLocation>$(SolutionDir)Connectors\bin\$(configuration)\Generic-$(TargetFramework)</_OutputCopyLocation>
+    <_OutputCopyLocation>$(SolutionDir)Connectors\bin\$(configuration)\Reqnroll-Generic-$(TargetFramework)</_OutputCopyLocation>
   </PropertyGroup>
 
   <ItemGroup>
