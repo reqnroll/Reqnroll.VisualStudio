@@ -36,7 +36,6 @@ global using Reqnroll.VisualStudio.Editor.Services.EditorConfig;
 global using Reqnroll.VisualStudio.Editor.Services.Formatting;
 global using Reqnroll.VisualStudio.Editor.Services.Parser;
 global using Reqnroll.VisualStudio.Editor.Services.StepDefinitions;
-global using Reqnroll.VisualStudio.Generation;
 global using Reqnroll.VisualStudio.Monitoring;
 global using Reqnroll.VisualStudio.Notifications;
 global using Reqnroll.VisualStudio.ProjectSystem;

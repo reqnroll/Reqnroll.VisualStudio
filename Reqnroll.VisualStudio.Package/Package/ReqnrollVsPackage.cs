@@ -1,7 +1,6 @@
 #nullable disable
 using System.ComponentModel.Design;
 using System.Diagnostics.CodeAnalysis;
-using Reqnroll.VisualStudio.Generator;
 
 namespace Reqnroll.VisualStudio.Package;
 
@@ -65,13 +64,12 @@ public sealed class ReqnrollVsPackage : AsyncPackage
     {
         try
         {
+            // ReSharper disable once UnusedVariable
             var menuCommandService = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
             var ideScope = VsUtils.ResolveMefDependency<IIdeScope>(ServiceProvider.GlobalProvider) as IVsIdeScope;
             if (ideScope != null)
             {
-                var command = new RegenerateAllFeatureFileCodeBehindCommand(ideScope);
-                command.Register(menuCommandService);
-                ideScope.Logger.LogVerbose("RegenerateAllFeatureFileCodeBehindCommand registered");
+                // menu commands can be registered here
             }
         }
         catch (Exception ex)

@@ -1,7 +1,4 @@
 #nullable disable
-using Newtonsoft.Json;
-using ScenarioBlock = Reqnroll.VisualStudio.Editor.Services.Parser.ScenarioBlock;
-
 namespace Reqnroll.VisualStudio.Specs.StepDefinitions;
 
 [Binding]
@@ -11,7 +8,6 @@ public class DeveroomSteps : Steps
     private readonly List<Action<StubProjectScope>> _projectScopeConfigurationSteps = new();
     private readonly StubIdeScope _stubIdeScope;
     private ProjectBindingRegistry _bindingRegistry;
-    private GenerationResult _generationResult;
     private GeneratorOptions _generatorOptions;
     private IProjectGenerator _projectGenerator;
 
@@ -200,7 +196,6 @@ public class DeveroomSteps : Steps
         generatorOptions.FallbackNuGetPackageSource = TestFolders.GetInputFilePath("ExternalPackages");
         _projectGenerator = generatorOptions.CreateProjectGenerator(s => _outputHelper.WriteLine(s));
         _projectGenerator.Generate();
-        var json = JsonConvert.SerializeObject(generatorOptions);
     }
 
     private void EnsureProjectGenerated()
@@ -281,12 +276,12 @@ public class DeveroomSteps : Steps
         _bindingRegistry.Should().NotBeNull();
         foreach (var stepDefinitionBinding in _bindingRegistry.StepDefinitions)
         {
-            stepDefinitionBinding.Implementation.SourceLocation?.SourceFile.Should().NotBeNull(
-                $"The step defintion '{stepDefinitionBinding.Implementation.Method}' should contain source file");
-            File.Exists(stepDefinitionBinding.Implementation.SourceLocation?.SourceFile).Should().BeTrue(
-                $"The step defintion source '{stepDefinitionBinding.Implementation.SourceLocation?.SourceFile}' should point to a valid file");
-            stepDefinitionBinding.Implementation.SourceLocation?.SourceFileLine.Should().BeGreaterThan(1,
-                $"The step defintion '{stepDefinitionBinding.Implementation.Method}' should contain source file line");
+            stepDefinitionBinding.Implementation.SourceLocation.SourceFile.Should().NotBeNull(
+                $"The step definition '{stepDefinitionBinding.Implementation.Method}' should contain source file");
+            File.Exists(stepDefinitionBinding.Implementation.SourceLocation.SourceFile).Should().BeTrue(
+                $"The step definition source '{stepDefinitionBinding.Implementation.SourceLocation.SourceFile}' should point to a valid file");
+            stepDefinitionBinding.Implementation.SourceLocation.SourceFileLine.Should().BeGreaterThan(1,
+                $"The step definition '{stepDefinitionBinding.Implementation.Method}' should contain source file line");
         }
     }
 
@@ -317,16 +312,7 @@ public class DeveroomSteps : Steps
     [When(@"the code-behind file is generated for a feature file in the project")]
     public void WhenTheCode_BehindFileIsGeneratedForAFeatureFileInTheProject()
     {
-        var featureFilePath = GetAFeatureFile();
-
-        var projectScope = GetProjectScope();
-        var generationService = projectScope.GetGenerationService();
-
-        _generationResult = generationService.GenerateFeatureFile(featureFilePath, ".cs",
-            ProjectGenerator.AssemblyName + ".Features");
-
-        if (_generationResult.IsFailed)
-            _outputHelper.WriteLine($"Generation failed: {_generationResult.ErrorMessage}");
+        throw new PendingStepException(); //TODO
     }
 
     private string GetAFeatureFile() => ProjectGenerator.FeatureFiles.First();
@@ -334,43 +320,36 @@ public class DeveroomSteps : Steps
     [Then(@"the generation succeeds")]
     public void ThenTheGenerationSucceeds()
     {
-        _generationResult.Should().NotBeNull();
-        _generationResult.ErrorMessage.Should().BeNullOrEmpty();
-        _generationResult.IsFailed.Should().BeFalse();
+        throw new PendingStepException(); //TODO
     }
 
     [Then(@"the generation fails")]
     public void ThenTheGenerationFails()
     {
-        _generationResult.Should().NotBeNull();
-        _generationResult.ErrorMessage.Should().NotBeNullOrEmpty();
-        _generationResult.IsFailed.Should().BeTrue();
+        throw new PendingStepException(); //TODO
     }
 
     [Then(@"the code-behind file is updated")]
     public void ThenTheCode_BehindFileIsUpdated()
     {
-        _generationResult.FeatureFileCodeBehind?.Content.Should().NotBeNull();
-        _generationResult.FeatureFileCodeBehind?.Content.Should().Contain("namespace");
+        throw new PendingStepException(); //TODO
     }
 
     [Then(@"the code-behind file contains ""(.*)""")]
     public void ThenTheCode_BehindFileContains(string text)
     {
-        _generationResult.FeatureFileCodeBehind?.Content.Should().NotBeNull();
-        _generationResult.FeatureFileCodeBehind?.Content.Should().Contain(text);
+        throw new PendingStepException(); //TODO
     }
 
     [Then(@"the code-behind file contains Unicode step")]
     public void ThenTheCode_BehindFileContainsUnicodeStep()
     {
-        ThenTheCode_BehindFileContains(GeneratorOptions.UnicodeBindingRegex);
+        throw new PendingStepException(); //TODO
     }
 
     [Then(@"the code-behind file contains errors")]
     public void ThenTheCode_BehindFileContainsErrors()
     {
-        _generationResult.FeatureFileCodeBehind?.Content.Should().NotBeNull();
-        _generationResult.FeatureFileCodeBehind?.Content.Should().Contain("#error");
+        throw new PendingStepException(); //TODO
     }
 }

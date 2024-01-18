@@ -38,15 +38,6 @@ public static class ProjectScopeServicesExtensions
         });
     }
 
-    public static GenerationService GetGenerationService(this IProjectScope projectScope)
-    {
-        if (!projectScope.GetProjectSettings().IsReqnrollProject)
-            return null;
-
-        return projectScope.Properties.GetOrCreateSingletonProperty(() =>
-            new GenerationService(projectScope));
-    }
-
     public static SnippetService GetSnippetService(this IProjectScope projectScope)
     {
         if (!projectScope.GetProjectSettings().IsReqnrollProject)

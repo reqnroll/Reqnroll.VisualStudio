@@ -21,7 +21,6 @@ global using Reqnroll.VisualStudio.Common;
 global using Reqnroll.VisualStudio.Diagnostics;
 global using Reqnroll.VisualStudio.Discovery;
 global using Reqnroll.VisualStudio.Editor.Commands;
-global using Reqnroll.VisualStudio.Generation;
 global using Reqnroll.VisualStudio.Interop;
 global using Reqnroll.VisualStudio.Monitoring;
 global using Reqnroll.VisualStudio.Notifications;

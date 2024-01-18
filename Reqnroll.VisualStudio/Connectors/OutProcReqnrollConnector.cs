@@ -9,7 +9,6 @@ public class OutProcReqnrollConnector
     private const string SpecFlowConnectorV1X86 = @"SpecFlow-V1\specflow-vs-x86.exe";
     private const string SpecFlowConnectorV2Net60 = @"SpecFlow-V2-net6.0\specflow-vs.dll";
     private const string SpecFlowConnectorV3Net60 = @"SpecFlow-V3-net6.0\specflow-vs.dll";
-    private const string GenerationCommandName = "generation";
     private const string BindingDiscoveryCommandName = "binding discovery";
 
     private readonly DeveroomConfiguration _configuration;
@@ -128,47 +127,6 @@ public class OutProcReqnrollConnector
             $"Error during {command}. {Environment.NewLine}Command executed:{Environment.NewLine}  {result.CommandLine}{Environment.NewLine}Exit code: {exitCode}{Environment.NewLine}Message: {Environment.NewLine}{errorMessage}";
     }
 
-    public GenerationResult RunGenerator(string featureFilePath, string configFilePath, string targetExtension,
-        string targetNamespace, string projectFolder, string reqnrollToolsFolder, string projectDefaultNamespace = null,
-        bool saveResultToFile = false)
-    {
-        var workingDirectory = reqnrollToolsFolder;
-        var arguments = new List<string>();
-        var connectorPath = GetConnectorPath(arguments);
-        arguments.Add("generate");
-        arguments.Add(featureFilePath);
-        arguments.Add(configFilePath);
-        arguments.Add(targetExtension);
-        arguments.Add(targetNamespace);
-        arguments.Add(projectFolder);
-        arguments.Add(projectDefaultNamespace);
-        if (saveResultToFile)
-            arguments.Add("--save");
-        if (DebugConnector)
-            arguments.Add("--debug");
-        var result = ProcessHelper.RunProcess(workingDirectory, connectorPath, arguments, encoding: Encoding.UTF8);
-        if (result.ExitCode != 0)
-        {
-            var errorMessage = result.HasErrors ? result.StandardError : "Unknown error.";
-
-            return new GenerationResult
-            {
-                ErrorMessage = GetDetailedErrorMessage(result, errorMessage, GenerationCommandName)
-            };
-        }
-
-        var generationResult = JsonSerialization.DeserializeObjectWithMarker<GenerationResult>(result.StandardOut);
-        if (generationResult.FeatureFileCodeBehind == null && !generationResult.IsFailed)
-            generationResult.ErrorMessage = "No code-behind information provided";
-
-        if (generationResult.IsFailed)
-            generationResult.ErrorMessage =
-                GetDetailedErrorMessage(result, Environment.NewLine + generationResult.ErrorMessage,
-                    GenerationCommandName);
-
-        return generationResult;
-    }
-
     protected virtual string GetConnectorPath(List<string> arguments)
     {
         var connectorsFolder = GetConnectorsFolder();
@@ -197,7 +155,7 @@ public class OutProcReqnrollConnector
             programFiles = Environment.GetEnvironmentVariable("ProgramFiles(x86)");
         if (string.IsNullOrEmpty(programFiles))
             programFiles = Environment.GetEnvironmentVariable("ProgramFiles");
-        return Path.Combine(programFiles, "dotnet");
+        return Path.Combine(programFiles!, "dotnet");
     }
 
     protected string GetDotNetExecCommand(List<string> arguments, string executableFolder, string executableFile)
