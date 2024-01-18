@@ -5,7 +5,7 @@ public sealed class CalculatorStepDefinitions
 {
     // For additional details on Reqnroll step definitions see https://go.reqnroll.net/doc-stepdef
 
-    [Given("the first number is (.*)")]
+    [Given("the first number is {int}")]
     public void GivenTheFirstNumberIs(int number)
     {
         //TODO: implement arrange (precondition) logic
@@ -17,7 +17,7 @@ public sealed class CalculatorStepDefinitions
         throw new PendingStepException();
     }
 
-    [Given("the second number is (.*)")]
+    [Given("the second number is {int}")]
     public void GivenTheSecondNumberIs(int number)
     {
         //TODO: implement arrange (precondition) logic
@@ -33,7 +33,7 @@ public sealed class CalculatorStepDefinitions
         throw new PendingStepException();
     }
 
-    [Then("the result should be (.*)")]
+    [Then("the result should be {int}")]
     public void ThenTheResultShouldBe(int result)
     {
         //TODO: implement assert (verification) logic

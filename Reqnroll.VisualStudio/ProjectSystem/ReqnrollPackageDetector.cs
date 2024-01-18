@@ -53,10 +53,11 @@ internal class ReqnrollPackageDetector
         return packageReferences.Any(pr => pr.PackageName == ReqnrollXUnitAdapterPackageName);
     }
 
-    public bool IsCucumberExpressionPluginEnabled(IEnumerable<NuGetPackageReference> packageReferences)
+    public bool IsCucumberExpressionEnabled(IEnumerable<NuGetPackageReference> packageReferences)
     {
-        return packageReferences.Any(pr =>
-            pr.PackageName != null && pr.PackageName.StartsWith(CucumberExpressionPluginPackageNamePrefix));
+        return true;
+        //TODO: return packageReferences.Any(pr =>
+        //    pr.PackageName != null && pr.PackageName.StartsWith(CucumberExpressionPluginPackageNamePrefix));
     }
 
     public bool IsReqnrollTestFrameworkPackagesUsed(NuGetPackageReference[] packageReferences)

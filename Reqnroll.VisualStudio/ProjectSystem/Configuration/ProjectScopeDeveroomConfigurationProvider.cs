@@ -9,6 +9,7 @@ namespace Reqnroll.VisualStudio.ProjectSystem.Configuration;
 public class ProjectScopeDeveroomConfigurationProvider : IDeveroomConfigurationProvider, IDisposable
 {
     public const string ReqnrollJsonConfigFileName = "reqnroll.json";
+    public const string SpecFlowJsonConfigFileName = "specflow.json";
     public const string ReqnrollAppConfigFileName = "App.config";
     public const string SpecSyncJsonConfigFileName = "specsync.json";
     public const string DeveroomConfigFileName = "deveroom.json";

@@ -131,7 +131,7 @@ public class ReqnrollProjectSettingsProvider
                 reqnrollProjectTraits |= ReqnrollProjectTraits.MsBuildGeneration;
             if (detector.IsXUnitAdapterEnabled(packageReferencesArray))
                 reqnrollProjectTraits |= ReqnrollProjectTraits.XUnitAdapter;
-            if (detector.IsCucumberExpressionPluginEnabled(packageReferencesArray))
+            if (detector.IsCucumberExpressionEnabled(packageReferencesArray))
                 reqnrollProjectTraits |= ReqnrollProjectTraits.CucumberExpression;
         }
 
@@ -149,6 +149,8 @@ public class ReqnrollProjectSettingsProvider
         var fileSystem = projectScope.IdeScope.FileSystem;
         return fileSystem.GetFilePathIfExists(Path.Combine(projectFolder,
                    ProjectScopeDeveroomConfigurationProvider.ReqnrollJsonConfigFileName)) ??
+               fileSystem.GetFilePathIfExists(Path.Combine(projectFolder,
+                   ProjectScopeDeveroomConfigurationProvider.SpecFlowJsonConfigFileName)) ??
                fileSystem.GetFilePathIfExists(Path.Combine(projectFolder,
                    ProjectScopeDeveroomConfigurationProvider.ReqnrollAppConfigFileName));
     }
