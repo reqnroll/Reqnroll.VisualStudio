@@ -37,7 +37,10 @@ public class BindingRegistryFactoryProvider
     private IBindingRegistryFactory GetFactory(int versionNumber) =>
         versionNumber switch
         {
-            _ => new BindingRegistryFactoryVLatest(_log),
+            >= 3_10_000 => new BindingRegistryFactoryVLatest(_log),
+            >= 3_09_022 => new BindingRegistryFactoryBeforeV310000(_log),
+            >= 3_07_013 => new BindingRegistryFactoryBeforeV309022(_log),
+            _ => new BindingRegistryFactoryBeforeV307013(_log),
         };
 
     private Option<FileVersionInfo> GetSpecFlowVersion()

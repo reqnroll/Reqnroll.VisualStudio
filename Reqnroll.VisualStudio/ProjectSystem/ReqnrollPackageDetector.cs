@@ -7,11 +7,8 @@ internal class ReqnrollPackageDetector
 {
     private const string ReqnrollPackageName = "Reqnroll";
     public const string ReqnrollToolsMsBuildGenerationPackageName = "Reqnroll.Tools.MsBuild.Generation";
-    public const string ReqnrollXUnitAdapterPackageName = "Reqnroll.xUnitAdapter";
-    public const string CucumberExpressionPluginPackageNamePrefix = "CucumberExpressions.Reqnroll";
-    public const string SpecFlowPlusRunnerPluginPackageNamePrefix = "SpecRun.Reqnroll";
+    public const string ReqnrollSpecFlowCompatibilityPackageName = "Reqnroll.SpecFlowCompatibility.ReqnrollPlugin";
 
-    private const string SpecRunPackageRe = @"^SpecRun.Reqnroll.(?<sfver>[\d-]+)$";
     private const string SpecSyncPackageRe = @"^SpecSync.AzureDevOps.Reqnroll.(?<sfver>[\d-]+)$";
 
     private static readonly string[] ReqnrollTestFrameworkPackages =
@@ -26,13 +23,13 @@ internal class ReqnrollPackageDetector
         ReqnrollTestFrameworkPackages
             .Concat(new[]
             {
-                ReqnrollToolsMsBuildGenerationPackageName
+                ReqnrollToolsMsBuildGenerationPackageName,
+                ReqnrollSpecFlowCompatibilityPackageName
             })
             .ToArray();
 
     private static readonly Regex[] KnownReqnrollExtensions =
     {
-        new(SpecRunPackageRe),
         new(SpecSyncPackageRe)
     };
 
@@ -41,30 +38,6 @@ internal class ReqnrollPackageDetector
     public ReqnrollPackageDetector(IFileSystem fileSystem)
     {
         _fileSystem = fileSystem;
-    }
-
-    public bool IsMsBuildGenerationEnabled(IEnumerable<NuGetPackageReference> packageReferences)
-    {
-        return packageReferences.Any(pr => pr.PackageName == ReqnrollToolsMsBuildGenerationPackageName);
-    }
-
-    public bool IsXUnitAdapterEnabled(IEnumerable<NuGetPackageReference> packageReferences)
-    {
-        return packageReferences.Any(pr => pr.PackageName == ReqnrollXUnitAdapterPackageName);
-    }
-
-    public bool IsCucumberExpressionEnabled(IEnumerable<NuGetPackageReference> packageReferences)
-    {
-        return true;
-        //TODO: return packageReferences.Any(pr =>
-        //    pr.PackageName != null && pr.PackageName.StartsWith(CucumberExpressionPluginPackageNamePrefix));
-    }
-
-    public bool IsReqnrollTestFrameworkPackagesUsed(NuGetPackageReference[] packageReferences)
-    {
-        return packageReferences.Any(pr =>
-            ReqnrollTestFrameworkPackages.Contains(pr.PackageName) ||
-            pr.PackageName.StartsWith(SpecFlowPlusRunnerPluginPackageNamePrefix));
     }
 
     public NuGetPackageReference GetReqnrollPackage(IEnumerable<NuGetPackageReference> packageReferences)
@@ -121,6 +94,11 @@ internal class ReqnrollPackageDetector
         }
 
         return null;
+    }
+
+    public bool IsSpecFlowCompatibilityEnabled(IEnumerable<NuGetPackageReference> packageReferences)
+    {
+        return packageReferences.Any(pr => pr.PackageName == ReqnrollSpecFlowCompatibilityPackageName);
     }
 
     private string ReplacePackageNamePart(string path, string oldPart, string newPart) => Regex.Replace(path,

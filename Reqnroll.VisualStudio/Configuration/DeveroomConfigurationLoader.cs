@@ -48,7 +48,8 @@ public class DeveroomConfigurationLoader
         config.ConfigurationBaseFolder = configFolder;
 
         config.Reqnroll.ConfigFilePath = EnsureFullPath(config, c => c.Reqnroll.ConfigFilePath);
-        config.Reqnroll.GeneratorFolder = EnsureFullPath(config, c => c.Reqnroll.GeneratorFolder, true);
+        config.SpecFlow.ConfigFilePath = EnsureFullPath(config, c => c.SpecFlow.ConfigFilePath);
+        config.SpecFlow.GeneratorFolder = EnsureFullPath(config, c => c.SpecFlow.GeneratorFolder, true);
     }
 
     private string ExpandEnvironmentVariables(string value)

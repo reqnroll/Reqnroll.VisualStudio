@@ -5,6 +5,9 @@ public class GenericOutProcReqnrollConnector : OutProcReqnrollConnector
     private const string ConnectorNet60 = @"Reqnroll-Generic-net6.0\reqnroll-vs.dll";
     private const string ConnectorNet70 = @"Reqnroll-Generic-net7.0\reqnroll-vs.dll";
     private const string ConnectorNet80 = @"Reqnroll-Generic-net8.0\reqnroll-vs.dll";
+    private const string SpecFlowConnectorNet60 = @"SpecFlow-Generic-net6.0\specflow-vs.dll";
+    private const string SpecFlowConnectorNet70 = @"SpecFlow-Generic-net7.0\specflow-vs.dll";
+    private const string SpecFlowConnectorNet80 = @"SpecFlow-Generic-net8.0\specflow-vs.dll";
 
     public GenericOutProcReqnrollConnector(
         DeveroomConfiguration configuration,
@@ -12,7 +15,7 @@ public class GenericOutProcReqnrollConnector : OutProcReqnrollConnector
         TargetFrameworkMoniker targetFrameworkMoniker,
         string extensionFolder,
         ProcessorArchitectureSetting processorArchitecture,
-        NuGetVersion reqnrollVersion,
+        ProjectSettings projectSettings,
         IMonitoringService monitoringService)
         : base(
             configuration,
@@ -20,24 +23,27 @@ public class GenericOutProcReqnrollConnector : OutProcReqnrollConnector
             targetFrameworkMoniker,
             extensionFolder,
             processorArchitecture,
-            reqnrollVersion,
+            projectSettings,
             monitoringService)
     {
     }
 
     protected override string GetConnectorPath(List<string> arguments)
     {
-        var connector = ConnectorNet60;
+        var connector = _projectSettings.IsSpecFlowProject ? 
+            SpecFlowConnectorNet60 : ConnectorNet60;
         if (_targetFrameworkMoniker.IsNetCore && _targetFrameworkMoniker.HasVersion &&
             _targetFrameworkMoniker.Version.Major >= 7)
         {
-            connector = ConnectorNet70;
+            connector = _projectSettings.IsSpecFlowProject ?
+                SpecFlowConnectorNet70 : ConnectorNet70;
         }
 
         if (_targetFrameworkMoniker.IsNetCore && _targetFrameworkMoniker.HasVersion &&
             _targetFrameworkMoniker.Version.Major >= 8)
         {
-            connector = ConnectorNet80;
+            connector = _projectSettings.IsSpecFlowProject ?
+                SpecFlowConnectorNet80 : ConnectorNet80;
         }
 
         var connectorsFolder = GetConnectorsFolder();

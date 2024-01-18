@@ -5,8 +5,10 @@ public class OutProcReqnrollConnector
 {
     private const string ConnectorV1AnyCpu = @"Reqnroll-V1\reqnroll-vs.exe";
     private const string ConnectorV1X86 = @"Reqnroll-V1\reqnroll-vs-x86.exe";
-    private const string ConnectorV2Net60 = @"Reqnroll-V2-net6.0\reqnroll-vs.dll";
-    private const string ConnectorV3Net60 = @"Reqnroll-V3-net6.0\reqnroll-vs.dll";
+    private const string SpecFlowConnectorV1AnyCpu = @"SpecFlow-V1\specflow-vs.exe";
+    private const string SpecFlowConnectorV1X86 = @"SpecFlow-V1\specflow-vs-x86.exe";
+    private const string SpecFlowConnectorV2Net60 = @"SpecFlow-V2-net6.0\specflow-vs.dll";
+    private const string SpecFlowConnectorV3Net60 = @"SpecFlow-V3-net6.0\specflow-vs.dll";
     private const string GenerationCommandName = "generation";
     private const string BindingDiscoveryCommandName = "binding discovery";
 
@@ -15,12 +17,13 @@ public class OutProcReqnrollConnector
     private readonly IDeveroomLogger _logger;
     private readonly IMonitoringService _monitoringService;
     private readonly ProcessorArchitectureSetting _processorArchitecture;
-    private readonly NuGetVersion _reqnrollVersion;
+    protected readonly ProjectSettings _projectSettings;
     protected readonly TargetFrameworkMoniker _targetFrameworkMoniker;
+    protected NuGetVersion ReqnrollVersion => _projectSettings.ReqnrollVersion;
 
     public OutProcReqnrollConnector(DeveroomConfiguration configuration, IDeveroomLogger logger,
         TargetFrameworkMoniker targetFrameworkMoniker, string extensionFolder,
-        ProcessorArchitectureSetting processorArchitecture, NuGetVersion reqnrollVersion,
+        ProcessorArchitectureSetting processorArchitecture, ProjectSettings projectSettings,
         IMonitoringService monitoringService)
     {
         _configuration = configuration;
@@ -28,7 +31,7 @@ public class OutProcReqnrollConnector
         _targetFrameworkMoniker = targetFrameworkMoniker;
         _extensionFolder = extensionFolder;
         _processorArchitecture = processorArchitecture;
-        _reqnrollVersion = reqnrollVersion;
+        _projectSettings = projectSettings;
         _monitoringService = monitoringService;
     }
 
@@ -104,7 +107,7 @@ public class OutProcReqnrollConnector
         discoveryResult.AnalyticsProperties ??= new Dictionary<string, object>();
 
         discoveryResult.AnalyticsProperties["ProjectTargetFramework"] = _targetFrameworkMoniker;
-        discoveryResult.AnalyticsProperties["ProjectReqnrollVersion"] = _reqnrollVersion;
+        discoveryResult.AnalyticsProperties["ProjectReqnrollVersion"] = ReqnrollVersion;
         discoveryResult.AnalyticsProperties["ConnectorArguments"] = result.Arguments;
         discoveryResult.AnalyticsProperties["ConnectorExitCode"] = result.ExitCode;
         if (!string.IsNullOrEmpty(discoveryResult.ReqnrollVersion))
@@ -170,19 +173,19 @@ public class OutProcReqnrollConnector
     {
         var connectorsFolder = GetConnectorsFolder();
 
-        if (_targetFrameworkMoniker.IsNetCore)
+        if (_targetFrameworkMoniker.IsNetCore && _projectSettings.IsSpecFlowProject)
         {
-            //TODO
-            //if (_reqnrollVersion != null && _reqnrollVersion.Version >= new Version(3, 9, 22))
-            //    return GetDotNetExecCommand(arguments, connectorsFolder, ConnectorV3Net60);
-            //return GetDotNetExecCommand(arguments, connectorsFolder, ConnectorV2Net60);
-            //throw new NotSupportedException("This connector is not supported!");
+            if (ReqnrollVersion != null && ReqnrollVersion.Version >= new Version(3, 9, 22))
+                return GetDotNetExecCommand(arguments, connectorsFolder, SpecFlowConnectorV3Net60);
+            return GetDotNetExecCommand(arguments, connectorsFolder, SpecFlowConnectorV2Net60);
         }
 
         //V1
-        string connectorName = ConnectorV1AnyCpu;
+        string connectorName = _projectSettings.IsSpecFlowProject ?
+            SpecFlowConnectorV1AnyCpu : ConnectorV1AnyCpu;
         if (_processorArchitecture == ProcessorArchitectureSetting.X86)
-            connectorName = ConnectorV1X86;
+            connectorName = _projectSettings.IsSpecFlowProject ? 
+                SpecFlowConnectorV1X86 : ConnectorV1X86;
 
         return Path.Combine(connectorsFolder, connectorName);
     }

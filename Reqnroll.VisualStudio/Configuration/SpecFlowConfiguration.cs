@@ -2,17 +2,18 @@
 
 namespace Reqnroll.VisualStudio.Configuration;
 
-public class ReqnrollConfiguration
+public class SpecFlowConfiguration
 {
-    public bool? IsReqnrollProject { get; set; }
+    public bool? IsSpecFlowProject { get; set; }
 
     public string Version { get; set; }
+    public string GeneratorFolder { get; set; }
     public string ConfigFilePath { get; set; }
-    public ReqnrollProjectTraits[] Traits { get; set; } = new ReqnrollProjectTraits[0];
+    public ReqnrollProjectTraits[] Traits { get; set; } = Array.Empty<ReqnrollProjectTraits>();
 
     private void FixEmptyContainers()
     {
-        Traits = Traits ?? new ReqnrollProjectTraits[0];
+        Traits = Traits ?? Array.Empty<ReqnrollProjectTraits>();
     }
 
     public void CheckConfiguration()
@@ -20,13 +21,14 @@ public class ReqnrollConfiguration
         FixEmptyContainers();
 
         if (Version != null && !Regex.IsMatch(Version, @"^(?:\.?[0-9]+){2,}(?:\-[\-a-z0-9]*)?$"))
-            throw new DeveroomConfigurationException("'reqnroll/version' was not in a correct format");
+            throw new DeveroomConfigurationException("'specFlow/version' was not in a correct format");
     }
 
     #region Equality
 
-    protected bool Equals(ReqnrollConfiguration other) => IsReqnrollProject == other.IsReqnrollProject &&
+    protected bool Equals(SpecFlowConfiguration other) => IsSpecFlowProject == other.IsSpecFlowProject &&
                                                           string.Equals(Version, other.Version) &&
+                                                          string.Equals(GeneratorFolder, other.GeneratorFolder) &&
                                                           string.Equals(ConfigFilePath, other.ConfigFilePath) &&
                                                           Equals(Traits, other.Traits);
 
@@ -42,8 +44,9 @@ public class ReqnrollConfiguration
     {
         unchecked
         {
-            var hashCode = IsReqnrollProject.GetHashCode();
+            var hashCode = IsSpecFlowProject.GetHashCode();
             hashCode = (hashCode * 397) ^ (Version != null ? Version.GetHashCode() : 0);
+            hashCode = (hashCode * 397) ^ (GeneratorFolder != null ? GeneratorFolder.GetHashCode() : 0);
             hashCode = (hashCode * 397) ^ (ConfigFilePath != null ? ConfigFilePath.GetHashCode() : 0);
             hashCode = (hashCode * 397) ^ (Traits != null ? Traits.GetHashCode() : 0);
             return hashCode;

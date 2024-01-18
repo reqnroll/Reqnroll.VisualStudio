@@ -18,6 +18,7 @@ public record ProjectSettings(
     public bool IsReqnrollTestProject => Kind == DeveroomProjectKind.ReqnrollTestProject;
     public bool IsReqnrollLibProject => Kind == DeveroomProjectKind.ReqnrollLibProject;
     public bool IsReqnrollProject => IsReqnrollTestProject || IsReqnrollLibProject;
+    public bool IsSpecFlowProject => IsReqnrollProject && ReqnrollProjectTraits.HasFlag(ReqnrollProjectTraits.LegacySpecFlow);
 
     public bool DesignTimeFeatureFileGenerationEnabled =>
         ReqnrollProjectTraits.HasFlag(ReqnrollProjectTraits.DesignTimeFeatureFileGeneration);
@@ -30,7 +31,10 @@ public record ProjectSettings(
 
     public string GetShortLabel()
     {
-        var result = $"{TargetFrameworkMoniker},Reqnroll:{GetReqnrollVersionLabel()}";
+        var result = $"{TargetFrameworkMoniker}";
+        result += IsSpecFlowProject
+            ? $",SpecFlow:{GetReqnrollVersionLabel()}"
+            : $",Reqnroll:{GetReqnrollVersionLabel()}";
         if (PlatformTarget != ProjectPlatformTarget.Unknown && PlatformTarget != ProjectPlatformTarget.AnyCpu)
             result += "," + PlatformTarget;
         if (DesignTimeFeatureFileGenerationEnabled)

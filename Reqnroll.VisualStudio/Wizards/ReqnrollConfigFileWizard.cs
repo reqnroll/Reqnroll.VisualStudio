@@ -11,8 +11,8 @@ public class ReqnrollConfigFileWizard : IDeveroomWizard
 
         wizardRunParameters.MonitoringService.MonitorCommandAddReqnrollConfigFile(projectSettings);
 
-        //TODO: if (projectSettings.IsReqnrollProject && projectSettings.ReqnrollVersion.Version < new Version(3, 6, 23))
-        //    wizardRunParameters.ReplacementsDictionary[WizardRunParameters.CopyToOutputDirectoryKey] = "PreserveNewest";
+        if (projectSettings.IsSpecFlowProject && projectSettings.ReqnrollVersion.Version < new Version(3, 6, 23))
+            wizardRunParameters.ReplacementsDictionary[WizardRunParameters.CopyToOutputDirectoryKey] = "PreserveNewest";
         return true;
     }
 }

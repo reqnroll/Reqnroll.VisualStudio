@@ -9,6 +9,7 @@ public class DeveroomConfiguration
     public string ConfigurationBaseFolder { get; set; }
 
     public ReqnrollConfiguration Reqnroll { get; set; } = new();
+    public SpecFlowConfiguration SpecFlow { get; set; } = new();
     public TraceabilityConfiguration Traceability { get; set; } = new();
     public EditorConfiguration Editor { get; set; } = new();
 
@@ -22,6 +23,7 @@ public class DeveroomConfiguration
     private void FixEmptyContainers()
     {
         Reqnroll ??= new ReqnrollConfiguration();
+        SpecFlow ??= new SpecFlowConfiguration();
         Traceability ??= new TraceabilityConfiguration();
         Editor ??= new EditorConfiguration();
     }
@@ -31,6 +33,7 @@ public class DeveroomConfiguration
         FixEmptyContainers();
 
         Reqnroll.CheckConfiguration();
+        SpecFlow.CheckConfiguration();
         Traceability.CheckConfiguration();
         Editor.CheckConfiguration();
     }
@@ -38,7 +41,9 @@ public class DeveroomConfiguration
     #region Equality
 
     protected bool Equals(DeveroomConfiguration other) =>
-        string.Equals(ConfigurationBaseFolder, other.ConfigurationBaseFolder) && Equals(Reqnroll, other.Reqnroll) &&
+        string.Equals(ConfigurationBaseFolder, other.ConfigurationBaseFolder) && 
+        Equals(Reqnroll, other.Reqnroll) &&
+        Equals(SpecFlow, other.SpecFlow) &&
         Equals(Traceability, other.Traceability) && Equals(Editor, other.Editor) &&
         ProcessorArchitecture == other.ProcessorArchitecture && DebugConnector == other.DebugConnector &&
         string.Equals(DefaultFeatureLanguage, other.DefaultFeatureLanguage) &&
@@ -58,6 +63,7 @@ public class DeveroomConfiguration
         {
             var hashCode = ConfigurationBaseFolder != null ? ConfigurationBaseFolder.GetHashCode() : 0;
             hashCode = (hashCode * 397) ^ (Reqnroll != null ? Reqnroll.GetHashCode() : 0);
+            hashCode = (hashCode * 397) ^ (SpecFlow != null ? SpecFlow.GetHashCode() : 0);
             hashCode = (hashCode * 397) ^ (Traceability != null ? Traceability.GetHashCode() : 0);
             hashCode = (hashCode * 397) ^ (Editor != null ? Editor.GetHashCode() : 0);
             hashCode = (hashCode * 397) ^ (int) ProcessorArchitecture;

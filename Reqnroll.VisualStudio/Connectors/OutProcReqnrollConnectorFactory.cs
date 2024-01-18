@@ -14,7 +14,7 @@ public static class OutProcReqnrollConnectorFactory
             projectSettings.TargetFrameworkMoniker,
             projectScope.IdeScope.GetExtensionFolder(),
             processorArchitecture,
-            projectSettings.ReqnrollVersion,
+            projectSettings,
             ideScope.MonitoringService);
     }
 
@@ -30,7 +30,7 @@ public static class OutProcReqnrollConnectorFactory
             projectSettings.TargetFrameworkMoniker,
             projectScope.IdeScope.GetExtensionFolder(),
             processorArchitecture,
-            projectSettings.ReqnrollVersion,
+            projectSettings,
             ideScope.MonitoringService);
     }
 
