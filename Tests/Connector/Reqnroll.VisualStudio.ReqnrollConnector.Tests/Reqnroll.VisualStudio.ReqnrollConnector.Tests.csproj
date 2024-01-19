@@ -10,14 +10,6 @@
     <Compile Remove="ApprovalTestData\**" />
     <Content Include="ApprovalTestData\**" />
   </ItemGroup>
-  <ItemGroup>
-    <None Remove="ApprovalTestData\GeneratedProjectTests\DS_3.9.40_nunit_nprj_net481_bt_992117478.approved.txt" />
-    <None Remove="ApprovalTestData\GeneratedProjectTests\DS_3.9.40_nunit_nprj_net481_bt_992117478.json" />
-    <None Remove="ApprovalTestData\GeneratedProjectTests\DS_3.9.40_nunit_nprj_net8.0_bt_992117478.approved.txt" />
-    <None Remove="ApprovalTestData\GeneratedProjectTests\DS_3.9.40_nunit_nprj_net8.0_bt_992117478.json" />
-    <None Remove="ApprovalTestData\GeneratedProjectTests\DS_3.9.74_nunit_nprj_net8.0_bt_992117478.approved.txt" />
-    <None Remove="ApprovalTestData\GeneratedProjectTests\DS_3.9.74_nunit_nprj_net8.0_bt_992117478.json" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="ApprovalTests" Version="5.9.0" />

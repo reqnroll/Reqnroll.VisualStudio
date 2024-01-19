@@ -1,9 +1,0 @@
-{
-  "GeneratorOptions": {
-    "FeatureFileCount": 1,
-    "ScenarioPerFeatureFileCount": 1,
-    "NewProjectFormat": true,
-    "TargetFramework": "netcoreapp21",
-    "ReqnrollPackageVersion": "3.9.40"
-  }
-}

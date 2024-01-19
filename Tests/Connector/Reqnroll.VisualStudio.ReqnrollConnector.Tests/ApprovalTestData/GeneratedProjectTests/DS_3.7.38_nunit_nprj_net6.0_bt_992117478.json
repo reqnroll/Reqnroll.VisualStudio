@@ -1,9 +1,0 @@
-{
-  "GeneratorOptions": {
-    "FeatureFileCount": 1,
-    "ScenarioPerFeatureFileCount": 1,
-    "NewProjectFormat": true,
-    "TargetFramework": "net6.0",
-    "ReqnrollPackageVersion": "3.7.38"
-  }
-}

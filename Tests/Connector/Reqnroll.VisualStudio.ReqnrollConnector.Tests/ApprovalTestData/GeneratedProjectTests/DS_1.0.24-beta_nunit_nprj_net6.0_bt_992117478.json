@@ -4,6 +4,6 @@
     "ScenarioPerFeatureFileCount": 1,
     "NewProjectFormat": true,
     "TargetFramework": "net6.0",
-    "ReqnrollPackageVersion": "3.9.40"
+    "ReqnrollPackageVersion": "1.0.24-beta"
   }
 }
