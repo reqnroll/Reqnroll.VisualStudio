@@ -1,4 +1,4 @@
-using Deveroom.SampleSpecFlow3940.ReqnrollPlugin;
+using Deveroom.SampleReqnroll10024.ReqnrollPlugin;
 using System.Reflection;
 using Reqnroll.Bindings;
 using Reqnroll.Bindings.Discovery;
@@ -8,7 +8,7 @@ using Reqnroll.UnitTestProvider;
 
 [assembly: RuntimePlugin(typeof(SampleRuntimePlugin))]
 
-namespace Deveroom.SampleSpecFlow3940.ReqnrollPlugin;
+namespace Deveroom.SampleReqnroll10024.ReqnrollPlugin;
 
 public class SampleRuntimePlugin : IRuntimePlugin
 {
@@ -44,10 +44,10 @@ public class SampleRuntimePlugin : IRuntimePlugin
 
         public void BuildingCompleted()
         {
-            _bindingRegistry.RegisterStepDefinitionBinding(new StepDefinitionBinding(
-                StepDefinitionType.Then, "there should be a step from a plugin",
-                new RuntimeBindingMethod(typeof(PluginSteps).GetMethod(nameof(PluginSteps.ThenThereShouldBeAStepFromAPlugin))), null));
-
+            var bindingMethod = new RuntimeBindingMethod(typeof(PluginSteps).GetMethod(nameof(PluginSteps.ThenThereShouldBeAStepFromAPlugin)));
+            var builder = new RegexStepDefinitionBindingBuilder(StepDefinitionType.Then, bindingMethod, null, "there should be a step from a plugin");
+            var stepDefinitionBinding = builder.BuildSingle();            
+            _bindingRegistry.RegisterStepDefinitionBinding(stepDefinitionBinding);
             _innerBuilder.BuildingCompleted();
         }
     }

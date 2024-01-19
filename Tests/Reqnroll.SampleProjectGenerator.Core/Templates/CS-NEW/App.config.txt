@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<configuration>
-  <configSections>
-    <section name="reqnroll" type="Reqnroll.Configuration.ConfigurationSectionHandler, Reqnroll" />
-  </configSections>
-  <reqnroll>
-    <!-- For additional details on Reqnroll configuration options see http://go.reqnroll.net/doc-config -->
-  </reqnroll>
-</configuration>

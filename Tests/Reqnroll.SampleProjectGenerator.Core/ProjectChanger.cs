@@ -1,12 +1,14 @@
 #nullable disable
 using System.Xml.Linq;
+using Newtonsoft.Json.Linq;
+using Formatting = Newtonsoft.Json.Formatting;
 
 namespace Reqnroll.SampleProjectGenerator;
 
 public abstract class ProjectChanger
 {
-    protected readonly string _appConfigFilePath;
-    protected readonly XDocument _appConfigXml;
+    protected readonly string _configJsonFilePath;
+    protected readonly JObject _configJson;
     protected readonly string _projectFilePath;
     protected readonly string _projectFolder;
     protected readonly XDocument _projXml;
@@ -17,9 +19,14 @@ public abstract class ProjectChanger
         _projectFilePath = projectFilePath;
         _targetPlatform = targetPlatform;
         _projectFolder = Path.GetDirectoryName(_projectFilePath);
-        _appConfigFilePath = Path.Combine(_projectFolder, "App.config");
+        _configJsonFilePath = Path.Combine(_projectFolder, "reqnroll.json");
         _projXml = Load(projectFilePath);
-        _appConfigXml = Load(_appConfigFilePath);
+        _configJson = LoadJson(_configJsonFilePath);
+    }
+
+    private JObject LoadJson(string configJsonFilePath)
+    {
+        return JObject.Parse(File.ReadAllText(configJsonFilePath));
     }
 
     protected XDocument Load(string path)
@@ -45,22 +52,37 @@ public abstract class ProjectChanger
 
     public virtual void SetReqnrollConfig(string name, string attr, string value)
     {
-        var reqnrollElm = _appConfigXml.Descendants("reqnroll").First();
-        var settingElm = reqnrollElm;
-        foreach (var nameSection in name.Split('/')) settingElm = EnsureReqnrollSetting(nameSection, settingElm);
-        settingElm.SetAttributeValue(attr, value);
-    }
-
-    private static XElement EnsureReqnrollSetting(string name, XElement spacFlowElm)
-    {
-        var settingElm = spacFlowElm.Element(name);
-        if (settingElm == null)
+        var settingObj = _configJson as JToken;
+        foreach (var nameSection in name.Split('/'))
         {
-            settingElm = new XElement(name);
-            spacFlowElm.Add(settingElm);
+            settingObj = EnsureReqnrollSetting(nameSection, settingObj);
         }
 
-        return settingElm;
+        ((JObject)settingObj).Add(attr, new JValue(value));
+    }
+
+    private static JToken EnsureReqnrollSetting(string name, JToken baseObj)
+    {
+        var isArray = name.EndsWith("[]");
+        name = name.TrimEnd('[', ']');
+
+        if (baseObj is JArray baseArray)
+        {
+            var settingObj = isArray ? (JToken)new JArray() : new JObject();
+            baseArray.Add(settingObj);
+            return settingObj;
+        }
+        else
+        {
+            var settingObj = baseObj[name];
+            if (settingObj == null)
+            {
+                settingObj = isArray ? new JArray() : new JObject();
+                ((JObject)baseObj).Add(name, settingObj);
+            }
+
+            return settingObj;
+        }
     }
 
     public void AddAssemblyReferencesFromFolder(string folderPath)
@@ -141,7 +163,12 @@ public abstract class ProjectChanger
     public virtual void Save()
     {
         Save(_projXml, _projectFilePath);
-        Save(_appConfigXml, _appConfigFilePath);
+        SaveJson(_configJson, _configJsonFilePath);
+    }
+
+    private void SaveJson(JObject jsonObj, string filePath)
+    {
+        File.WriteAllText(filePath, jsonObj.ToString(Formatting.Indented));
     }
 
     public abstract void AddFile(string filePath, string action, string generator = null,

@@ -18,7 +18,8 @@ public class NewProjectFormatProjectChanger : ProjectChanger
 
     public override void SetPlatformTarget(string platformTarget)
     {
-        throw new NotImplementedException();
+        var targetFwElm = DescendantsSimple(_projXml, "PlatformTarget").First();
+        targetFwElm.Value = platformTarget;
     }
 
     public override void SetTargetFramework(string targetFramework)

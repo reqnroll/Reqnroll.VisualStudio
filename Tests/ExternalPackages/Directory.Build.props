@@ -9,7 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Reqnroll" Version="3.9.40" />
+    <PackageReference Include="Reqnroll" Version="1.0.24-beta" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="bin\$(Configuration)\net6.0\$(AssemblyName).pdb" PackagePath="lib\net6.0\$(AssemblyName).pdb">
+       <PackageCopyToOutput>true</PackageCopyToOutput>
+    </Content>
+  </ItemGroup>  
 
 </Project>

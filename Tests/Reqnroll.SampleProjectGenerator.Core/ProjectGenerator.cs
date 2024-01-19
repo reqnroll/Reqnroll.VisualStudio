@@ -189,7 +189,7 @@ public abstract class ProjectGenerator : IProjectGenerator
         ExecNuGetInstall(_options.ExternalBindingPackageName, packagesFolder);
         var projectChanger = CreateProjectChanger(projectFilePath);
         InstallNuGetPackage(projectChanger, packagesFolder, _options.ExternalBindingPackageName, packageVersion: "1.0.0", sourcePlatform: "net45");
-        projectChanger.SetReqnrollConfig("stepAssemblies/stepAssembly", "assembly",
+        projectChanger.SetReqnrollConfig("stepAssemblies[]/stepAssembly", "assembly",
             _options.ExternalBindingPackageName);
         projectChanger.Save();
     }

@@ -3,7 +3,7 @@ function BuildExternalPackage ([string]$packageFolder)
 {
     pushd .
 	Write-Host $packageFolder
-    cd ".\$packageFolder"
+    cd $packageFolder
 
     dotnet build --configuration Release
  
@@ -12,9 +12,5 @@ function BuildExternalPackage ([string]$packageFolder)
     popd
 }
 
-Get-ChildItem -Directory | ForEach-Object { BuildExternalPackage $_ }
+Get-ChildItem -Directory -Exclude "PackagesForTests" | ForEach-Object { BuildExternalPackage $_ }
 
-pushd .
-cd PackagesForTests
-nuget install
-popd
