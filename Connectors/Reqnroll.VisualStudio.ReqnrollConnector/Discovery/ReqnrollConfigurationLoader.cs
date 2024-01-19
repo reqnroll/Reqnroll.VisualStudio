@@ -22,6 +22,16 @@ public class ReqnrollConfigurationLoader : IConfigurationLoader
         var configFileContent = File.ReadAllText(_configFilePath);
         switch (extension.ToLowerInvariant())
         {
+            case ".config": // for SpecFlow compatibility
+            {
+                var configDocument = new XmlDocument();
+                configDocument.LoadXml(configFileContent);
+                var specFlowNode = configDocument.SelectSingleNode("/configuration/specFlow");
+                if (specFlowNode == null)
+                    return LoadDefaultConfiguration(reqnrollConfiguration);
+
+                return LegacyAppConfigLoader.LoadConfiguration(specFlowNode, LoadDefaultConfiguration(reqnrollConfiguration));
+            }
             case ".json":
             {
                 configFileContent = ConvertToJsonSpecFlow3Style(configFileContent);

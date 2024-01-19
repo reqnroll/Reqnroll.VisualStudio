@@ -5,10 +5,9 @@ namespace Reqnroll.SampleProjectGenerator;
 
 public class GeneratorOptions
 {
-    private const string LatestReqnrollVersion = "3.9.74";
-    public const string ReqnrollV3Version = "3.6.23";
+    private const string LatestReqnrollVersion = "1.0.24-beta";
     public const string UnicodeBindingRegex = "Unicode Алло Χαίρετε Árvíztűrő tükörfúrógép";
-    public const string DefaultTargetFramework = "net48";
+    public const string DefaultTargetFramework = "net8.0";
 
     [Option("force", Required = false, Default = false)]
     public bool Force { get; set; }
@@ -17,8 +16,8 @@ public class GeneratorOptions
     [Option("targetFolder", Required = false, Default = null)]
     public string _TargetFolder { get; set; }
 
-    [Option("newPrjFormat", Required = false, Default = false)]
-    public bool NewProjectFormat { get; set; }
+    [Option("newPrjFormat", Required = false, Default = true)]
+    public bool NewProjectFormat { get; set; } = true;
 
     // ReSharper disable once InconsistentNaming
     [Option("sfVer", Required = false, Default = LatestReqnrollVersion)]
@@ -108,8 +107,6 @@ public class GeneratorOptions
 
         result.Append($"{ReqnrollPackageVersion}_");
         result.Append($"{UnitTestProvider.ToLowerInvariant()}_");
-        if (NewProjectFormat)
-            result.Append("nprj_");
         if (TargetFramework != DefaultTargetFramework)
             result.Append($"{TargetFramework}_");
         if (PlatformTarget != null)
@@ -152,14 +149,12 @@ public class GeneratorOptions
 
     public IProjectGenerator CreateProjectGenerator(Action<string> consoleWriteLine)
     {
-        if (NewProjectFormat)
-        {
-            if (TargetFramework is "net452" or "net461")
-                return new NewProjectFormatForNetFrameworkProjectGenerator(this, consoleWriteLine);
+        if (!NewProjectFormat)
+            throw new NotSupportedException("old project format is not supported");
 
-            return new NewProjectFormatProjectGenerator(this, consoleWriteLine);
-        }
+        if (TargetFramework is "net452" or "net461")
+            return new NewProjectFormatForNetFrameworkProjectGenerator(this, consoleWriteLine);
 
-        return new OldProjectFormatProjectGenerator(this, consoleWriteLine);
+        return new NewProjectFormatProjectGenerator(this, consoleWriteLine);
     }
 }

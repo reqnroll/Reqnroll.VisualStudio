@@ -24,20 +24,13 @@ public class NewProjectFormatProjectGenerator : ProjectGenerator
 
     protected override void InstallReqnrollPackages(string packagesFolder, ProjectChanger projectChanger)
     {
-        InstallNuGetPackage(projectChanger, packagesFolder, "Reqnroll.Tools.MsBuild.Generation", "net462",
-            _options.ReqnrollPackageVersion);
+        //nop
     }
 
     protected override void SetReqnrollUnitTestProvider(ProjectChanger projectChanger, string packagesFolder)
     {
-        if (_options.ReqnrollVersion >= new Version("3.0.0"))
-        {
-            InstallNuGetPackage(projectChanger, packagesFolder, $"Reqnroll.{_options.UnitTestProvider}", "net462",
-                _options.ReqnrollPackageVersion);
-            return;
-        }
-
-        base.SetReqnrollUnitTestProvider(projectChanger, packagesFolder);
+        InstallNuGetPackage(projectChanger, packagesFolder, $"Reqnroll.{_options.UnitTestProvider}", "net462",
+            _options.ReqnrollPackageVersion);
     }
 
     protected override void BuildProject()

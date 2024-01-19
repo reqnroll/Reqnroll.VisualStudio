@@ -17,7 +17,7 @@ public abstract class ProjectGenerator : IProjectGenerator
 
     public string TargetFolder => _options.TargetFolder;
     public string TargetFramework => _options.TargetFramework;
-    public virtual string PackagesFolder => "packages";
+    public abstract string PackagesFolder { get; }
     public string AssemblyName => "DeveroomSample";
     public abstract string GetOutputAssemblyPath(string config = "Debug");
     public List<string> FeatureFiles { get; } = new();
@@ -94,10 +94,6 @@ public abstract class ProjectGenerator : IProjectGenerator
 
     private void EnsureEnvironmentVariables()
     {
-        if (_options.ReqnrollVersion.Major == 3 && _options.ReqnrollVersion.Minor < 2)
-            //MSBUILDSINGLELOADCONTEXT is required for some Reqnroll versions.
-            //See https://stackoverflow.com/questions/60755395/reqnroll-generatefeaturefilecodebehindtask-has-failed-unexpectedly
-            Environment.SetEnvironmentVariable("MSBUILDSINGLELOADCONTEXT", "1");
     }
 
     protected virtual void SetTargetFramework(string projectFilePath)
@@ -143,8 +139,6 @@ public abstract class ProjectGenerator : IProjectGenerator
 
     private void GenerateTestArtifacts(string projectFilePath)
     {
-        var customTool = _options.ReqnrollVersion >= new Version("3.0") ? null : "ReqnrollSingleFileGenerator";
-
         var featuresFolder = Path.Combine(_options.TargetFolder, "Features");
         var stepDefsFolder = Path.Combine(_options.TargetFolder, "StepDefinitions");
         EnsureEmptyFolder(featuresFolder);
@@ -164,7 +158,7 @@ public abstract class ProjectGenerator : IProjectGenerator
                 _options.ScenarioPerFeatureFileCount * _options.ScenarioOutlinePerScenarioPercent / 100;
             var scenarioCount = _options.ScenarioPerFeatureFileCount - scenarioOutlineCount;
             var filePath = assetGenerator.GenerateFeatureFile(featuresFolder, scenarioCount, scenarioOutlineCount);
-            projectChanger.AddFile(filePath, "None", customTool);
+            projectChanger.AddFile(filePath, "None", null);
             FeatureFiles.Add(filePath);
         }
 
@@ -205,13 +199,6 @@ public abstract class ProjectGenerator : IProjectGenerator
         ExecNuGetInstall(_options.PluginName, packagesFolder);
         var projectChanger = CreateProjectChanger(projectFilePath);
         InstallNuGetPackage(projectChanger, packagesFolder, _options.PluginName, packageVersion: "1.0.0", sourcePlatform: "net45");
-        if (_options.ReqnrollVersion.Major < 3)
-        {
-            projectChanger.SetReqnrollConfig("plugins/add", "name", _options.PluginName.Replace(".ReqnrollPlugin", ""));
-            projectChanger.SetReqnrollConfig("plugins/add", "type",
-                _options.AddRuntimePlugin && _options.AddGeneratorPlugin ? "GeneratorAndRuntime" :
-                _options.AddGeneratorPlugin ? "Generator" : "Runtime");
-        }
 
         projectChanger.Save();
     }
@@ -239,7 +226,7 @@ public abstract class ProjectGenerator : IProjectGenerator
 
     private void InstallNUnit(string packagesFolder, string projectFilePath)
     {
-        if (IsTargetFrameworkTooOldForNUnit4(_options.TargetFramework) || _options.ReqnrollVersion < new Version("2.0"))
+        if (IsTargetFrameworkTooOldForNUnit4(_options.TargetFramework))
         {
             ExecNuGetInstall("NUnit", packagesFolder, "-Version", "3.14.0"); //Latest major 3 version
         }
@@ -252,7 +239,7 @@ public abstract class ProjectGenerator : IProjectGenerator
 
         var projectChanger = CreateProjectChanger(projectFilePath);
 
-        if (IsTargetFrameworkTooOldForNUnit4(_options.TargetFramework) || _options.ReqnrollVersion < new Version("2.0"))
+        if (IsTargetFrameworkTooOldForNUnit4(_options.TargetFramework))
         {
             InstallNuGetPackage(projectChanger, packagesFolder, "NUnit", packageVersion: "3.14.0", sourcePlatform: "netstandard2.0");
         }
@@ -323,85 +310,9 @@ public abstract class ProjectGenerator : IProjectGenerator
         projectChanger.Save();
     }
 
-    protected virtual void SetReqnrollUnitTestProvider(ProjectChanger projectChanger, string packagesFolder)
-    {
-        if (_options.ReqnrollVersion >= new Version("3.0"))
-        {
-            var sourcePlatform = GetReqnrollSourcePlatform();
-            ExecNuGetInstall("Reqnroll.Tools.MsBuild.Generation", packagesFolder, "-Version",
-                _options.ReqnrollPackageVersion);
-            InstallNuGetPackage(projectChanger, packagesFolder, "Reqnroll.Tools.MsBuild.Generation", sourcePlatform,
-                _options.ReqnrollPackageVersion);
+    protected abstract void SetReqnrollUnitTestProvider(ProjectChanger projectChanger, string packagesFolder);
 
-            ExecNuGetInstall("Reqnroll." + _options.UnitTestProvider, packagesFolder, "-Version",
-                _options.ReqnrollPackageVersion);
-            InstallNuGetPackage(projectChanger, packagesFolder, "Reqnroll." + _options.UnitTestProvider, sourcePlatform,
-                _options.ReqnrollPackageVersion);
-            return;
-        }
-
-        projectChanger.SetReqnrollConfig("unitTestProvider", "name", _options.UnitTestProvider);
-    }
-
-    protected virtual void InstallReqnrollPackages(string packagesFolder, ProjectChanger projectChanger)
-    {
-        var sourcePlatform = GetReqnrollSourcePlatform();
-        InstallNuGetPackage(projectChanger, packagesFolder, "Reqnroll", sourcePlatform,
-            _options.ReqnrollPackageVersion);
-
-        if (_options.ReqnrollVersion >= new Version("3.1"))
-        {
-            InstallNuGetPackage(projectChanger, packagesFolder, "Cucumber.Messages", dependency: true,
-                packageVersion: "6.0.1", sourcePlatform: "netstandard2.0");
-            InstallNuGetPackage(projectChanger, packagesFolder, "Google.Protobuf", dependency: true,
-                packageVersion: "3.7.0", sourcePlatform: "netstandard1.0");
-        }
-
-        if (_options.ReqnrollVersion >= new Version("3.7"))
-        {
-            InstallNuGetPackage(projectChanger, packagesFolder, "BoDi", dependency: true, packageVersion: "1.5.0", sourcePlatform: "netstandard2.0");
-            InstallNuGetPackage(projectChanger, packagesFolder, "Gherkin", dependency: true, packageVersion: "6.0.0", sourcePlatform: "netstandard2.0");
-            InstallNuGetPackage(projectChanger, packagesFolder, "Utf8Json", "net45", dependency: true,
-                packageVersion: "1.3.7");
-            InstallNuGetPackage(projectChanger, packagesFolder, "System.ValueTuple", "netstandard1.0",
-                dependency: true);
-        }
-        else if (_options.ReqnrollVersion >= new Version("3.0.188"))
-        {
-            InstallNuGetPackage(projectChanger, packagesFolder, "BoDi", dependency: true, packageVersion: "1.4.1", sourcePlatform: "netstandard2.0");
-            InstallNuGetPackage(projectChanger, packagesFolder, "Gherkin", dependency: true, packageVersion: "6.0.0", sourcePlatform: "netstandard2.0");
-            InstallNuGetPackage(projectChanger, packagesFolder, "Utf8Json", "net45", dependency: true,
-                packageVersion: "1.3.7");
-            InstallNuGetPackage(projectChanger, packagesFolder, "System.ValueTuple", "netstandard1.0",
-                dependency: true);
-        }
-        else if (_options.ReqnrollVersion >= new Version("3.0"))
-        {
-            InstallNuGetPackage(projectChanger, packagesFolder, "BoDi", dependency: true,
-                packageVersion: "1.4.0-alpha1");
-            InstallNuGetPackage(projectChanger, packagesFolder, "Gherkin", dependency: true,
-                packageVersion: "6.0.0-beta1");
-            InstallNuGetPackage(projectChanger, packagesFolder, "Utf8Json", "net45", dependency: true,
-                packageVersion: "1.3.7");
-            InstallNuGetPackage(projectChanger, packagesFolder, "System.ValueTuple", "netstandard1.0",
-                dependency: true);
-        }
-        else if (_options.ReqnrollVersion >= new Version("2.3"))
-        {
-            InstallNuGetPackage(projectChanger, packagesFolder, "Newtonsoft.Json", dependency: true, sourcePlatform: "netstandard1.0");
-            InstallNuGetPackage(projectChanger, packagesFolder, "System.ValueTuple", "netstandard1.0",
-                dependency: true);
-        }
-    }
-
-    private string GetReqnrollSourcePlatform()
-    {
-        var sourcePlatform =
-            _options.ReqnrollVersion >= new Version("3.3") ? "net461" :
-            _options.ReqnrollVersion >= new Version("2.0") ? "net45" :
-            "net35";
-        return sourcePlatform;
-    }
+    protected abstract void InstallReqnrollPackages(string packagesFolder, ProjectChanger projectChanger);
 
     protected void InstallNuGetPackage(ProjectChanger projectChanger, string packagesFolder, string packageName,
         string sourcePlatform = "net462", string packageVersion = null, bool dependency = false)

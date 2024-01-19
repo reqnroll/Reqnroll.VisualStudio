@@ -18,9 +18,9 @@ public class ReqnrollConfigurationLoaderTests
   <configSections>
     <section name=""reqnroll"" type=""Reqnroll.Configuration.ConfigurationSectionHandler, Reqnroll"" />
   </configSections>
-  <reqnroll>
+  <specFlow>
     <language feature=""de-AT"" />
-  </reqnroll>
+  </specFlow>
 </configuration>";
         var filePath = Path.GetTempPath() + ".config";
         File.WriteAllText(filePath, configFileContent);
@@ -95,7 +95,7 @@ public class ReqnrollConfigurationLoaderTests
 
 
     [Fact]
-    public void Loads_input_config_for_AppConfig_file_without_reqnroll_node()
+    public void Loads_input_config_for_AppConfig_file_without_config_node()
     {
         var configFileContent = @"<?xml version=""1.0"" encoding=""utf-8""?>
 <configuration>

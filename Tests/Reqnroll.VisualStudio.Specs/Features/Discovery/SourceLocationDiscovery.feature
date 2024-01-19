@@ -23,11 +23,8 @@ Scenario Outline: Discover binding source location from Reqnroll project with as
 	Then the discovery succeeds with several step definitions
 	And the step definitions contain source file and line
 Examples:
-	| label | framework     |
-	| V1    | net48         |
-	| V2    | netcoreapp2.1 |
-	| V3    | netcoreapp3.1 |
-	| V5    | net5.0        |
-	| V6    | net6.0        |
-	| V7    | net7.0        |
-	| V8    | net8.0        |
+	| framework |
+	| net481    |
+	| net6.0    |
+	| net7.0    |
+	| net8.0    |

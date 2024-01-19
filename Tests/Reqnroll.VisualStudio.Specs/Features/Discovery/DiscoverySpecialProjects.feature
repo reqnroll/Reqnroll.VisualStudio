@@ -9,6 +9,7 @@ Scenario: Discover Unicode bindings from Reqnroll project
 
 Scenario Outline: Discover bindings from Reqnroll project with platform target
 	Given there is a simple Reqnroll project with platform target "<target>" for the latest version
+	And the target framework is net481
 	And the project is built
 	And the project is configured to use "<target>" connector
 	When the binding discovery performed

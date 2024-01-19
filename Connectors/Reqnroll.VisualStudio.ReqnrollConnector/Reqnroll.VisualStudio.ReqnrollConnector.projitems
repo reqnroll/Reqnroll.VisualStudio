@@ -16,6 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Discovery\BaseDiscoverer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Discovery\DiscoveryOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Discovery\IReqnrollDiscoverer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Discovery\LegacyAppConfigLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Discovery\NoInvokeDependencyProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Discovery\SpecFlow21ConfigurationLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Discovery\ReqnrollConfigurationLoader.cs" />

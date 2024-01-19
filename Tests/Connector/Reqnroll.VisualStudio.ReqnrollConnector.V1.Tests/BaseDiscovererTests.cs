@@ -26,13 +26,20 @@ public class BaseDiscovererTests
 
     private string GetTestAssemblyPath() => Assembly.GetExecutingAssembly().Location;
 
+    public static IStepDefinitionBinding CreateRegex(StepDefinitionType stepDefinitionType, string regex, IBindingMethod bindingMethod, BindingScope bindingScope = null)
+    {
+        var builder = new RegexStepDefinitionBindingBuilder(stepDefinitionType, bindingMethod, bindingScope, regex);
+        var stepDefinitionBinding = builder.BuildSingle();
+        stepDefinitionBinding.IsValid.Should().BeTrue($"the {nameof(CreateRegex)} method should create valid step definitions");
+        return stepDefinitionBinding;
+    }
+
     private void RegisterStepDefinitionBinding(string regex = "I press add",
         StepDefinitionType type = StepDefinitionType.When, string method = nameof(StubBindingClass.WhenIPressAdd),
         BindingScope scope = null)
     {
         var methodInfo = GetMethodInfo(method);
-        _bindingRegistry.RegisterStepDefinitionBinding(new StepDefinitionBinding(type, 
-            new RuntimeBindingMethod(methodInfo), scope, StepDefinitionExpressionTypes.RegularExpression, regex, new RegularExpression(new Regex(regex))));
+        _bindingRegistry.RegisterStepDefinitionBinding(CreateRegex(type, regex, new RuntimeBindingMethod(methodInfo), scope));
     }
 
     private void RegisterStepDefinitionBindingWithSourceAndError(string regex = "I press add",
@@ -41,11 +48,7 @@ public class BaseDiscovererTests
     {
         var methodInfo = GetMethodInfo(method);
         _bindingRegistry.RegisterStepDefinitionBinding(
-            new StepDefinitionBindingWithSourceAndError(type, regex, new RuntimeBindingMethod(methodInfo), scope)
-            {
-                SourceExpression = sourceExpression,
-                ErrorMessage = error
-            });
+            StepDefinitionBinding.CreateInvalid(type, new RuntimeBindingMethod(methodInfo), scope, StepDefinitionExpressionTypes.RegularExpression, sourceExpression, error));
     }
 
     private static MethodInfo GetMethodInfo(string method)
@@ -273,21 +276,6 @@ public class BaseDiscovererTests
         result.StepDefinitions[0].Error.Should().Be("this an error");
     }
 
-
-    [Fact]
-    public void Does_not_discover_source_expression_and_error_from_old_stepdefs()
-    {
-        RegisterStepDefinitionBinding();
-
-        var sut = CreateSut();
-
-        var result = sut.DiscoverInternal(GetTestAssemblyPath(), null);
-
-        result.StepDefinitions.Should().HaveCount(1);
-        result.StepDefinitions[0].Expression.Should().BeNull();
-        result.StepDefinitions[0].Error.Should().BeNull();
-    }
-
     [Fact]
     public void Should_detect_regex_error()
     {
@@ -403,17 +391,5 @@ public class BaseDiscovererTests
         public void WithStdParams(string p0, string p1, int p2, Table p3)
         {
         }
-    }
-
-    public class StepDefinitionBindingWithSourceAndError : StepDefinitionBinding
-    {
-        public StepDefinitionBindingWithSourceAndError(StepDefinitionType stepDefinitionType, string regexString,
-            IBindingMethod bindingMethod, BindingScope bindingScope) : base(stepDefinitionType, bindingMethod, bindingScope,
-            StepDefinitionExpressionTypes.RegularExpression, regexString, new RegularExpression(new Regex(regexString)))
-        {
-        }
-
-        public string SourceExpression { get; set; }
-        public string ErrorMessage { get; set; }
     }
 }

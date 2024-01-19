@@ -1,7 +1,7 @@
 Feature: Discovery - Platform Compatibility
 
-Scenario Outline: Discover bindings from a SpecFlow v3 project in different .NET Core platforms
-	Given there is a simple Reqnroll project for v3.*
+Scenario Outline: Discover bindings from a Reqnroll project in different .NET Core platforms
+	Given there is a simple Reqnroll project for the latest version
 	And the project uses the new project format
 	And the target framework is <framework>
 	And the project is built
@@ -9,10 +9,6 @@ Scenario Outline: Discover bindings from a SpecFlow v3 project in different .NET
 	Then the discovery succeeds with several step definitions
 Examples: 
 	| framework     |
-	| netcoreapp2.0 |
-	| netcoreapp2.1 |
-	| netcoreapp2.2 |
-	| netcoreapp3.0 |
-	| netcoreapp3.1 |
-	| net5.0        |
 	| net6.0        |
+	| net7.0        |
+	| net8.0        |

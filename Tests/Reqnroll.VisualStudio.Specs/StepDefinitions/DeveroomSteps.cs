@@ -81,7 +81,7 @@ public class DeveroomSteps : Steps
         GivenThereIsASmallReqnrollProject();
         _generatorOptions.AddExternalBindingPackage = true;
         _generatorOptions.ExternalBindingPackageName =
-            $"Deveroom.SampleReqnroll{DomainDefaults.LatestReqnrollV2Version.ToShortVersionString()}.ExternalBindings";
+            $"Deveroom.SampleReqnroll{DomainDefaults.LatestReqnrollVersion.ToShortVersionString()}.ExternalBindings";
     }
 
     [Given(@"there is a small Reqnroll project with async bindings")]
@@ -184,8 +184,6 @@ public class DeveroomSteps : Steps
         {
             if (!_generatorOptions.NewProjectFormat)
                 _generatorOptions.NewProjectFormat = true;
-            if (!_generatorOptions.ReqnrollPackageVersion.StartsWith("3."))
-                _generatorOptions.ReqnrollPackageVersion = GeneratorOptions.ReqnrollV3Version;
         }
     }
 

@@ -7,13 +7,15 @@ namespace Reqnroll.VisualStudio.Specs.Support;
 public class Converters
 {
     [StepArgumentTransformation(@"the latest version")]
-    [StepArgumentTransformation(@"v2\.\*")]
-    public NuGetVersion LatestVersionConverter() => DomainDefaults.LatestReqnrollV2Version;
+    public NuGetVersion LatestVersionConverter() => DomainDefaults.LatestReqnrollVersion;
 
-    [StepArgumentTransformation(@"the latest V3 version")]
-    [StepArgumentTransformation(@"v3\.\*")]
-    [StepArgumentTransformation(@"v3\.1\.\*")]
-    public NuGetVersion LatestV3VersionConverter() => DomainDefaults.LatestReqnrollV3Version;
+    [StepArgumentTransformation(@"SpecFlow v2\.\*")]
+    public NuGetVersion LatestSpecFlowV2VersionConverter() => DomainDefaults.LatestSpecFlowV2Version;
+
+    [StepArgumentTransformation(@"the latest SpecFlow v3 version")]
+    [StepArgumentTransformation(@"SpecFlow v3\.\*")]
+    [StepArgumentTransformation(@"SpecFlow v3\.1\.\*")]
+    public NuGetVersion LatestSpecFlowV3VersionConverter() => DomainDefaults.LatestSpecFlowV3Version;
 
     [StepArgumentTransformation(@"v(\d[\d\.\-\w]+)")]
     public NuGetVersion VersionConverter(string versionString) => new(versionString, versionString);
