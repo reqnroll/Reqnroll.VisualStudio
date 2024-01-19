@@ -1,6 +1,6 @@
 using Reqnroll;
 
-namespace Deveroom.SampleReqnroll10024.ExternalBindingsX;
+namespace Deveroom.SampleReqnroll.ExternalBindings;
 
 [Binding]
 public class ExternalBindingsSteps

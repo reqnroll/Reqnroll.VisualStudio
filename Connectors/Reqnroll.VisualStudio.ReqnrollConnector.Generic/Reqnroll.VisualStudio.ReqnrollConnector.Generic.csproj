@@ -14,7 +14,7 @@
   <ItemGroup>
     <PackageReference Include="dnlib" Version="3.3.5" />
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="6.0.0" />
-    <PackageReference Include="Reqnroll.CustomPlugin" Version="1.0.24-beta" />
+    <PackageReference Include="Reqnroll.CustomPlugin" Version="1.0.0-local" />
     <PackageReference Include="System.Collections.Immutable" Version="6.0.0" />
     <PackageReference Include="System.Security.Permissions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />

@@ -21,7 +21,7 @@ public class GeneratedProjectTests : ApprovalTestBase
     }
 
     [Theory]
-    [InlineData("DS_1.0.24-beta_nunit_nprj_net6.0_bt_992117478")]
+    [InlineData("DS_1.0.0-local_nunit_nprj_net6.0_bt_992117478")]
     public void Approval(string testName)
     {
         //arrange

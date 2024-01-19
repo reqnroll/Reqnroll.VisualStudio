@@ -1,4 +1,4 @@
-using Deveroom.SampleReqnroll10024.ReqnrollPlugin;
+using Deveroom.SampleReqnroll.ReqnrollPlugin;
 using System.Reflection;
 using Reqnroll.Bindings;
 using Reqnroll.Bindings.Discovery;
@@ -8,7 +8,7 @@ using Reqnroll.UnitTestProvider;
 
 [assembly: RuntimePlugin(typeof(SampleRuntimePlugin))]
 
-namespace Deveroom.SampleReqnroll10024.ReqnrollPlugin;
+namespace Deveroom.SampleReqnroll.ReqnrollPlugin;
 
 public class SampleRuntimePlugin : IRuntimePlugin
 {

@@ -172,16 +172,16 @@ public abstract class ProjectGenerator : IProjectGenerator
 
     private void ExecNuGetInstall(string packageName, string packagesFolder, params string[] otherArgs)
     {
-        var args = new[]
-        {
-            "install", packageName, "-OutputDirectory", packagesFolder,
-            "-Source", "https://api.nuget.org/v3/index.json"
-        }.AsEnumerable();
-        if (otherArgs != null)
-            args = args.Concat(otherArgs);
-        if (_options.FallbackNuGetPackageSource != null)
-            args = args.Concat(new[] { "-FallbackSource", _options.FallbackNuGetPackageSource });
-        ExecNuGet(args.ToArray());
+        //var args = new[]
+        //{
+        //    "install", packageName, "-OutputDirectory", packagesFolder,
+        //    "-Source", "https://api.nuget.org/v3/index.json"
+        //}.AsEnumerable();
+        //if (otherArgs != null)
+        //    args = args.Concat(otherArgs);
+        //if (_options.FallbackNuGetPackageSource != null)
+        //    args = args.Concat(new[] { "-FallbackSource", _options.FallbackNuGetPackageSource });
+        //ExecNuGet(args.ToArray());
     }
 
     private void InstallExternalBindingPackage(string packagesFolder, string projectFilePath)

@@ -270,3 +270,4 @@ launchSettings.json
 *.received.txt
 /Tests/ExternalPackages/PackagesForTests/Reqnroll*/*
 
+/Tests/ExternalPackages/Reqnroll*.nupkg

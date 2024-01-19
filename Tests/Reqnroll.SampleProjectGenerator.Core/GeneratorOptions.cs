@@ -5,7 +5,7 @@ namespace Reqnroll.SampleProjectGenerator;
 
 public class GeneratorOptions
 {
-    private const string LatestReqnrollVersion = "1.0.24-beta";
+    private const string LatestReqnrollVersion = "1.0.0-local";
     public const string UnicodeBindingRegex = "Unicode Алло Χαίρετε Árvíztűrő tükörfúrógép";
     public const string DefaultTargetFramework = "net8.0";
 
