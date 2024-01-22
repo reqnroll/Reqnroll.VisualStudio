@@ -87,11 +87,14 @@ jobs:
       with:
         name: packages
         path: "Reqnroll.VisualStudio.Package/**/*.vsix"
+    - uses: nuget/setup-nuget@v1
     - name: Prepare Connector Tests
       shell: pwsh
       run: |
         cd Tests/ExternalPackages
         ./buildExternalPackages.ps1
+        cd Tests/ExternalPackages/PackagesForTests
+        nuget install packages.config
     - name: Connector Tests
       run: |
         dotnet test ./Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.Tests/Reqnroll.VisualStudio.ReqnrollConnector.Tests.csproj ${{ steps.versions.outputs.test_params }}
