@@ -8,8 +8,8 @@ Scenario Outline: Discover bindings from a Reqnroll project on .NET Framework
 	Then the discovery succeeds with several step definitions
 	And the step definitions contain source file and line
 Examples:
-	| case      | version      |
-	| line-v1.0 | v1.0.0-local |
+	| case      | version               |
+	| line-v1.0 | v1.0.0-pre20240124-54 |
 
 Scenario Outline: Discover bindings from a Reqnroll project on .NET Core
 	Given there is a simple Reqnroll project for <version>
@@ -18,8 +18,8 @@ Scenario Outline: Discover bindings from a Reqnroll project on .NET Core
 	When the binding discovery performed
 	Then the discovery succeeds with several step definitions
 Examples:
-	| case      | version      |
-	| line-v1.0 | v1.0.0-local |
+	| case      | version               |
+	| line-v1.0 | v1.0.0-pre20240124-54 |
 
 Scenario Outline: Discover bindings from Reqnroll using different test runners
 	Given there is a simple Reqnroll project with test runner "<test runner tool>" for the latest version
@@ -41,7 +41,7 @@ Scenario Outline: Discover bindings with the right Reqnroll connector
 	When the binding discovery performed
 	Then the discovery succeeds with several step definitions
 Examples:
-	| case     | version      | framework |
-	| G-net8.0 | v1.0.0-local | net8.0    |
-	| G-net7.0 | v1.0.0-local | net7.0    |
-	| G-net6.0 | v1.0.0-local | net6.0    |
+	| case     | version               | framework |
+	| G-net8.0 | v1.0.0-pre20240124-54 | net8.0    |
+	| G-net7.0 | v1.0.0-pre20240124-54 | net7.0    |
+	| G-net6.0 | v1.0.0-pre20240124-54 | net6.0    |

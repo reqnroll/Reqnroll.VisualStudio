@@ -7,7 +7,7 @@
     "ImageRuntimeVersion": "v4.0.30319",
     "SFFile": "Reqnroll.dll",
     "SFFileVersion": "1.0.0",
-    "SFProductVersion": "1.0.0-local+950a702ede55b3d95c5f03a42455feddb0c7ae7b",
+    "SFProductVersion": "1.0.0-pre20240124-54+c3ecf3233f071aa97dfe882a5cfe11322d197789",
     "SourcePaths": "1",
     "StepDefinitions": "3",
     "TargetFramework": ".NETCoreApp,Version=v6.0",
