@@ -93,7 +93,7 @@ jobs:
       run: |
         cd Tests/ExternalPackages
         ./buildExternalPackages.ps1
-        cd Tests/ExternalPackages/PackagesForTests
+        cd PackagesForTests
         nuget install packages.config
     - name: Connector Tests
       run: |
