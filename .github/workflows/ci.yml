@@ -66,10 +66,6 @@ jobs:
         Write-Output "product_configuration=$productConfig" >> $env:GITHUB_OUTPUT
         Write-Output "Product Configuration: $productConfig"
 
-        $buildParams = "-p:VersionSuffix=$versionSuffix -c $productConfig"
-        Write-Output "build_params=$buildParams" >> $env:GITHUB_OUTPUT
-        Write-Output "Build Params: $buildParams"
-
         $testParams = "--no-build --verbosity normal -c $productConfig"
         Write-Output "test_params=$testParams" >> $env:GITHUB_OUTPUT
         Write-Output "Test Params: $testParams"
@@ -91,21 +87,17 @@ jobs:
       with:
         name: packages
         path: "Reqnroll.VisualStudio.Package/**/*.vsix"
-    - name: Connector Tests
+    - name: Prepare Connector Tests
       shell: pwsh
       run: |
         cd Tests/ExternalPackages
         ./buildExternalPackages.ps1
-        cd ..
+    - name: Connector Tests
+      run: |
         dotnet test ./Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.Tests/Reqnroll.VisualStudio.ReqnrollConnector.Tests.csproj ${{ steps.versions.outputs.test_params }}
         dotnet test ./Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.V1.Tests/Reqnroll.VisualStudio.ReqnrollConnector.V1.Tests.csproj ${{ steps.versions.outputs.test_params }}
     - name: Specs Tests
-      run: dotnet test ./Tests/Reqnroll.VisualStudio.Specs/Reqnroll.VisualStudio.Specs.csproj ${{ steps.versions.outputs.test_params }} --logger "trx;LogFileName=specs-results.trx"
-    - uses: actions/upload-artifact@v3
-      if: success() || failure()      
-      with:
-        name: specs-results
-        path: "**/specs-mstest-results.trx"
+      run: dotnet test ./Tests/Reqnroll.VisualStudio.Specs/Reqnroll.VisualStudio.Specs.csproj ${{ steps.versions.outputs.test_params }} --logger "trx;LogFileName=specs-results.trx" --runtime win-x64
     - uses: actions/upload-artifact@v3
       if: success() || failure()      
       with:
