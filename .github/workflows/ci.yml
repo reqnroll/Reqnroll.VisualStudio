@@ -97,7 +97,7 @@ jobs:
         dotnet test ./Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.Tests/Reqnroll.VisualStudio.ReqnrollConnector.Tests.csproj ${{ steps.versions.outputs.test_params }}
         dotnet test ./Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.V1.Tests/Reqnroll.VisualStudio.ReqnrollConnector.V1.Tests.csproj ${{ steps.versions.outputs.test_params }}
     - name: Specs Tests
-      run: dotnet test ./Tests/Reqnroll.VisualStudio.Specs/Reqnroll.VisualStudio.Specs.csproj ${{ steps.versions.outputs.test_params }} --logger "trx;LogFileName=specs-results.trx" --runtime win-x64
+      run: dotnet test ./Tests/Reqnroll.VisualStudio.Specs/Reqnroll.VisualStudio.Specs.csproj ${{ steps.versions.outputs.test_params }} --logger "trx;LogFileName=specs-results.trx"
     - uses: actions/upload-artifact@v3
       if: success() || failure()      
       with:
