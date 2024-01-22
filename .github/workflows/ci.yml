@@ -10,7 +10,7 @@ on:
       configuration:
         description: 'Build Configuration'
         required: true
-        default: 'Debug'
+        default: 'Release'
         type: choice
         options:
         - Debug
@@ -61,7 +61,7 @@ jobs:
         
         $productConfig = "${{ inputs.configuration }}"
         if ($productConfig -eq "") {
-            $productConfig = "Debug"
+            $productConfig = "Release"
         }
         Write-Output "product_configuration=$productConfig" >> $env:GITHUB_OUTPUT
         Write-Output "Product Configuration: $productConfig"
@@ -96,6 +96,7 @@ jobs:
       run: |
         cd Tests/ExternalPackages
         ./buildExternalPackages.ps1
+        cd ..
         dotnet test ./Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.Tests/Reqnroll.VisualStudio.ReqnrollConnector.Tests.csproj ${{ steps.versions.outputs.test_params }}
         dotnet test ./Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.V1.Tests/Reqnroll.VisualStudio.ReqnrollConnector.V1.Tests.csproj ${{ steps.versions.outputs.test_params }}
     - name: Specs Tests
