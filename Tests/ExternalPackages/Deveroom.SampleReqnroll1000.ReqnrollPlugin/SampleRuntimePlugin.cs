@@ -50,6 +50,11 @@ public class SampleRuntimePlugin : IRuntimePlugin
             _bindingRegistry.RegisterStepDefinitionBinding(stepDefinitionBinding);
             _innerBuilder.BuildingCompleted();
         }
+
+        public Assembly[] GetBindingAssemblies(Assembly testAssembly)
+        {
+            return _innerBuilder.GetBindingAssemblies(testAssembly);
+        }
     }
 }
 

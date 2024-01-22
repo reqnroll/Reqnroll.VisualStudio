@@ -15,7 +15,7 @@ cd Reqnroll.VisualStudio.ReqnrollConnector.V1
 dotnet publish -c $configuration
 
 mkdir $outputFolder\Reqnroll-V1\
-Copy-Item bin\$configuration\net48\publish\* $outputFolder\Reqnroll-V1\ -Exclude @('Reqnroll.*','System.*', 'Gherkin.*','*.exe.config')
+Copy-Item bin\$configuration\net48\publish\* $outputFolder\Reqnroll-V1\ -Exclude @('System.*', 'Gherkin.*','*.exe.config')
 
 # build Reqnroll V1 x86
 

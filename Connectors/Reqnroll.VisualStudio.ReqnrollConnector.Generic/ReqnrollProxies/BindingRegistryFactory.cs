@@ -1,7 +1,6 @@
-using Reqnroll.Configuration;
+﻿using Reqnroll.Bindings.Provider.Data;
 
 namespace ReqnrollConnector.ReqnrollProxies;
-
 public abstract class BindingRegistryFactory : IBindingRegistryFactory
 {
     protected ILogger Log;
@@ -11,40 +10,26 @@ public abstract class BindingRegistryFactory : IBindingRegistryFactory
         Log = log;
     }
 
-    public IBindingRegistryAdapter GetBindingRegistry(AssemblyLoadContext assemblyLoadContext,
-        Assembly testAssembly, Option<FileDetails> configFile) =>
-        CreateDependencyProvider(assemblyLoadContext)
-            .Map(dependencyProvider => CreateObjectContainer(
-                    testAssembly,
-                    CreateContainerBuilder(dependencyProvider),
-                    configFile
-                        .Map<Option<FileDetails>, object>(CreateConfigurationLoader)
-                        .Map(CreateConfigurationProvider),
-                    dependencyProvider)
-                .Map(container=>PrepareTestRunnerCreation(container, assemblyLoadContext))
-                .Map(container =>
-                    CreateTestRunner(container, testAssembly)
-                        .Map(testRunner => ResolveBindingRegistry(testAssembly, container, testRunner))
-                )
-                .Map(AdaptBindingRegistry)
-            );
+    public IBindingRegistryAdapter GetBindingRegistry(AssemblyLoadContext assemblyLoadContext, Assembly testAssembly, Option<FileDetails> configFile)
+    {
+        var configFileContent = LoadConfigFileContent(configFile.Reduce((FileDetails)null));
 
-    protected abstract object CreateObjectContainer(Assembly testAssembly, object containerBuilder,
-        IRuntimeConfigurationProvider configurationProvider, object dependencyProvider);
+        var reqnrollAssembly = assemblyLoadContext.LoadFromAssemblyName(new AssemblyName("Reqnroll"));
+        var bindingProviderServiceType = reqnrollAssembly.GetType("Reqnroll.Bindings.Provider.BindingProviderService", true)!;
+        var bindingJson = bindingProviderServiceType.ReflectionCallStaticMethod<string>("DiscoverBindings", new[] { typeof(Assembly), typeof(string) }, testAssembly, configFileContent);
+        var bindingData = JsonSerialization.DeserializeObjectDefaultCase<BindingData>(bindingJson, Log);
+        return new BindingRegistryAdapter(bindingData.Reduce(new BindingData()));
+    }
 
-    protected abstract object CreateDependencyProvider(AssemblyLoadContext assemblyLoadContext);
+    private string? LoadConfigFileContent(FileDetails? configFile)
+    {
+        if (configFile == null)
+            return null;
 
-    protected abstract object CreateContainerBuilder(object dependencyProvider);
+        if (configFile.Extension.Equals(".config", StringComparison.InvariantCultureIgnoreCase))
+            return LegacyAppConfigLoader.LoadConfiguration(configFile);
 
-    protected abstract object CreateConfigurationLoader(Option<FileDetails> configFile);
-
-    protected abstract IRuntimeConfigurationProvider CreateConfigurationProvider(
-        object configurationLoader);
-
-    protected abstract object PrepareTestRunnerCreation(object globalContainer, AssemblyLoadContext assemblyLoadContext);
-
-    protected abstract object CreateTestRunner(object globalContainer, Assembly testAssembly);
-    protected abstract object ResolveBindingRegistry(Assembly testAssembly, object globalContainer, object testRunner);
-
-    protected abstract IBindingRegistryAdapter AdaptBindingRegistry(object bindingRegistry);
+        var content = File.ReadAllText(configFile.FullName);
+        return content;
+    }
 }

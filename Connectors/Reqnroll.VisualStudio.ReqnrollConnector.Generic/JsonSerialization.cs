@@ -39,10 +39,32 @@ public static class JsonSerialization
         }
     }
 
+    public static Option<TResult> DeserializeObjectDefaultCase<TResult>(string json, ILogger? log = null)
+    {
+        try
+        {
+            var deserializeObject = JsonSerializer.Deserialize<TResult>(json, GetJsonSerializerSettingsDefaultCase());
+            return deserializeObject;
+        }
+        catch (Exception e)
+        {
+            log?.Error(e.ToString());
+            return None.Value;
+        }
+    }
+
     public static JsonSerializerOptions GetJsonSerializerSettings() =>
         new()
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            WriteIndented = true,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        };
+
+    public static JsonSerializerOptions GetJsonSerializerSettingsDefaultCase() =>
+        new()
+        {
             WriteIndented = true,
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping

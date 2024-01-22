@@ -1,4 +1,3 @@
-global using BoDi;
 global using Microsoft.Extensions.DependencyModel;
 global using Microsoft.Extensions.DependencyModel.Resolution;
 global using Reqnroll.VisualStudio.ReqnrollConnector;

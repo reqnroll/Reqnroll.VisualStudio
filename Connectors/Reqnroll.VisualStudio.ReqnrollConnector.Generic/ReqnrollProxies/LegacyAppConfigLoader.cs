@@ -1,22 +1,55 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Reqnroll.Configuration;
-
-namespace ReqnrollConnector.ReqnrollProxies;
+﻿namespace ReqnrollConnector.ReqnrollProxies;
 internal static class LegacyAppConfigLoader
 {
-    public static ReqnrollConfiguration LoadConfiguration(XmlNode configNode, ReqnrollConfiguration configuration)
+    class ConfigData
     {
+        public FeatureData? Feature { get; set; }
+        public BindingCultureData? BindingCulture { get; set; }
+        public StepAssemblyData[]? StepAssemblies { get; set; }
+    }
+
+    class FeatureData
+    {
+        public string? FeatureLanguage { get; set; }
+    }
+
+    class BindingCultureData
+    {
+        public string? Name { get; set; }
+    }
+
+    class StepAssemblyData
+    {
+        public string? Assembly { get; set; }
+    }
+
+    public static string? LoadConfiguration(FileDetails configFileDetails)
+    {
+        var configFileContent = File.ReadAllText(configFileDetails.FullName);
+
+        var configDocument = new XmlDocument();
+        configDocument.LoadXml(configFileContent);
+        var specFlowNode = configDocument.SelectSingleNode("/configuration/specFlow");
+        if (specFlowNode == null)
+            return null;
+
+        return LoadConfiguration(specFlowNode);
+    }
+
+    private static string LoadConfiguration(XmlNode configNode)
+    {
+        var configData = new ConfigData();
+
         // we only load step assemblies, feature language and binding culture
         if (configNode.SelectSingleNode("language") is XmlElement languageNode)
         {
             var featureAttr = languageNode.Attributes["feature"];
             if (featureAttr != null)
             {
-                configuration.FeatureLanguage = new CultureInfo(featureAttr.Value);
+                configData.Feature = new FeatureData
+                {
+                    FeatureLanguage = featureAttr.Value
+                };
             }
         }
 
@@ -25,24 +58,29 @@ internal static class LegacyAppConfigLoader
             var nameAttr = bindingCultureNode.Attributes["name"];
             if (nameAttr != null)
             {
-                configuration.BindingCulture = new CultureInfo(nameAttr.Value);
+                configData.BindingCulture = new BindingCultureData
+                {
+                    Name = nameAttr.Value
+                };
             }
         }
 
         var stepAssemblyNodes = configNode.SelectNodes("stepAssemblies/stepAssembly");
         if (stepAssemblyNodes != null)
         {
-            configuration.AdditionalStepAssemblies ??= new();
+            var stepAssemblies = new List<StepAssemblyData>();
             foreach (var stepAssemblyNode in stepAssemblyNodes.OfType<XmlElement>())
             {
                 var assemblyAttr = stepAssemblyNode.Attributes["assembly"];
                 if (assemblyAttr != null)
                 {
-                    configuration.AdditionalStepAssemblies.Add(assemblyAttr.Value);
+                    stepAssemblies.Add(new StepAssemblyData{ Assembly = assemblyAttr.Value });
                 }
             }
+
+            configData.StepAssemblies = stepAssemblies.ToArray();
         }
 
-        return configuration;
+        return JsonSerialization.SerializeObject(configData);
     }
 }

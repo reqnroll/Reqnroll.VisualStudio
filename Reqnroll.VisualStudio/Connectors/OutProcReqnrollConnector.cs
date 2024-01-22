@@ -145,6 +145,10 @@ public class OutProcReqnrollConnector
             connectorName = _projectSettings.IsSpecFlowProject ? 
                 SpecFlowConnectorV1X86 : ConnectorV1X86;
 
+#if DEBUG
+        _logger.LogInfo($"Invoking '{connectorName}'...");
+#endif
+
         return Path.Combine(connectorsFolder, connectorName);
     }
 
@@ -160,6 +164,9 @@ public class OutProcReqnrollConnector
 
     protected string GetDotNetExecCommand(List<string> arguments, string executableFolder, string executableFile)
     {
+#if DEBUG
+        _logger.LogInfo($"Invoking '{executableFile}'...");
+#endif
         arguments.Add("exec");
         arguments.Add(Path.Combine(executableFolder, executableFile));
         return GetDotNetCommand();

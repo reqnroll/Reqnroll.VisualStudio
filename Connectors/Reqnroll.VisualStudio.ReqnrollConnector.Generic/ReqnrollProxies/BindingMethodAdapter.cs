@@ -1,10 +1,15 @@
-using Reqnroll.Bindings.Reflection;
+using Reqnroll.Bindings.Provider.Data;
 
 namespace ReqnrollConnector.ReqnrollProxies;
 
-public record BindingMethodAdapter(IBindingMethod Adaptee)
+public record BindingMethodAdapter(BindingSourceMethodData? Adaptee)
 {
-    public IEnumerable<string> ParameterTypeNames => Adaptee.Parameters.Select(p => p.Type.FullName);
-    public Option<MethodInfo> MethodInfo => (Adaptee as RuntimeBindingMethod)?.MethodInfo;
-    public override string? ToString() => Adaptee.ToString();
+    public bool IsProvided => Adaptee != null;
+    public string? DeclaringTypeAssemblyName => Adaptee?.Assembly;
+    public string? DeclaringTypeFullName => Adaptee?.Type;
+    public string? DeclaringTypeName => DeclaringTypeFullName?.Split('.').Last();
+    public string? MethodSignatureWithoutReturnType => Adaptee?.FullName?.Split(new[] { ' ' }, 2).ElementAtOrDefault(1)?.Trim();
+
+    public int MetadataToken => Adaptee?.MetadataToken ?? 0;
+    public override string? ToString() => IsProvided ? $"{DeclaringTypeName}.{MethodSignatureWithoutReturnType}" : "???";
 }

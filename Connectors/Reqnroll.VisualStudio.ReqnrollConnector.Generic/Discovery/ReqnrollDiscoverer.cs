@@ -25,8 +25,10 @@ public class ReqnrollDiscoverer
             .GetBindingRegistry(assemblyLoadContext, testAssembly, configFile)
             .GetStepDefinitions()
             .Select(sdb => CreateStepDefinition(sdb,
-                method => GetParamTypes(method, parameterTypeName => GetKey(typeNames, parameterTypeName)),
-                sourcePath => GetKey(sourcePaths, sourcePath))
+                sdb2 => GetParamTypes(sdb2.ParamTypes, parameterTypeName => GetKey(typeNames, parameterTypeName)),
+                sourcePath => GetKey(sourcePaths, sourcePath),
+                assemblyLoadContext,
+                testAssembly)
             )
             .OrderBy(sd => sd.SourceLocation)
             .ToImmutableArray();
@@ -43,15 +45,16 @@ public class ReqnrollDiscoverer
     }
 
     private StepDefinition CreateStepDefinition(StepDefinitionBindingAdapter sdb,
-        Func<BindingMethodAdapter, string?> getParameterTypes, Func<string, string> getSourcePathId)
+        Func<StepDefinitionBindingAdapter, string?> getParameterTypes, Func<string, string> getSourcePathId,
+        AssemblyLoadContext assemblyLoadContext, Assembly testAssembly)
     {
-        var sourceLocation = GetSourceLocation(sdb.Method, getSourcePathId);
+        var sourceLocation = GetSourceLocation(sdb.Method, getSourcePathId, assemblyLoadContext, testAssembly);
         var stepDefinition = new StepDefinition
         (
             sdb.StepDefinitionType,
             sdb.Regex.Map(r => r.ToString()).Reduce((string) null!),
             sdb.Method.ToString()!,
-            getParameterTypes(sdb.Method),
+            getParameterTypes(sdb),
             GetScope(sdb),
             GetSourceExpression(sdb),
             GetErrorMessage(sdb),
@@ -74,10 +77,10 @@ public class ReqnrollDiscoverer
         return found.Key;
     }
 
-    private string? GetParamTypes(BindingMethodAdapter bindingMethod, Func<string, string> getKey)
+    private string? GetParamTypes(string[] parameterTypeNames, Func<string, string> getKey)
     {
         var paramTypes = string.Join("|",
-            bindingMethod.ParameterTypeNames.Select(parameterTypeName => GetParamType(parameterTypeName, getKey)));
+            parameterTypeNames.Select(parameterTypeName => GetParamType(parameterTypeName, getKey)));
         return paramTypes.Length == 0 ? null : paramTypes;
     }
 
@@ -121,16 +124,19 @@ public class ReqnrollDiscoverer
     private static string? GetErrorMessage(StepDefinitionBindingAdapter sdb)
         => sdb.GetProperty<string>("ErrorMessage").Reduce((string)null!);
 
-    private Option<string>
-        GetSourceLocation(BindingMethodAdapter bindingMethod, Func<string, string> getSourcePathId) =>
-        bindingMethod.MethodInfo
-            .Map(mi => (reader: mi.DeclaringType
-                        .Map(declaringType => declaringType!.Assembly)
+    private Option<string> GetSourceLocation(BindingMethodAdapter bindingMethod, Func<string, string> getSourcePathId,
+        AssemblyLoadContext assemblyLoadContext, Assembly testAssembly)
+    {
+        if (!bindingMethod.IsProvided)
+            return None.Value;
+        return bindingMethod
+            .Map(mi => (reader: (mi.DeclaringTypeAssemblyName??testAssembly.FullName!)
+                        .Map(assemblyName => assemblyLoadContext.LoadFromAssemblyName(new AssemblyName(assemblyName)))
                         .Map(assembly => _symbolReaders[assembly].Reduce(() => default!)),
                     mi.MetadataToken
                 ))
             .Map(x => x.reader.ReadMethodSymbol(x.MetadataToken))
-            .Reduce(ImmutableArray<MethodSymbolSequencePoint>.Empty)
+            //.Reduce(ImmutableArray<MethodSymbolSequencePoint>.Empty)
             .Map(sequencePoints => sequencePoints
                 .Aggregate(
                     (startSequencePoint: None<MethodSymbolSequencePoint>.Value,
@@ -140,10 +146,11 @@ public class ReqnrollDiscoverer
                         : (acc.startSequencePoint, cur)
                 )
                 .Map(x => x.startSequencePoint is Some<MethodSymbolSequencePoint> some
-                    ? (some.Content, ((Some<MethodSymbolSequencePoint>) x.endSequencePoint).Content)
+                    ? (some.Content, ((Some<MethodSymbolSequencePoint>)x.endSequencePoint).Content)
                     : None<(MethodSymbolSequencePoint startSequencePoint, MethodSymbolSequencePoint endSequencePoint)>
                         .Value)
             )
             .Map(border =>
                 $"#{getSourcePathId(border.startSequencePoint.SourcePath)}|{border.startSequencePoint.StartLine}|{border.startSequencePoint.StartColumn}|{border.endSequencePoint.EndLine}|{border.endSequencePoint.EndColumn}");
+    }
 }

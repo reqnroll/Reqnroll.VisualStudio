@@ -34,7 +34,7 @@ public static class ReflectionExtensions
     }
 
     public static T ReflectionCallStaticMethod<T>(this Type type, string methodName, Type[] parameterTypes,
-        params object[] args)
+        params object?[] args)
     {
         if (type == null) throw new ArgumentNullException(nameof(type));
         var methodInfo = type.GetMethod(methodName, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic,
