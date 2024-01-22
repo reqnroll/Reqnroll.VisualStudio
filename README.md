@@ -9,11 +9,9 @@ For documentation, please refer to the Reqnroll website:
 
 ## Build status
 
-Continuous Integration: [![Build Status](https://reqnroll.visualstudio.com/Reqnroll/_apis/build/status/Reqnroll.VS.CI)](https://reqnroll.visualstudio.com/Reqnroll/_build?definitionId=52)
+[![CI](https://github.com/reqnroll/Reqnroll.VisualStudio/actions/workflows/ci.yml/badge.svg)](https://github.com/reqnroll/Reqnroll.VisualStudio/actions/workflows/ci.yml)
 
 ## Deployment status
-
-Publish to MyGet: ![Publish to MyGet status](https://vsrm.dev.azure.com/reqnroll/_apis/public/Release/badge/4d755a95-f4b3-45f5-abb5-aeccc2b85d15/13/57)
 
 MyGet Feed: <https://www.myget.org/F/reqnroll-vsix/vsix/>
 
