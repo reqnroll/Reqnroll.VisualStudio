@@ -52,7 +52,7 @@ public static class DeveroomLoggerExtensions
     public static void LogException(this IDeveroomLogger logger, Exception ex, string message = "Exception",
         [CallerMemberName] string callerName = "???")
     {
-        Debug.Fail(ex.ToString());
+        //Debug.Fail(ex.ToString());
         var msg = new LogMessage(TraceLevel.Error, message, callerName, ex);
         logger.Log(msg);
     }
