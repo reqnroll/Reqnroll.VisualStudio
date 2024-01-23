@@ -16,7 +16,7 @@ on:
         - Debug
         - Release
       production_release:
-        description: 'If the build produces a production package (clean version suffix)'
+        description: 'If the build produces a production package (resets version prefix)'
         type: boolean
         default: false
         required: true
@@ -57,16 +57,16 @@ jobs:
         Write-Output "Production release setting: $productionReleaseSetting"
 
         $versionSuffix = "${{ inputs.version_suffix }}"
-        if ($versionSuffix -ne "") {
-          $versionSuffix = "$versionSuffix-${env:GITHUB_RUN_NUMBER}"
-        }
-        elseif ($productionReleaseSetting -eq 'true') {
+        if ($productionReleaseSetting -eq 'true') {
             $versionSuffix = ''
         }
-        else {
+        elseif ($versionSuffix -eq "") {
             $date = [datetime]::Today
             $dateString = $date.ToString('yyyyMMdd')
             $versionSuffix = "ci$dateString-${env:GITHUB_RUN_NUMBER}"
+        }
+        else {
+            $versionSuffix = "$versionSuffix-${env:GITHUB_RUN_NUMBER}"
         }
         Write-Output "product_version_suffix=$versionSuffix" >> $env:GITHUB_OUTPUT
         Write-Output "Product Suffix: $versionSuffix"
