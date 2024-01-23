@@ -91,7 +91,7 @@ jobs:
       shell: pwsh
       run: |
         cd Connectors
-        .\build.ps1 -configuration ${{ steps.versions.outputs.product_configuration }}
+        .\build.ps1 -configuration ${{ steps.versions.outputs.product_configuration }} -buildNumber ${{ steps.versions.outputs.product_build_number }} -versionSuffix "${{ steps.versions.outputs.product_version_suffix }}"
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.1
     - name: Build
