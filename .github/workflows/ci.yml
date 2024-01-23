@@ -15,6 +15,11 @@ on:
         options:
         - Debug
         - Release
+      preview_release:
+        description: 'If the build produces a preview package'
+        type: boolean
+        default: true
+        required: true
       version_suffix:
         description: 'Suffix for the NuGet packages (without leading -). Build ID will be appended.'
         required: false
@@ -31,6 +36,7 @@ jobs:
 
     outputs:
       product_version_suffix: ${{ steps.versions.outputs.product_version_suffix }}
+      product_build_number: ${{ steps.versions.outputs.product_build_number }}
       product_configuration: ${{ steps.versions.outputs.product_configuration }}
       build_params: ${{ steps.versions.outputs.build_params }}
       test_params: ${{ steps.versions.outputs.test_params }}
@@ -47,8 +53,14 @@ jobs:
       name: Calculate versions
       shell: pwsh
       run: |
+        $previewReleaseSetting = "${{ inputs.preview_release }}"
+        Write-Output "Preview release setting: $previewReleaseSetting"
+
         $versionSuffix = "${{ inputs.version_suffix }}"
-        if ($versionSuffix -eq "") {
+        if ($previewReleaseSetting -eq 'false') {
+            $versionSuffix = ''
+        }
+        elseif ($versionSuffix -eq "") {
             $date = [datetime]::Today
             $dateString = $date.ToString('yyyyMMdd')
             $versionSuffix = "ci$dateString-${env:GITHUB_RUN_NUMBER}"
@@ -58,6 +70,10 @@ jobs:
         }
         Write-Output "product_version_suffix=$versionSuffix" >> $env:GITHUB_OUTPUT
         Write-Output "Product Suffix: $versionSuffix"
+        
+        $buildNumber = ${env:GITHUB_RUN_NUMBER}
+        Write-Output "product_build_number=$buildNumber" >> $env:GITHUB_OUTPUT
+        Write-Output "Build Number: $buildNumber"
         
         $productConfig = "${{ inputs.configuration }}"
         if ($productConfig -eq "") {
@@ -79,7 +95,7 @@ jobs:
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.1
     - name: Build
-      run: msbuild -property:DeployExtension=false -property:Configuration=${{ steps.versions.outputs.product_configuration }}
+      run: msbuild -property:DeployExtension=false -property:Configuration=${{ steps.versions.outputs.product_configuration }} -property:ReqnrollBuildNumber=${{ steps.versions.outputs.product_build_number }} -property:VersionSuffix=${{ steps.versions.outputs.product_version_suffix }}
     - name: Unit Tests
       run: dotnet test ./Tests/Reqnroll.VisualStudio.Tests/Reqnroll.VisualStudio.Tests.csproj ${{ steps.versions.outputs.test_params }}
     - name: Upload vsix
