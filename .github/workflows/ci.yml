@@ -15,15 +15,15 @@ on:
         options:
         - Debug
         - Release
-      preview_release:
-        description: 'If the build produces a preview package'
+      production_release:
+        description: 'If the build produces a production package'
         type: boolean
-        default: true
+        default: false
         required: true
       version_suffix:
         description: 'Suffix for the NuGet packages (without leading -). Build ID will be appended.'
+        default: manual
         required: false
-
 
 permissions:
   checks: write
@@ -53,11 +53,11 @@ jobs:
       name: Calculate versions
       shell: pwsh
       run: |
-        $previewReleaseSetting = "${{ inputs.preview_release }}"
-        Write-Output "Preview release setting: $previewReleaseSetting"
+        $productionReleaseSetting = "${{ inputs.production_release }}"
+        Write-Output "Production release setting: $productionReleaseSetting"
 
         $versionSuffix = "${{ inputs.version_suffix }}"
-        if ($previewReleaseSetting -eq 'false') {
+        if ($productionReleaseSetting -eq 'true') {
             $versionSuffix = ''
         }
         elseif ($versionSuffix -eq "") {
