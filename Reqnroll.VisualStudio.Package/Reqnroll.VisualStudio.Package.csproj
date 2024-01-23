@@ -116,7 +116,7 @@
   <Target Name="GetVsixDisplayName" Returns="$(VsixDisplayName)" BeforeTargets="BeforeCompile" AfterTargets="GetBuildVersion">
     <Message Text="VSIX Display Name is set to: $(VsixDisplayName)" />
     <CreateProperty 
-      Condition="'$(VersionSuffix)' != ''" Value="$(ReqnrollPackageDisplayName) PREVIEW $(VersionSuffix)">
+      Condition="'$(VersionSuffix)' != ''" Value="Reqnroll for VS2022 PREVIEW $(VersionSuffix)"> <!-- shoretened name, because max lenght is 50 -->
       <Output TaskParameter="Value" PropertyName="VsixDisplayName" />
     </CreateProperty>
     <CreateProperty 
