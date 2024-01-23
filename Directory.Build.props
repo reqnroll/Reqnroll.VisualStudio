@@ -1,11 +1,17 @@
 <Project>
 
-  <ItemGroup>
-    <PackageReference Include="Nerdbank.GitVersioning"
-                      Version="3.4.244"
-                      PrivateAssets="all"
-                      Condition="!Exists('packages.config')" />
-  </ItemGroup>
+  <PropertyGroup>
+    <ReqnrollMainVersion>2024.1</ReqnrollMainVersion>
+    <ReqnrollBuildNumber>99999</ReqnrollBuildNumber> <!-- set by CI; local build numbers are always greater than ones from CI-->
+    <VersionSuffix>local</VersionSuffix> <!-- set by CI -->
+    <ReqnrollPackageVersion>$(ReqnrollMainVersion).$(ReqnrollBuildNumber)</ReqnrollPackageVersion>
+    <AssemblyVersion>$(ReqnrollMainVersion).0.0</AssemblyVersion>
+    <VersionPrefix>$(ReqnrollPackageVersion)</VersionPrefix>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <ReqnrollPackageDisplayName>Reqnroll for Visual Studio 2022</ReqnrollPackageDisplayName>
+  </PropertyGroup>
 
   <PropertyGroup>
     <GitVersionBaseDirectory>$(MSBuildThisFileDirectory)</GitVersionBaseDirectory>

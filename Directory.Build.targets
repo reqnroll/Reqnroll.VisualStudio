@@ -1,0 +1,5 @@
+<Project>
+  <!-- other targets depend on this 'GetBuildVersion' used by Nerdbank.GitVersioning -->
+  <Target Name="GetBuildVersion" Returns="$(ReqnrollPackageVersion)" BeforeTargets="BeforeCompile">
+  </Target>
+</Project>
