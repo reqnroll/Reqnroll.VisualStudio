@@ -8,13 +8,13 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />$if$ ('$unittestframework$' == 'xUnit')
-    <PackageReference Include="Reqnroll.xUnit" Version="1.0.0-pre20240124-54" />
+    <PackageReference Include="Reqnroll.xUnit" Version="1.0.0-pre20240125-60" />
     <PackageReference Include="xunit" Version="2.6.6" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.5.6" />$endif$$if$ ('$unittestframework$' == 'NUnit')
-    <PackageReference Include="Reqnroll.NUnit" Version="1.0.0-pre20240124-54" />
+    <PackageReference Include="Reqnroll.NUnit" Version="1.0.0-pre20240125-60" />
     <PackageReference Include="nunit" Version="3.14.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />$endif$$if$ ('$unittestframework$' == 'MSTest')
-    <PackageReference Include="Reqnroll.MsTest" Version="1.0.0-pre20240124-54" />
+    <PackageReference Include="Reqnroll.MsTest" Version="1.0.0-pre20240125-60" />
     <PackageReference Include="MSTest.TestAdapter" Version="3.1.1" />
     <PackageReference Include="MSTest.TestFramework" Version="3.1.1" />$endif$$if$ ('$fluentassertionsincluded$' == 'True')
     <PackageReference Include="FluentAssertions" Version="6.12.0" />$endif$

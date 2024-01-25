@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Reqnroll" Version="1.0.0-pre20240124-54" />
+    <PackageReference Include="Reqnroll" Version="1.0.0-pre20240125-60" />
   </ItemGroup>
 
   <ItemGroup>
