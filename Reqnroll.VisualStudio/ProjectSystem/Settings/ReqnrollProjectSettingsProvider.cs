@@ -217,6 +217,6 @@ public class ReqnrollProjectSettingsProvider
                fileSystem.GetFilePathIfExists(Path.Combine(projectFolder,
                    ProjectScopeDeveroomConfigurationProvider.SpecFlowJsonConfigFileName)) ??
                fileSystem.GetFilePathIfExists(Path.Combine(projectFolder,
-                   ProjectScopeDeveroomConfigurationProvider.ReqnrollAppConfigFileName));
+                   ProjectScopeDeveroomConfigurationProvider.SpecFlowAppConfigFileName));
     }
 }

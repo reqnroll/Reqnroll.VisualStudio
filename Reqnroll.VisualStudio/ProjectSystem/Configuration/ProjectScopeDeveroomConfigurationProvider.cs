@@ -1,7 +1,6 @@
 #nullable disable
 using System;
 using System.Xml.XPath;
-using System.Linq;
 using System.Xml.Linq;
 
 namespace Reqnroll.VisualStudio.ProjectSystem.Configuration;
@@ -10,7 +9,7 @@ public class ProjectScopeDeveroomConfigurationProvider : IDeveroomConfigurationP
 {
     public const string ReqnrollJsonConfigFileName = "reqnroll.json";
     public const string SpecFlowJsonConfigFileName = "specflow.json";
-    public const string ReqnrollAppConfigFileName = "App.config";
+    public const string SpecFlowAppConfigFileName = "App.config";
     public const string SpecSyncJsonConfigFileName = "specsync.json";
     public const string DeveroomConfigFileName = "deveroom.json";
 
@@ -89,9 +88,17 @@ public class ProjectScopeDeveroomConfigurationProvider : IDeveroomConfigurationP
         }
         else
         {
-            var appConfigSource = GetProjectConfigFilePath(ReqnrollAppConfigFileName);
-            if (appConfigSource != null)
-                yield return appConfigSource;
+            var specFlowJsonSource = GetProjectConfigFilePath(SpecFlowJsonConfigFileName);
+            if (specFlowJsonSource != null)
+            {
+                yield return specFlowJsonSource;
+            }
+            else
+            {
+                var appConfigSource = GetProjectConfigFilePath(SpecFlowAppConfigFileName);
+                if (appConfigSource != null)
+                    yield return appConfigSource;
+            }
         }
 
         var specSyncConfigSource = GetProjectConfigFilePath(SpecSyncJsonConfigFileName);
@@ -111,7 +118,7 @@ public class ProjectScopeDeveroomConfigurationProvider : IDeveroomConfigurationP
             var fileSystem = _projectScope.IdeScope.FileSystem;
             var configFilePath = fileSystem.GetFilePathIfExists(Path.Combine(projectFolder, fileName));
 
-            if (fileName.Equals(ReqnrollAppConfigFileName)) configFilePath ??= GetAppConfigPathFromProject();
+            if (fileName.Equals(SpecFlowAppConfigFileName)) configFilePath ??= GetAppConfigPathFromProject();
             if (configFilePath == null)
                 return null;
 
@@ -149,11 +156,14 @@ public class ProjectScopeDeveroomConfigurationProvider : IDeveroomConfigurationP
             try
             {
                 var fileName = Path.GetFileName(configSource.FilePath);
-                if (ReqnrollAppConfigFileName.Equals(fileName, StringComparison.InvariantCultureIgnoreCase))
-                    LoadFromReqnrollXmlConfig(configSource.FilePath, configuration);
-
                 if (ReqnrollJsonConfigFileName.Equals(fileName, StringComparison.InvariantCultureIgnoreCase))
                     LoadFromReqnrollJsonConfig(configSource.FilePath, configuration);
+
+                if (SpecFlowAppConfigFileName.Equals(fileName, StringComparison.InvariantCultureIgnoreCase))
+                    LoadFromSpecFlowXmlConfig(configSource.FilePath, configuration);
+
+                if (SpecFlowJsonConfigFileName.Equals(fileName, StringComparison.InvariantCultureIgnoreCase))
+                    LoadFromSpecFlowJsonConfig(configSource.FilePath, configuration);
 
                 if (SpecSyncJsonConfigFileName.Equals(fileName, StringComparison.InvariantCultureIgnoreCase))
                     LoadFromSpecSyncJsonConfig(configSource.FilePath, configuration);
@@ -198,14 +208,14 @@ public class ProjectScopeDeveroomConfigurationProvider : IDeveroomConfigurationP
     private string XPathEvaluateAttribute(XDocument doc, string xpath) => (doc.XPathEvaluate(xpath) as IEnumerable)
         ?.OfType<XAttribute>().FirstOrDefault()?.Value;
 
-    private void LoadFromReqnrollXmlConfig(string configSourceFilePath, DeveroomConfiguration configuration)
+    private void LoadFromSpecFlowXmlConfig(string configSourceFilePath, DeveroomConfiguration configuration)
     {
         var fileContent = FileSystem.File.ReadAllText(configSourceFilePath);
         var configDoc = XDocument.Parse(fileContent);
-        var featureLang = XPathEvaluateAttribute(configDoc, "/configuration/reqnroll/language/@feature");
+        var featureLang = XPathEvaluateAttribute(configDoc, "/configuration/specFlow/language/@feature");
         if (featureLang != null)
             configuration.DefaultFeatureLanguage = featureLang;
-        var bindingCulture = XPathEvaluateAttribute(configDoc, "/configuration/reqnroll/bindingCulture/@name");
+        var bindingCulture = XPathEvaluateAttribute(configDoc, "/configuration/specFlow/bindingCulture/@name");
         if (bindingCulture != null)
             configuration.ConfiguredBindingCulture = bindingCulture;
     }
@@ -215,6 +225,11 @@ public class ProjectScopeDeveroomConfigurationProvider : IDeveroomConfigurationP
         Logger.LogVerbose($"Loading configuration from '{configSourceFilePath}'");
         var configLoader = DeveroomConfigurationLoader.CreateReqnrollJsonConfigurationLoader(FileSystem);
         configLoader.Update(configuration, configSourceFilePath);
+    }
+
+    private void LoadFromSpecFlowJsonConfig(string configSourceFilePath, DeveroomConfiguration configuration)
+    {
+        LoadFromReqnrollJsonConfig(configSourceFilePath, configuration);
     }
 
     private void LoadFromSpecSyncJsonConfig(string configSourceFilePath, DeveroomConfiguration configuration)

@@ -197,7 +197,7 @@ public class FeatureFileTaggerTests
 
     [Theory]
     [InlineData(ProjectScopeDeveroomConfigurationProvider.DeveroomConfigFileName, "{}")]
-    [InlineData(ProjectScopeDeveroomConfigurationProvider.ReqnrollAppConfigFileName, "<xml />")]
+    [InlineData(ProjectScopeDeveroomConfigurationProvider.SpecFlowAppConfigFileName, "<xml />")]
     [InlineData(ProjectScopeDeveroomConfigurationProvider.ReqnrollJsonConfigFileName, "{}")]
     [InlineData(ProjectScopeDeveroomConfigurationProvider.SpecSyncJsonConfigFileName, "{}")]
     [InlineData("Test Project.csproj", "<xml><PropertyGroup><AppConfig>xx</AppConfig></PropertyGroup></xml>")]
