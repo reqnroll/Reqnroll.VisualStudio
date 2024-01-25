@@ -52,6 +52,8 @@ jobs:
     - id: versions
       name: Calculate versions
       shell: pwsh
+      env:
+        APPINSIGHTS_KEY: ${{ secrets.APPINSIGHTS_KEY }}      
       run: |
         $productionReleaseSetting = "${{ inputs.production_release }}"
         $productionRelease = $false
@@ -86,6 +88,14 @@ jobs:
         Write-Output "product_configuration=$productConfig" >> $env:GITHUB_OUTPUT
         Write-Output "Product Configuration: $productConfig"
 
+        $buildParams = "-p:VersionSuffix=$versionSuffix -property:ReqnrollBuildNumber=$buildNumber"
+        Write-Output "Build Params: $buildParams"
+        if ($productionRelease) {
+          $buildParams = "$buildParams -property:AppInsightsInstrumentationKey=$env:APPINSIGHTS_KEY"
+          Write-Output "Main Build Params Updated for Production"
+        }
+        Write-Output "build_params=$buildParams" >> $env:GITHUB_OUTPUT
+
         $testParams = "--no-build --verbosity normal -c $productConfig"
         Write-Output "test_params=$testParams" >> $env:GITHUB_OUTPUT
         Write-Output "Test Params: $testParams"
@@ -95,11 +105,11 @@ jobs:
       shell: pwsh
       run: |
         cd Connectors
-        .\build.ps1 -configuration ${{ steps.versions.outputs.product_configuration }} -buildNumber ${{ steps.versions.outputs.product_build_number }} -versionSuffix "${{ steps.versions.outputs.product_version_suffix }}"
+        .\build.ps1 -configuration ${{ steps.versions.outputs.product_configuration }} -additionalArgs ${{ steps.versions.outputs.build_params }}
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.1
     - name: Build
-      run: msbuild -property:DeployExtension=false -property:Configuration=${{ steps.versions.outputs.product_configuration }} -property:ReqnrollBuildNumber=${{ steps.versions.outputs.product_build_number }} -property:VersionSuffix=${{ steps.versions.outputs.product_version_suffix }}
+      run: msbuild -property:DeployExtension=false -property:Configuration=${{ steps.versions.outputs.product_configuration }} ${{ steps.versions.outputs.build_params }}
     - name: Unit Tests
       run: dotnet test ./Tests/Reqnroll.VisualStudio.Tests/Reqnroll.VisualStudio.Tests.csproj ${{ steps.versions.outputs.test_params }}
     - name: Upload vsix

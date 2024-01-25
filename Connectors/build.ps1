@@ -1,17 +1,14 @@
 param (
 	[string]$configuration = "Debug",
-	[string]$buildNumber = '-',
-	[string]$versionSuffix = '-'
+	[string]$additionalArgs = '-'
 )
 
 $outputFolder = "$PSScriptRoot\bin\$configuration"
 $buildArgs = @("-c", $configuration)
-if ($buildNumber -ne '-') {
-	$buildArgs += "-property:ReqnrollBuildNumber=$buildNumber"
+if ($additionalArgs -ne '-') {
+	$buildArgs += $additionalArgs.Split(' ')
 }
-if ($versionSuffix -ne '-') {
-	$buildArgs += "-property:VersionSuffix=$versionSuffix"
-}
+
 
 Write-Output "ARGS: $buildArgs"
 
