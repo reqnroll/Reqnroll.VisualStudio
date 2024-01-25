@@ -54,10 +54,14 @@ jobs:
       shell: pwsh
       run: |
         $productionReleaseSetting = "${{ inputs.production_release }}"
-        Write-Output "Production release setting: $productionReleaseSetting"
+        $productionRelease = $false
+        if ($productionReleaseSetting -eq 'true') {
+            $productionRelease = $true
+        }
+        Write-Output "Production release: $productionRelease"
 
         $versionSuffix = "${{ inputs.version_suffix }}"
-        if ($productionReleaseSetting -eq 'true') {
+        if ($productionRelease) {
             $versionSuffix = ''
         }
         elseif ($versionSuffix -eq "") {
