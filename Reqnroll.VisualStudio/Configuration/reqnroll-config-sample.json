@@ -1,10 +1,9 @@
 {
-  "$schema": "reqnroll-config-1.0.json",
+  "$schema": "https://schemas.reqnroll.net/reqnroll-config-latest.json",
 
   "ide": {
     "reqnroll": {
       "isReqnrollProject": true,
-      "generatorFolder": "..\\MyDependencies\\Reqnroll.2.3.0\\tools",
       "traits": [
         "DesignTimeFeatureFileGeneration"
       ]
