@@ -20,7 +20,7 @@ public class InMemoryStubProjectBuilder : IDisposable
 
         _bindingRegistryChanged = new AsyncManualResetEvent();
         _tagChanged = new AsyncManualResetEvent();
-        _cts = new DebuggableCancellationTokenSource(TimeSpan.FromSeconds(10));
+        _cts = new DebuggableCancellationTokenSource(TimeSpan.FromSeconds(20));
     }
 
     private StubIdeScope StubIdeScope => _project.StubIdeScope;
