@@ -1,7 +1,4 @@
 #nullable disable
-using System;
-using System.Linq;
-
 namespace Reqnroll.VisualStudio.Snippets;
 
 public class SnippetService
@@ -25,9 +22,10 @@ public class SnippetService
     {
         try
         {
+            var projectTraits = _projectScope.GetProjectSettings().ReqnrollProjectTraits;
             var skeletonProvider = expressionStyle == SnippetExpressionStyle.CucumberExpression
-                ? (DeveroomStepDefinitionSkeletonProvider) new CucumberExpressionSkeletonProvider()
-                : new RegexStepDefinitionSkeletonProvider();
+                ? (DeveroomStepDefinitionSkeletonProvider) new CucumberExpressionSkeletonProvider(projectTraits)
+                : new RegexStepDefinitionSkeletonProvider(projectTraits);
 
             var configuration = _projectScope.GetDeveroomConfiguration();
             newLine = newLine ?? Environment.NewLine;

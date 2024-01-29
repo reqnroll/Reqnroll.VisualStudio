@@ -4,6 +4,12 @@ namespace Reqnroll.VisualStudio.Snippets.Fallback;
 
 public class CucumberExpressionSkeletonProvider : DeveroomStepDefinitionSkeletonProvider
 {
+    public CucumberExpressionSkeletonProvider(ReqnrollProjectTraits projectTraits)
+        : base(projectTraits)
+    {
+
+    }
+
     protected override bool UseVerbatimStringForExpression => false;
 
     protected override string GetExpression(AnalyzedStepText stepText)
