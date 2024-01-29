@@ -1,10 +1,11 @@
-using System;
-using System.Linq;
-
 namespace Reqnroll.VisualStudio.Snippets.Fallback;
 
 public class RegexStepDefinitionSkeletonProvider : DeveroomStepDefinitionSkeletonProvider
 {
+    public RegexStepDefinitionSkeletonProvider(ReqnrollProjectTraits projectTraits) : base(projectTraits)
+    {
+    }
+
     // imported from SpecFlow v2.4
     protected override bool UseVerbatimStringForExpression => true;
 

@@ -1,12 +1,16 @@
-using System;
 using System.Globalization;
-using System.Linq;
 
 namespace Reqnroll.VisualStudio.Snippets.Fallback;
 
 public abstract class DeveroomStepDefinitionSkeletonProvider
 {
+    protected ReqnrollProjectTraits ProjectTraits { get; }
     protected abstract bool UseVerbatimStringForExpression { get; }
+
+    protected DeveroomStepDefinitionSkeletonProvider(ReqnrollProjectTraits projectTraits)
+    {
+        ProjectTraits = projectTraits;
+    }
 
     public string GetStepDefinitionSkeletonSnippet(UndefinedStepDescriptor undefinedStep,
         string indent, string newLine, string bindingCultureName)
@@ -59,7 +63,9 @@ public abstract class DeveroomStepDefinitionSkeletonProvider
         if (stepInstance.HasDocString)
             result.Parameters.Add(new AnalyzedStepParameter("String", "multilineText"));
         if (stepInstance.HasDataTable)
-            result.Parameters.Add(new AnalyzedStepParameter("Table", "table"));
+            result.Parameters.Add(ProjectTraits.HasFlag(ReqnrollProjectTraits.LegacySpecFlow)
+                ? new AnalyzedStepParameter("Table", "table")
+                : new AnalyzedStepParameter("DataTable", "dataTable"));
         return result;
     }
 
