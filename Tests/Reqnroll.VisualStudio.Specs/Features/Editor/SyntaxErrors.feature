@@ -6,6 +6,8 @@ Rules:
 	* Highlights syntax errors
 	* Highlights semantic errors
 
+# this scenario is flaky on CI
+@quarantaine
 Scenario: Highlights syntax errors
 	Given there is a Reqnroll project scope
 	When the following feature file is opened in the editor

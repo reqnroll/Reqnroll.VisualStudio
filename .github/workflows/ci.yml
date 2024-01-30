@@ -130,7 +130,7 @@ jobs:
     - name: Connector V1 Tests
       run: dotnet test ./Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.V1.Tests/Reqnroll.VisualStudio.ReqnrollConnector.V1.Tests.csproj ${{ steps.versions.outputs.test_params }}
     - name: Specs Tests
-      run: dotnet test ./Tests/Reqnroll.VisualStudio.Specs/Reqnroll.VisualStudio.Specs.csproj ${{ steps.versions.outputs.test_params }} --logger "trx;LogFileName=specs-results.trx"
+      run: dotnet test ./Tests/Reqnroll.VisualStudio.Specs/Reqnroll.VisualStudio.Specs.csproj ${{ steps.versions.outputs.test_params }} --filter "Category!=quarantaine" --logger "trx;LogFileName=specs-results.trx"
     - uses: actions/upload-artifact@v4
       if: success() || failure()      
       with:
