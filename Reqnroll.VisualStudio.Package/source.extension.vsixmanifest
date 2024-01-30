@@ -3,10 +3,10 @@
     <Metadata>
         <Identity Id="Reqnroll.VisualStudio.2022.9bb74670-95a3-4de3-a188-2aea7e40f79b" Version="|%CurrentProject%;GetVsixVersion|" Language="en-US" Publisher="Reqnroll" />
         <DisplayName>|%CurrentProject%;GetVsixDisplayName|</DisplayName>
-        <Description xml:space="preserve">Visual Studio extension for working with Reqnroll projects and Gherkin feature files.</Description>
-        <MoreInfo>https://www.reqnroll.net</MoreInfo>
+        <Description xml:space="preserve">Visual Studio extension for working with Reqnroll and SpecFlow projects or Gherkin feature files.</Description>
+        <MoreInfo>https://reqnroll.net</MoreInfo>
         <License>LICENSE.txt</License>
-        <GettingStartedGuide>https://go.reqnroll.net/getting-started</GettingStartedGuide>
+        <GettingStartedGuide>https://go.reqnroll.net/quickstart</GettingStartedGuide>
         <ReleaseNotes>Changelog.txt</ReleaseNotes>
         <Icon>Package\Resources\ReqnrollIcon.ico</Icon>
         <Tags>Reqnroll, BDD, Gherkin, Feature File, Formulation</Tags>

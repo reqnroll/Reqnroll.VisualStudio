@@ -5,13 +5,13 @@ namespace $rootnamespace$
     [Binding]
     public sealed class $safeitemname$
     {
-        // For additional details on Reqnroll hooks see http://go.reqnroll.net/doc-hooks
+        // For additional details on Reqnroll hooks see https://go.reqnroll.net/doc-hooks
 
         [BeforeScenario("@tag1")]
         public void BeforeScenarioWithTag()
         {
             // Example of filtering hooks using tags. (in this case, this 'before scenario' hook will execute if the feature/scenario contains the tag '@tag1')
-            // See https://docs.reqnroll.net/projects/reqnroll/en/latest/Bindings/Hooks.html?highlight=hooks#tag-scoping
+            // See https://go.reqnroll.net/doc-hooks#tag-scoping
 
             //TODO: implement logic that has to run before executing each scenario
         }
@@ -20,7 +20,7 @@ namespace $rootnamespace$
         public void FirstBeforeScenario()
         {
             // Example of ordering the execution of hooks
-            // See https://docs.reqnroll.net/projects/reqnroll/en/latest/Bindings/Hooks.html?highlight=order#hook-execution-order
+            // See https://go.reqnroll.net/doc-hooks#hook-execution-order
 
             //TODO: implement logic that has to run before executing each scenario
         }
