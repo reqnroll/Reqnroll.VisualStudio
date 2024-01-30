@@ -14,7 +14,7 @@ For documentation, please refer to the Reqnroll website:
 
 ### Visual Studio
 
-* [Visual Studio 2022 (Community, Personal, Enterprise)](https://marketplace.visualstudio.com/items?itemName=Reqnroll.ReqnrollForVisualStudio2022)
+* [Visual Studio 2022 (Community, Personal, Enterprise)](https://go.reqnroll.net/vs2022-extension)
 
 ### Reqnroll, SpecFlow & other BDD tools
 
@@ -26,7 +26,7 @@ For documentation, please refer to the Reqnroll website:
 
 The extension can be installed directly from Visual Studio using the extension manager. See detailed instructions at the [Installation documentation page](https://go.reqnroll.net/doc-setup-vs).
 
-Please also help other users by rating the extension at the Visual Studio Marketplace: [Reqnroll for Visual Studio 2022](https://marketplace.visualstudio.com/items?itemName=Reqnroll.ReqnrollForVisualStudio2022).
+Please also help other users by rating the extension at the Visual Studio Marketplace: [Reqnroll for Visual Studio 2022](https://go.reqnroll.net/vs2022-extension).
 
 ## Contributing
 
