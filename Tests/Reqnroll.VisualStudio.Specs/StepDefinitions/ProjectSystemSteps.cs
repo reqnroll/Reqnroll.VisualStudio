@@ -128,7 +128,7 @@ public class ProjectSystemSteps : Steps
         RegisterStepDefinitions(stepDefinitions);
     }
 
-    private StepDefinition CreateStepDefinitionFromTableRow(TableRow tableRow)
+    private StepDefinition CreateStepDefinitionFromTableRow(DataTableRow tableRow)
     {
         var filePath = @"X:\ProjectMock\CalculatorSteps.cs";
         var stepDefinition = new StepDefinition
