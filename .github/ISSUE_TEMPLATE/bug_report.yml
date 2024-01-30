@@ -19,7 +19,7 @@ body:
     required: true
 - type: textarea
   attributes:
-    label: Content of reqnroll.json
+    label: Content of reqnroll.json (if present)
     placeholder: PLEASE COPY THE ENTIRE reqnroll.json
 - type: textarea
   attributes:
@@ -33,6 +33,6 @@ body:
     required: true
 - type: input
   attributes:
-    label: Link to Repository Project
+    label: Link to a project repository that reproduces the issue
   validations:
     required: false

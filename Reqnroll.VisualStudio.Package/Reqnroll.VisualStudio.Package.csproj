@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net481</TargetFramework>
     <SignAssembly>true</SignAssembly>
@@ -96,7 +96,7 @@
 
   <Import Project="..\Connectors\DeploymentAssets.props" />
 
-  <Target Name="ReplaceVersions" AfterTargets="GetBuildVersion" BeforeTargets="BeforeCompile" >
+  <Target Name="ReplaceVersions" AfterTargets="GetBuildVersion" BeforeTargets="BeforeCompile">
     <ItemGroup>
       <TemplateFiles Include="$(MSBuildThisFileDirectory)..\Reqnroll.VisualStudio.ItemTemplates\**\*.vstemplate" />
       <TemplateFiles Include="$(MSBuildThisFileDirectory)..\Reqnroll.VisualStudio.ProjectTemplate\**\*.vstemplate" />
@@ -115,13 +115,19 @@
   </Target>  
   <Target Name="GetVsixDisplayName" Returns="$(VsixDisplayName)" BeforeTargets="BeforeCompile" AfterTargets="GetBuildVersion">
     <Message Text="VSIX Display Name is set to: $(VsixDisplayName)" />
-    <CreateProperty 
-      Condition="'$(VersionSuffix)' != ''" Value="Reqnroll for VS2022 PREVIEW $(VersionSuffix)"> <!-- shoretened name, because max lenght is 50 -->
+    <CreateProperty Condition="'$(VersionSuffix)' != ''" Value="Reqnroll for VS2022 PREVIEW $(VersionSuffix)"> <!-- shoretened name, because max lenght is 50 -->
       <Output TaskParameter="Value" PropertyName="VsixDisplayName" />
     </CreateProperty>
-    <CreateProperty 
-      Condition="'$(VersionSuffix)' == ''" Value="$(ReqnrollPackageDisplayName)">
+    <CreateProperty Condition="'$(VersionSuffix)' == ''" Value="$(ReqnrollPackageDisplayName)">
       <Output TaskParameter="Value" PropertyName="VsixDisplayName" />
     </CreateProperty>
+  </Target>  
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <ItemGroup>
+      <VsixFiles Include="$(OutDir)**\Reqnroll.VisualStudio.Package.vsix" />
+    </ItemGroup>
+    <Message Text="Rename: @(VsixFiles) -> @(VsixFiles -> Replace('.vsix', '.v$(ReqnrollPackageVersion).vsix'))" Importance="High" />
+    <Move SourceFiles="@(VsixFiles)" 
+          DestinationFiles="@(VsixFiles -> Replace('.vsix', '.v$(ReqnrollPackageVersion).vsix'))" />
   </Target>  
 </Project>

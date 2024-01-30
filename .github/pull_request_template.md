@@ -19,9 +19,6 @@
 <!--- Go over all the following points, and put an `x` in all the boxes that apply. -->
 <!-- This checklist is here for you that you didn't forget anything -->
 <!--- If you're unsure about any of these, don't hesitate to ask. We're here to help! -->
-
-
-
 - [ ] I've added tests for my code. (most of the time mandatory)
 - [ ] I have added an entry to the changelog. (mandatory)
 - [ ] My change requires a change to the documentation.

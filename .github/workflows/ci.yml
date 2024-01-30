@@ -115,7 +115,7 @@ jobs:
     - name: Upload vsix
       uses: actions/upload-artifact@v4
       with:
-        name: packages
+        name: vsix
         path: "Reqnroll.VisualStudio.Package/**/*.vsix"
     - uses: nuget/setup-nuget@v1.2
     - name: Prepare Connector Tests
