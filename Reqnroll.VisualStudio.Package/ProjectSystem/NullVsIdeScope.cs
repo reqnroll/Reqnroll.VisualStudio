@@ -221,6 +221,10 @@ public class NullVsIdeScope : IVsIdeScope
         {
         }
 
+        public void MonitorWelcomeDialogDismissed(Dictionary<string, object> additionalProps)
+        {
+        }
+
         public void TransmitEvent(IAnalyticsEvent runtimeEvent)
         {
         }
