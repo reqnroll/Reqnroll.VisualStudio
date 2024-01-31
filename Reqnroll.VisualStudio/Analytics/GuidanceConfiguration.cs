@@ -6,9 +6,11 @@ public class GuidanceConfiguration : IGuidanceConfiguration
 {
     public GuidanceConfiguration()
     {
+        // currently not used
         Installation = new GuidanceStep(GuidanceNotification.AfterInstall, null,
-            @"https://reqnroll.net/welcome-to-reqnroll/");
+            "https://reqnroll.net/welcome-to-reqnroll/");
 
+        // currently not used
         Upgrade = new GuidanceStep(GuidanceNotification.Upgrade, null, null);
 
         UsageSequence = new[]

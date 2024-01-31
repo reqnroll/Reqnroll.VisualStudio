@@ -238,6 +238,12 @@ public class MonitoringService : IMonitoringService
             additionalProps));
     }
 
+    public void MonitorWelcomeDialogDismissed(Dictionary<string, object> additionalProps)
+    {
+        _analyticsTransmitter.TransmitEvent(new GenericEvent("Welcome dialog dismissed",
+            additionalProps));
+    }
+
     public void TransmitEvent(IAnalyticsEvent runtimeEvent)
         => _analyticsTransmitter.TransmitEvent(runtimeEvent);
 

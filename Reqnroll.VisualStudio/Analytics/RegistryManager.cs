@@ -15,7 +15,6 @@ public class RegistryManager : IRegistryManager
     private static string RegPath => @"Software\Reqnroll";
 #endif
 
-    private const string Version2019 = "version";
     private const string Version = "version.vs2022";
     private const string InstallDate = "installDate.vs2022";
     private const string LastUsedDate = "lastUsedDate";
@@ -30,7 +29,6 @@ public class RegistryManager : IRegistryManager
         {
             using var key = Registry.CurrentUser.OpenSubKey(RegPath, RegistryKeyPermissionCheck.ReadSubTree);
 
-            status.Installed2019Version = ReadVersion(key, Version2019);
             status.InstalledVersion = ReadVersion(key, Version);
             status.InstallDate = ReadDate(key, InstallDate);
             status.LastUsedDate = ReadDate(key, LastUsedDate);

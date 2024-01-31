@@ -46,33 +46,11 @@ public class WelcomeService : IWelcomeService
         var today = DateTime.Today;
         var status = _registryManager.GetInstallStatus();
         var currentVersion = new Version(_versionProvider.GetExtensionVersion());
-        var browserNotificationService = new ExternalBrowserNotificationService(ideScope);
 
         if (!status.IsInstalled)
         {
-            if (status.Is2019Installed)
-            {
-                var installed2019Version = status.Installed2019Version.ToString();
-                monitoringService.MonitorExtensionUpgraded(installed2019Version);
-
-                ScheduleWelcomeDialog(ideScope, new WelcomeDialogViewModel(),
-                    (viewModel, elapsed) =>
-                    {
-                        monitoringService.MonitorUpgradeDialogDismissed(new Dictionary<string, object>
-                        {
-                            {"OldExtensionVersion", installed2019Version},
-                            {"NewExtensionVersion", currentVersion},
-                            {"WelcomeScreenSeconds", (int) elapsed.TotalSeconds},
-                            {"VisitedPages", viewModel.VisitedPages.Count}
-                        });
-                    });
-            }
-            else
-            {
-                // new user
-                browserNotificationService.ShowPage(_guidanceConfiguration.Installation.Url);
-                monitoringService.MonitorExtensionInstalled();
-            }
+            // new user
+            monitoringService.MonitorExtensionInstalled();
 
             status.InstallDate = today;
             status.InstalledVersion = currentVersion;
@@ -80,6 +58,17 @@ public class WelcomeService : IWelcomeService
 
             _registryManager.UpdateStatus(status);
             CheckFileAssociation(ideScope);
+
+            ScheduleWelcomeDialog(ideScope, new WelcomeDialogViewModel(),
+                (viewModel, elapsed) =>
+                {
+                    monitoringService.MonitorWelcomeDialogDismissed(new Dictionary<string, object>
+                    {
+                        { "ExtensionVersion", currentVersion },
+                        { "WelcomeScreenSeconds", (int)elapsed.TotalSeconds },
+                        { "VisitedPages", viewModel.VisitedPages.Count },
+                    });
+                });
         }
         else
         {
@@ -102,30 +91,18 @@ public class WelcomeService : IWelcomeService
 
                 _registryManager.UpdateStatus(status);
                 CheckFileAssociation(ideScope);
-#if !DEBUG
-                    var selectedChangelog = GetSelectedChangelog(ideScope, installedVersion);
-                    ScheduleWelcomeDialog(ideScope, new UpgradeDialogViewModel(currentVersion.ToString(), selectedChangelog),
-                        (viewModel, elapsed) =>
+                var selectedChangelog = GetSelectedChangelog(ideScope, installedVersion);
+                ScheduleWelcomeDialog(ideScope, new UpgradeDialogViewModel(currentVersion.ToString(), selectedChangelog),
+                    (viewModel, elapsed) =>
+                    {
+                        monitoringService.MonitorUpgradeDialogDismissed(new Dictionary<string, object>
                         {
-                            monitoringService.MonitorUpgradeDialogDismissed(new Dictionary<string, object>
-                            {
-                                { "OldExtensionVersion", installedVersion },
-                                { "NewExtensionVersion", currentVersion },
-                                { "WelcomeScreenSeconds", (int)elapsed.TotalSeconds },
-                                { "VisitedPages", viewModel.VisitedPages.Count },
-                            });
-                        },
-                        viewModel =>
-                        {
-                            //todo: implement second page
-                            //var newsPage = viewModel.OtherNewsPage;
-                            //if (_deveroomNews != null && newsPage != null)
-                            //{
-                            //    //EventTracker.TrackWelcomeNewsLoaded(_deveroomNews);
-                            //    newsPage.Text = UpgradeDialogViewModel.COMMUNITY_INFO_HEADER + _deveroomNews;
-                            //}
+                            { "OldExtensionVersion", installedVersion },
+                            { "NewExtensionVersion", currentVersion },
+                            { "WelcomeScreenSeconds", (int)elapsed.TotalSeconds },
+                            { "VisitedPages", viewModel.VisitedPages.Count },
                         });
-#endif
+                    });
             }
             else
             {

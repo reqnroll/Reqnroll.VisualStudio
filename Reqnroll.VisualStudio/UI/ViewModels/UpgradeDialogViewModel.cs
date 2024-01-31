@@ -2,35 +2,30 @@ namespace Reqnroll.VisualStudio.UI.ViewModels;
 
 public class UpgradeDialogViewModel : WizardViewModel
 {
-    public const string UPGRADE_HEADER_TEMPLATE = @"
-# Reqnroll Updated to v{newVersion}
+    public const string UPGRADE_HEADER_TEMPLATE = """
+        # Reqnroll Updated to v{newVersion}
 
-Please have a look at the changes since the last installed version.
+        Please have a look at the changes since the last installed version.
 
-";
+        """;
 
-    public const string COMMUNITY_INFO_HEADER = @"
-# Join the Reqnroll community!
+    public const string COMMUNITY_INFO_HEADER = """
+        # Join the Reqnroll community!
 
-";
+        """;
 
-    public const string COMMUNITY_INFO_TEXT = COMMUNITY_INFO_HEADER + @"
-## Find solutions, share ideas and engage in discussions.
+    public const string COMMUNITY_INFO_TEXT = COMMUNITY_INFO_HEADER +
+        """
+        Reqnroll is an independent project that is owned and supported by the community.
+        
+        If you find a bug or an issue with the Reqnroll Visual Studio extension, please 
+        report it on GitHub: https://github.com/reqnroll/Reqnroll.VisualStudio/issues.
+        
+        For all other communication (questions, feature suggestions, discussions), please 
+        use the GitHub discussion board: https://github.com/reqnroll/Reqnroll/discussions.
 
-* Join our community forum: https://support.reqnroll.net/
-
-* Join our Discord channel: https://discord.com/invite/xQMrjDXx7a
-
-* Follow us on Twitter: https://twitter.com/reqnroll
-
-* Follow us on LinkedIn: https://www.linkedin.com/company/reqnroll/
-
-* Subscribe on YouTube: https://www.youtube.com/c/ReqnrollBDD
-
-* Join our next webinar: https://reqnroll.net/community/webinars/
-
-In case you are missing an important feature, please leave us your feature request [here](https://support.reqnroll.net/hc/en-us/community/topics/360000519178-Feature-Requests).
-";
+        Further contact details can be found on our website: https://reqnroll.net/contact/.
+        """;
 
 #if DEBUG
     public static UpgradeDialogViewModel DesignData = new("1.0.99", @"# v1.0.1 - 2019-02-27
@@ -54,9 +49,6 @@ Bug fixes:
         })
     {
     }
-
-    public MarkDownWizardPageViewModel OtherNewsPage =>
-        Pages.OfType<MarkDownWizardPageViewModel>().FirstOrDefault(p => p.Name == "Community");
 
     private static string GetChangesText(string newVersion, string changeLog)
     {

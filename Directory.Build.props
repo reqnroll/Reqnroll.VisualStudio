@@ -20,7 +20,7 @@
   <PropertyGroup>
     <NoWarn>VSTHRD010;VSTHRD110;NU1603;VSTHRD200</NoWarn>
     <!--VSTHRD200: Use "Async" suffix in names of methods that return an awaitable type.-->
-    <LangVersion>10</LangVersion>
+    <LangVersion>11</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>

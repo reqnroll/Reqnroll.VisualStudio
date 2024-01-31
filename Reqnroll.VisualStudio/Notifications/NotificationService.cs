@@ -23,7 +23,8 @@ public class NotificationService
     {
         //Fire and forget no await
 #pragma warning disable 4014
-        Task.Run(CheckAndNotifyAsync);
+        //TODO: disabled until notification service will be available
+        //Task.Run(CheckAndNotifyAsync);
 #pragma warning restore 4014
     }
 
