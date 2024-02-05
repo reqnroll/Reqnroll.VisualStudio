@@ -26,9 +26,9 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <VSIXSourceItem Include="..\Changelog.md">
+    <VSIXSourceItem Include="..\CHANGELOG.md">
       <IncludeInVSIX>true</IncludeInVSIX>
-      <TargetPath>Changelog.txt</TargetPath>
+      <TargetPath>CHANGELOG.txt</TargetPath>
     </VSIXSourceItem>
     <VSIXSourceItem Include="..\LICENSE">
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -100,7 +100,7 @@
     <ItemGroup>
       <TemplateFiles Include="$(MSBuildThisFileDirectory)..\Reqnroll.VisualStudio.ItemTemplates\**\*.vstemplate" />
       <TemplateFiles Include="$(MSBuildThisFileDirectory)..\Reqnroll.VisualStudio.ProjectTemplate\**\*.vstemplate" />
-      <VsChangeLog Include="$(MSBuildThisFileDirectory)..\Changelog.md" />
+      <VsChangeLog Include="$(MSBuildThisFileDirectory)..\CHANGELOG.md" />
     </ItemGroup>
 
     <WriteLinesToFile File="%(TemplateFiles.FullPath)" Lines="$([System.Text.RegularExpressions.Regex]::Replace($([System.IO.File]::ReadAllText(%(TemplateFiles.FullPath))), 'Version=(\d+).(\d+).(\d+).(\d+),', 'Version=$(AssemblyVersion),'))" Overwrite="true" Encoding="UTF-8" />

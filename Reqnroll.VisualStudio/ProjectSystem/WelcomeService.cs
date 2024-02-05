@@ -155,7 +155,7 @@ public class WelcomeService : IWelcomeService
         try
         {
             var extensionFolder = ideScope.GetExtensionFolder();
-            var changeLogPath = Path.Combine(extensionFolder, "Changelog.txt");
+            var changeLogPath = Path.Combine(extensionFolder, "CHANGELOG.txt");
             if (!ideScope.FileSystem.File.Exists(changeLogPath))
                 return string.Empty;
             return ideScope.FileSystem.File.ReadAllText(changeLogPath);

@@ -260,7 +260,6 @@ paket-files/
 __pycache__/
 *.pyc
 ReleaseOutput/*
-Deveroom.VisualStudio.Package/Changelog.txt
 *.feature.cs
 
 !**/ExternalPackages/*.nupkg

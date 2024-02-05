@@ -7,7 +7,7 @@
         <MoreInfo>https://reqnroll.net</MoreInfo>
         <License>LICENSE.txt</License>
         <GettingStartedGuide>https://go.reqnroll.net/quickstart</GettingStartedGuide>
-        <ReleaseNotes>Changelog.txt</ReleaseNotes>
+        <ReleaseNotes>CHANGELOG.txt</ReleaseNotes>
         <Icon>Package\Resources\ReqnrollIcon.ico</Icon>
         <Tags>Reqnroll, BDD, Gherkin, Feature File, Formulation</Tags>
     </Metadata>
