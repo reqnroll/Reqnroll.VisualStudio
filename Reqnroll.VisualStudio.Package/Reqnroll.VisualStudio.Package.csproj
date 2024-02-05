@@ -105,7 +105,7 @@
 
     <WriteLinesToFile File="%(TemplateFiles.FullPath)" Lines="$([System.Text.RegularExpressions.Regex]::Replace($([System.IO.File]::ReadAllText(%(TemplateFiles.FullPath))), 'Version=(\d+).(\d+).(\d+).(\d+),', 'Version=$(AssemblyVersion),'))" Overwrite="true" Encoding="UTF-8" />
 
-    <WriteLinesToFile Condition=" '$(Configuration)' == 'Release' " File="%(VsChangeLog.FullPath)" Lines="$([System.IO.File]::ReadAllText(%(VsChangeLog.FullPath)).Replace('$vNext$','$(Version)').Replace('$buildDate$','$([System.DateTime]::Now.ToString('yyyy-MM-dd'))'))" Overwrite="true" Encoding="UTF-8" />
+    <WriteLinesToFile Condition=" '$(Configuration)' == 'Release' " File="%(VsChangeLog.FullPath)" Lines="$([System.IO.File]::ReadAllText(%(VsChangeLog.FullPath)).Replace('[vNext]','v$(Version) - $([System.DateTime]::Now.ToString('yyyy-MM-dd'))'))" Overwrite="true" Encoding="UTF-8" />
 
   </Target>
 
