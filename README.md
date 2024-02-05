@@ -1,26 +1,30 @@
-# Visual Studio extension of Reqnroll
-
-For documentation, please refer to the Reqnroll website:
-[https://www.reqnroll.net](https://www.reqnroll.net)
-
-[![Visual Studio Marketplace Installs](https://img.shields.io/visual-studio-marketplace/i/Reqnroll.ReqnrollForVisualStudio2022?label=installs%20VS2022)](https://marketplace.visualstudio.com/items?itemName=Reqnroll.ReqnrollForVisualStudio2022)
-
-## Build status
+# Reqnroll Visual Studio extension
 
 [![CI](https://github.com/reqnroll/Reqnroll.VisualStudio/actions/workflows/ci.yml/badge.svg)](https://github.com/reqnroll/Reqnroll.VisualStudio/actions/workflows/ci.yml)
 
+[![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/Reqnroll.ReqnrollForVisualStudio2022)](https://marketplace.visualstudio.com/items?itemName=Reqnroll.ReqnrollForVisualStudio2022)
 
-## Supported platforms
+Reqnroll is an open-source .NET test automation tool to practice [Behavior Driven Development (BDD)](https://cucumber.io/docs/bdd/).
 
-### Visual Studio
+Reqnroll is a .NET port of [Cucumber](https://cucumber.io/) and it is based on the [SpecFlow](https://www.specflow.org/) framework and code base. You can find more information about the goal of the Reqnroll project and the motivations to create it on the [Reqnroll website](https://reqnroll.net/).
 
-* [Visual Studio 2022 (Community, Personal, Enterprise)](https://go.reqnroll.net/vs2022-extension)
+The Reqnroll Visual Studio extension supports the following Visual Studio versions:
 
-### Reqnroll, SpecFlow & other BDD tools
+* [Visual Studio 2022 (Community, Professional, Enterprise)](https://go.reqnroll.net/vs2022-extension)
 
-* All Reqnroll versions
+The extension can be used for the following frameworks:
+
+* **All Reqnroll versions**
 * SpecFlow v3.3 or later
 * Any Gherkin feature file (step definition navigation features disabled)
+
+## Useful links
+
+* [Reqnroll Quickstart guide](https://go.reqnroll.net/quickstart)
+* [Reqnroll website](https://reqnroll.net/)
+* [Reqnroll documentation](https://docs.reqnroll.net/)
+* [Visual Studio extension release notes](https://go.reqnroll.net/vs-release-notes)
+* [Project setup instructions for Reqnroll](https://go.reqnroll.net/doc-setup-project)
 
 ## Installation
 
@@ -34,7 +38,7 @@ All contributors are welcome! For more information see the [Contribution guideli
 
 ## License
 
-Reqnroll for VisualStudio is licensed under the [MIT license](LICENSE).
+Reqnroll for VisualStudio is licensed under the [BSD 3-Clause License](LICENSE).
 
 Copyright (c) 2024 Reqnroll
 
