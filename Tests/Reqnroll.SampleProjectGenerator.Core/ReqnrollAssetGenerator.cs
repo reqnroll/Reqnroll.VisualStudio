@@ -14,18 +14,20 @@ public class ReqnrollAssetGenerator
         {"DocString", "string"}
     };
 
-    private readonly Dictionary<string, StepDef[]> stepDefinitions;
+    private readonly Dictionary<string, StepDef[]> _stepDefinitions;
+    private readonly List<HookDef> _hooks;
     private StepDef _unicodeStep;
 
     public ReqnrollAssetGenerator(int stepDefinitionCount)
     {
-        stepDefinitions =
+        _stepDefinitions =
             GetStepDefinitionList(stepDefinitionCount)
                 .GroupBy(sd => sd.Keyword)
                 .ToDictionary(g => g.Key, g => g.ToArray());
+        _hooks = new List<HookDef>();
     }
 
-    public int StepDefCount => stepDefinitions.Sum(g => g.Value.Length);
+    public int StepDefCount => _stepDefinitions.Sum(g => g.Value.Length);
     public int StepCount { get; private set; }
 
     private IEnumerable<StepDef> GetStepDefinitionList(int stepDefinitionCount)
@@ -63,10 +65,10 @@ public class ReqnrollAssetGenerator
             Regex = GeneratorOptions.UnicodeBindingRegex,
             StepTextParams = new List<string>()
         };
-        if (stepDefinitions.ContainsKey("Given"))
-            stepDefinitions["Given"] = stepDefinitions["Given"].Concat(new[] {_unicodeStep}).ToArray();
+        if (_stepDefinitions.ContainsKey("Given"))
+            _stepDefinitions["Given"] = _stepDefinitions["Given"].Concat(new[] {_unicodeStep}).ToArray();
         else
-            stepDefinitions["Given"] = new[] {_unicodeStep};
+            _stepDefinitions["Given"] = new[] {_unicodeStep};
     }
 
     private string GetKeyword(int stepDefCount)
@@ -197,7 +199,7 @@ public class ReqnrollAssetGenerator
         StepCount++;
 
         keywordType = keywordType ?? keyword;
-        if (!stepDefinitions.TryGetValue(keywordType, out var sdList))
+        if (!_stepDefinitions.TryGetValue(keywordType, out var sdList))
             throw new Exception("keyword not found: " + keywordType);
         var stepDef = sdList[LoremIpsum.Rnd.Next(sdList.Length)];
 
@@ -244,7 +246,7 @@ public class ReqnrollAssetGenerator
 
     public List<string> GenerateStepDefClasses(string targetFolder, int stepDefPerClassCount)
     {
-        var sdList = LoremIpsum.Randomize(stepDefinitions.SelectMany(g => g.Value));
+        var sdList = LoremIpsum.Randomize(_stepDefinitions.SelectMany(g => g.Value));
         int startIndex = 0;
         var result = new List<string>();
 
@@ -254,22 +256,28 @@ public class ReqnrollAssetGenerator
         {
             result.Add(
                 GenerateStepDefClass(targetFolder,
-                    sdList.Skip(startIndex).Take(Math.Min(stepDefPerClassCount, sdList.Length - startIndex))));
+                    sdList.Skip(startIndex).Take(Math.Min(stepDefPerClassCount, sdList.Length - startIndex)), 
+                    Enumerable.Empty<HookDef>()));
             startIndex += stepDefPerClassCount;
+        }
+
+        if (_hooks.Count > 0)
+        {
+            result.Add(GenerateStepDefClass(targetFolder, Enumerable.Empty<StepDef>(), _hooks));
         }
 
         return result;
     }
 
-    private string GenerateStepDefClass(string folder, IEnumerable<StepDef> stepDefs)
+    private string GenerateStepDefClass(string folder, IEnumerable<StepDef> stepDefs, IEnumerable<HookDef> hookDefs)
     {
         var className = ToPascalCase(LoremIpsum.GetShortText()) + "Steps";
         var filePath = Path.Combine(folder, className + ".cs");
-        File.WriteAllText(filePath, GenerateStepDefClassContent(stepDefs, className));
+        File.WriteAllText(filePath, GenerateStepDefClassContent(stepDefs, hookDefs, className));
         return filePath;
     }
 
-    private string GenerateStepDefClassContent(IEnumerable<StepDef> stepDefs, string className)
+    private string GenerateStepDefClassContent(IEnumerable<StepDef> stepDefs, IEnumerable<HookDef> hookDefs, string className)
     {
         var content = new StringBuilder();
         content.AppendLine("using System;");
@@ -295,6 +303,21 @@ public class ReqnrollAssetGenerator
             content.AppendLine();
         }
 
+        foreach (var hookDef in hookDefs)
+        {
+            var asyncPrefix = hookDef.Async ? "async " : "";
+            content.AppendLine($"        [{hookDef.HookType}()]");
+            content.AppendLine(
+                $"        public {asyncPrefix}void {hookDef.MethodName ?? ToPascalCase(LoremIpsum.GetShortText())}()");
+            content.AppendLine("        {");
+            content.AppendLine(
+                $"           AutomationStub.DoHook();");
+            if (hookDef.Async)
+                content.AppendLine("           await System.Threading.Tasks.Task.Delay(200);");
+            content.AppendLine("        }");
+            content.AppendLine();
+        }
+
         content.AppendLine("    }");
         content.AppendLine("}");
         return content.ToString();
@@ -314,10 +337,10 @@ public class ReqnrollAssetGenerator
             StepTextParams = new List<string>(),
             Async = true
         };
-        if (stepDefinitions.ContainsKey("When"))
-            stepDefinitions["When"] = stepDefinitions["When"].Concat(new[] {stepDef}).ToArray();
+        if (_stepDefinitions.ContainsKey("When"))
+            _stepDefinitions["When"] = _stepDefinitions["When"].Concat(new[] {stepDef}).ToArray();
         else
-            stepDefinitions["When"] = new[] {stepDef};
+            _stepDefinitions["When"] = new[] {stepDef};
     }
 
     private class StepDef
@@ -341,5 +364,21 @@ public class ReqnrollAssetGenerator
                 return result;
             }
         }
+    }
+
+    private class HookDef
+    {
+        public bool Async { get; set; }
+        public string HookType { get; set; }
+        public string MethodName { get; set; }
+    }
+
+    public void AddBeforeScenarioHook()
+    {
+        _hooks.Add(new HookDef
+        {
+            HookType = "BeforeScenario",
+            MethodName = "BeforeScenarioHook"
+        });
     }
 }

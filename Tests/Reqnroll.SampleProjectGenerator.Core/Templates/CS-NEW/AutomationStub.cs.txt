@@ -8,5 +8,10 @@ namespace DeveroomSample.StepDefinitions
         {
 		   Console.WriteLine("executing step...");
         }
+
+        public static void DoHook(params object[] stepArgs)
+        {
+		   Console.WriteLine("executing hook...");
+        }
 	}
 }

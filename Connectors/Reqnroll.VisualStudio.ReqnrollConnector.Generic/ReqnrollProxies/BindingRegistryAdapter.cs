@@ -8,4 +8,9 @@ public record BindingRegistryAdapter(BindingData Adaptee) : IBindingRegistryAdap
     {
         return (Adaptee.StepDefinitions ?? Array.Empty<StepDefinitionData>()).Select(sd => new StepDefinitionBindingAdapter(sd));
     }
+
+    public IEnumerable<HookBindingAdapter> GetHooks()
+    {
+        return (Adaptee.Hooks ?? Array.Empty<HookData>()).Select(h => new HookBindingAdapter(h));
+    }
 }

@@ -17,8 +17,8 @@ public class ProjectBindingRegistryCacheTests
         //arrange
         var ideScope = new StubIdeScope(_testOutputHelper);
         var cache = new ProjectBindingRegistryCache(ideScope);
-        var olderRegistry = ProjectBindingRegistry.FromStepDefinitions(Array.Empty<ProjectStepDefinitionBinding>());
-        var newerRegistry = ProjectBindingRegistry.FromStepDefinitions(Array.Empty<ProjectStepDefinitionBinding>());
+        var olderRegistry = ProjectBindingRegistry.FromBindings(Array.Empty<ProjectStepDefinitionBinding>());
+        var newerRegistry = ProjectBindingRegistry.FromBindings(Array.Empty<ProjectStepDefinitionBinding>());
 
         //act
         await cache.Update(_ => newerRegistry);
@@ -36,7 +36,7 @@ public class ProjectBindingRegistryCacheTests
         //arrange
         var ideScope = new StubIdeScope(_testOutputHelper);
         var cache = new ProjectBindingRegistryCache(ideScope);
-        var existingRegistry = ProjectBindingRegistry.FromStepDefinitions(Array.Empty<ProjectStepDefinitionBinding>());
+        var existingRegistry = ProjectBindingRegistry.FromBindings(Array.Empty<ProjectStepDefinitionBinding>());
         var invalidRegistry = ProjectBindingRegistry.Invalid;
 
         //act
@@ -54,7 +54,7 @@ public class ProjectBindingRegistryCacheTests
         //arrange
         var ideScope = new StubIdeScope(_testOutputHelper);
         var cache = new ProjectBindingRegistryCache(ideScope);
-        var bindingRegistry = ProjectBindingRegistry.FromStepDefinitions(new ProjectStepDefinitionBinding[]
+        var bindingRegistry = ProjectBindingRegistry.FromBindings(new ProjectStepDefinitionBinding[]
         {
             new TestProjectStepDefinitionBinding(),
             new TestProjectStepDefinitionBinding("Error")
@@ -84,7 +84,7 @@ public class ProjectBindingRegistryCacheTests
         var projectBindingRegistryCache = new ProjectBindingRegistryCache(ideScope.Object);
 
         var oldVersions = new ConcurrentQueue<int>();
-        var initialRegistry = new ProjectBindingRegistry(Array.Empty<ProjectStepDefinitionBinding>(), 123456);
+        var initialRegistry = new ProjectBindingRegistry(Array.Empty<ProjectStepDefinitionBinding>(), Array.Empty<ProjectHookBinding>(), 123456);
 
         var timeout = TimeSpan.FromSeconds(20);
         using var cts = new CancellationTokenSource(timeout);
@@ -167,7 +167,7 @@ public class ProjectBindingRegistryCacheTests
             {
                 await Task.Yield();
                 oldVersions.Enqueue(old.Version);
-                return new ProjectBindingRegistry(Array.Empty<ProjectStepDefinitionBinding>(),
+                return new ProjectBindingRegistry(Array.Empty<ProjectStepDefinitionBinding>(), Array.Empty<ProjectHookBinding>(),
                     Guid.NewGuid().GetHashCode());
             });
 
@@ -184,13 +184,13 @@ public class ProjectBindingRegistryCacheTests
     {
         public TestProjectStepDefinitionBinding()
             : base(ScenarioBlock.Given, new Regex(string.Empty), new Scope(),
-                new ProjectStepDefinitionImplementation("M1", Array.Empty<string>(), new SourceLocation("file", 0, 0)))
+                new ProjectBindingImplementation("M1", Array.Empty<string>(), new SourceLocation("file", 0, 0)))
         {
         }
 
         public TestProjectStepDefinitionBinding(string error)
             : base(ScenarioBlock.Given, new Regex(string.Empty), new Scope(),
-                new ProjectStepDefinitionImplementation("M1", Array.Empty<string>(), new SourceLocation("file", 0, 0)),
+                new ProjectBindingImplementation("M1", Array.Empty<string>(), new SourceLocation("file", 0, 0)),
                 "", error)
         {
         }

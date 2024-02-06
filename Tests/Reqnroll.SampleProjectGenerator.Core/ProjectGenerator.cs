@@ -151,6 +151,8 @@ public abstract class ProjectGenerator : IProjectGenerator
             assetGenerator.AddUnicodeSteps();
         if (_options.AddAsyncStep)
             assetGenerator.AddAsyncStep();
+        if (_options.AddBeforeScenarioHook)
+            assetGenerator.AddBeforeScenarioHook();
         var projectChanger = CreateProjectChanger(projectFilePath);
         for (int i = 0; i < _options.FeatureFileCount; i++)
         {

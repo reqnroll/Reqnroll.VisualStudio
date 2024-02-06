@@ -206,6 +206,24 @@ public class DeveroomTagParser : IDeveroomTagParser
                     TagRowCells(fileSnapshot, scenarioOutlineExample.TableHeader, examplesBlockTag,
                         DeveroomTagTypes.ScenarioOutlinePlaceholder);
             }
+
+        if (scenarioDefinition is Scenario scenario && bindingRegistry != ProjectBindingRegistry.Invalid)
+        {
+            var match = bindingRegistry.MatchScenarioToHooks(scenario, scenarioDefinitionTag);
+            if (match.HasHooks)
+            {
+                var firstTagTag = scenarioDefinitionTag
+                    .GetDescendantsOfType(DeveroomTagTypes.Tag)
+                    .OrderBy(t => t.Span.Start)
+                    .FirstOrDefault();
+
+                var startTag = firstTagTag ?? scenarioDefinitionTag;
+                var span = new SnapshotSpan(startTag.Span.Start, scenarioDefinitionTag.Span.End);
+
+                var hookReferenceTag = new DeveroomTag(DeveroomTagTypes.ScenarioHookReference, span, match);
+                scenarioDefinitionTag.AddChild(hookReferenceTag);
+            }
+        }
     }
 
     private void TagRowCells(ITextSnapshot fileSnapshot, TableRow row, DeveroomTag parentTag, string tagType)

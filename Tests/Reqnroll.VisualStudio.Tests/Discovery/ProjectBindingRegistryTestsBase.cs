@@ -4,11 +4,12 @@ namespace Reqnroll.VisualStudio.Tests.Discovery;
 public abstract class ProjectBindingRegistryTestsBase
 {
     protected readonly List<ProjectStepDefinitionBinding> _stepDefinitionBindings = new();
-    protected readonly Dictionary<string, ProjectStepDefinitionImplementation> Implementations = new();
+    protected readonly List<ProjectHookBinding> _hookBindings = new();
+    protected readonly Dictionary<string, ProjectBindingImplementation> Implementations = new();
 
     protected ProjectBindingRegistry CreateSut()
     {
-        var projectBindingRegistry = new ProjectBindingRegistry(_stepDefinitionBindings.ToArray(), 123456);
+        var projectBindingRegistry = new ProjectBindingRegistry(_stepDefinitionBindings.ToArray(), _hookBindings.ToArray(), 123456);
         return projectBindingRegistry;
     }
 
@@ -24,7 +25,7 @@ public abstract class ProjectBindingRegistryTestsBase
         if (!Implementations.TryGetValue(methodName, out var implementation))
         {
             implementation =
-                new ProjectStepDefinitionImplementation(methodName, parameterTypes,
+                new ProjectBindingImplementation(methodName, parameterTypes,
                     new SourceLocation("MyClass.cs", 2, 5));
             Implementations.Add(methodName, implementation);
         }

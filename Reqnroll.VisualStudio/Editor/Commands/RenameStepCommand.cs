@@ -37,11 +37,14 @@ public class RenameStepCommand : DeveroomEditorCommandBase, IDeveroomCodeEditorC
         if (textView.TextBuffer.ContentType.IsOfType(VsContentTypes.FeatureFile))
         {
             var goToStepDefinitionCommand =
-                new GoToStepDefinitionCommand(IdeScope, AggregatorFactory, DeveroomTaggerProvider);
-            goToStepDefinitionCommand.InvokeCommand(textView, projectStepDefinitionBinding =>
+                new GoToDefinitionCommand(IdeScope, AggregatorFactory, DeveroomTaggerProvider);
+            goToStepDefinitionCommand.InvokeCommand(textView, projectBinding =>
             {
+                var sourceLocation = projectBinding.Implementation.SourceLocation;
+                var projectStepDefinitionBinding = projectBinding as ProjectStepDefinitionBinding;
+                if (projectStepDefinitionBinding == null || sourceLocation == null)
+                    return;
                 ctx.StepDefinitionBinding = projectStepDefinitionBinding;
-                var sourceLocation = projectStepDefinitionBinding.Implementation.SourceLocation;
                 IdeScope.GetTextBuffer(sourceLocation, out var textBuffer);
                 ctx.TextBufferOfStepDefinitionClass = textBuffer;
                 var stepDefLine =

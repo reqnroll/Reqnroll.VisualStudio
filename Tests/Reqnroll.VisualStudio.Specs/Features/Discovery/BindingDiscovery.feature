@@ -19,3 +19,10 @@ Scenario: Discover bindings from Reqnroll project with external bindings
 	When the binding discovery performed
 	Then the discovery succeeds with several step definitions
 	And there is a "Then" step with regex "there should be a step from an external assembly"
+
+Scenario: Discover hooks from a Reqnroll project
+	Given there is a small Reqnroll project with hooks
+	And the project is built
+	When the binding discovery performed
+	Then the discovery succeeds with hooks
+

@@ -49,7 +49,7 @@ public class DeveroomSteps : Steps
 
         _generatorOptions = new GeneratorOptions
         {
-            ReqnrollPackageVersion = reqnrollVersion.ToString()
+            ReqnrollPackageVersion = reqnrollVersion.ToString(),
         };
     }
 
@@ -62,7 +62,8 @@ public class DeveroomSteps : Steps
         {
             FeatureFileCount = 1,
             ScenarioPerFeatureFileCount = 1,
-            ScenarioOutlinePerScenarioPercent = 0
+            ScenarioOutlinePerScenarioPercent = 0,
+            ReqnrollPackageVersion = DomainDefaults.LatestReqnrollVersion.ToString()
         };
     }
 
@@ -125,6 +126,14 @@ public class DeveroomSteps : Steps
         _generatorOptions.ReqnrollPackageVersion = reqnrollVersion.ToString();
         _generatorOptions.AddUnicodeBinding = true;
     }
+
+    [Given("there is a small Reqnroll project with hooks")]
+    public void GivenThereIsASmallReqnrollProjectWithHooks()
+    {
+        GivenThereIsASmallReqnrollProject();
+        _generatorOptions.AddBeforeScenarioHook = true;
+    }
+
 
     [Given(@"there is a simple Reqnroll project with platform target ""(.*)"" for (.*)")]
     public void GivenThereIsASimpleReqnrollProjectWithPlatformTargetForVersion(string platformTarget,
@@ -248,6 +257,14 @@ public class DeveroomSteps : Steps
         _bindingRegistry.Should().NotBeNull("the binding registry should have been discovered");
         _bindingRegistry.StepDefinitions.Should()
             .HaveCountGreaterThan(1, "there should be step definitions discovered");
+    }
+
+    [Then("the discovery succeeds with hooks")]
+    public void ThenTheDiscoverySucceedsWithHooks()
+    {
+        _bindingRegistry.Should().NotBeNull("the binding registry should have been discovered");
+        _bindingRegistry.Hooks.Should()
+            .HaveCountGreaterThan(0, "there should be hooks discovered");
     }
 
     [Then(@"there is a ""(.*)"" step with regex ""(.*)""")]

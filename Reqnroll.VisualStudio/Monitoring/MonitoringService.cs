@@ -113,6 +113,11 @@ public class MonitoringService : IMonitoringService
             }));
     }
 
+    public void MonitorCommandGoToHook()
+    {
+        _analyticsTransmitter.TransmitEvent(new GenericEvent("GoToHook command executed"));
+    }
+
     public void MonitorCommandAutoFormatTable()
     {
         //TODO: re-enable tracking for real command based triggering (not by character type)

@@ -95,6 +95,30 @@ public abstract class DeveroomEditorCommandBase : IDeveroomEditorCommand
         return configuration;
     }
 
+    protected void PerformJump<TResult>(object match, TResult result, ProjectBindingImplementation implementation, Action<TResult> continueWithAfterJump)
+    {
+        var sourceLocation = implementation?.SourceLocation;
+        if (sourceLocation == null)
+        {
+            Logger.LogWarning($"Cannot jump to {match}: no source location");
+            IdeScope.Actions.ShowProblem("Unable to jump to the step definition. No source location detected.");
+            return;
+        }
+
+        Logger.LogInfo($"Jumping to {match} at {sourceLocation}");
+        if (IdeScope.Actions.NavigateTo(sourceLocation))
+        {
+            continueWithAfterJump?.Invoke(result);
+        }
+        else
+        {
+            Logger.LogWarning(
+                $"Cannot jump to {match}: invalid source file or position. Try to build the project to refresh positions.");
+            IdeScope.Actions.ShowProblem(
+                $"Unable to jump to the step definition. Invalid source file or file position.{Environment.NewLine}{sourceLocation}");
+        }
+    }
+
     #region Helper methods
 
     protected void SetSelectionToChangedLines(IWpfTextView textView, ITextSnapshotLine[] lines)

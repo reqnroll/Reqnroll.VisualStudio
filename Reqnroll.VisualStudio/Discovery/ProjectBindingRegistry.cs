@@ -5,17 +5,18 @@ public record ProjectBindingRegistry
 {
     private const string DataTableDefaultTypeName = TypeShortcuts.ReqnrollTableType;
     private const string DocStringDefaultTypeName = TypeShortcuts.StringType;
-    public static ProjectBindingRegistry Invalid = new(ImmutableArray<ProjectStepDefinitionBinding>.Empty);
+    public static ProjectBindingRegistry Invalid = new(ImmutableArray<ProjectStepDefinitionBinding>.Empty, ImmutableArray<ProjectHookBinding>.Empty);
 
     private static int _versionCounter;
 
-    private ProjectBindingRegistry(IEnumerable<ProjectStepDefinitionBinding> stepDefinitions)
+    private ProjectBindingRegistry(IEnumerable<ProjectStepDefinitionBinding> stepDefinitions, IEnumerable<ProjectHookBinding> hooks)
     {
         StepDefinitions = stepDefinitions.ToImmutableArray();
+        Hooks = hooks.ToImmutableArray();
     }
 
-    public ProjectBindingRegistry(IEnumerable<ProjectStepDefinitionBinding> stepDefinitions, int projectHash)
-        : this(stepDefinitions)
+    public ProjectBindingRegistry(IEnumerable<ProjectStepDefinitionBinding> stepDefinitions, IEnumerable<ProjectHookBinding> hooks, int projectHash)
+        : this(stepDefinitions, hooks)
     {
         ProjectHash = projectHash;
     }
@@ -25,9 +26,20 @@ public record ProjectBindingRegistry
     public bool IsPatched => !ProjectHash.HasValue && this != Invalid;
 
     public ImmutableArray<ProjectStepDefinitionBinding> StepDefinitions { get; }
+    public ImmutableArray<ProjectHookBinding> Hooks { get; }
 
     public override string ToString() => $"ProjectBindingRegistry_V{Version}_H{ProjectHash}";
 
+    public HookMatchResult MatchScenarioToHooks(Scenario scenario, IGherkinDocumentContext context)
+    {
+        var hookMatches = Hooks
+            .Where(h => h.Match(scenario, context))
+            .OrderBy(h => h.HookType)
+            .ThenBy(h => h.HookOrder)
+            .ToArray();
+
+        return new HookMatchResult(hookMatches);
+    }
 
     public MatchResult MatchStep(Step step, IGherkinDocumentContext context)
     {
@@ -180,25 +192,25 @@ public record ProjectBindingRegistry
         return sdMatches;
     }
 
-    public static ProjectBindingRegistry FromStepDefinitions(
-        IEnumerable<ProjectStepDefinitionBinding> projectStepDefinitionBindings) => new(projectStepDefinitionBindings);
+    public static ProjectBindingRegistry FromBindings(
+        IEnumerable<ProjectStepDefinitionBinding> projectStepDefinitionBindings, IEnumerable<ProjectHookBinding>? hooks = null) => new(projectStepDefinitionBindings, hooks ?? Array.Empty<ProjectHookBinding>());
 
     public ProjectBindingRegistry WithStepDefinitions(
         IEnumerable<ProjectStepDefinitionBinding> projectStepDefinitionBindings)
     {
         var stepDefinitions = StepDefinitions.ToList();
         stepDefinitions.AddRange(projectStepDefinitionBindings);
-        return new ProjectBindingRegistry(stepDefinitions);
+        return new ProjectBindingRegistry(stepDefinitions, Hooks);
     }
 
     public ProjectBindingRegistry ReplaceStepDefinition(ProjectStepDefinitionBinding original,
         ProjectStepDefinitionBinding replacement)
     {
-        return new ProjectBindingRegistry(StepDefinitions.Select(sd => sd == original ? replacement : sd));
+        return new ProjectBindingRegistry(StepDefinitions.Select(sd => sd == original ? replacement : sd), Hooks);
     }
 
     public ProjectBindingRegistry Where(Func<ProjectStepDefinitionBinding, bool> predicate) =>
-        new(StepDefinitions.Where(predicate));
+        new(StepDefinitions.Where(predicate), Hooks);
 
     public async Task<ProjectBindingRegistry> ReplaceStepDefinitions(CSharpStepDefinitionFile stepDefinitionFile)
     {

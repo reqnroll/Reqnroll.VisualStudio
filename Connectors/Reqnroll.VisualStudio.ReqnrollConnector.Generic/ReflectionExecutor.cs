@@ -33,18 +33,21 @@ public class ReflectionExecutor
                         {
                             return new ConnectorResult(
                                 discoveryResult.StepDefinitions,
+                                discoveryResult.Hooks,
                                 discoveryResult.SourceFiles,
                                 discoveryResult.TypeNames,
                                 analyticsProperties,
                                 errorMessage);
                         }
                         return new ConnectorResult(ImmutableArray<StepDefinition>.Empty,
+                            ImmutableArray<Reqnroll.VisualStudio.ReqnrollConnector.Models.Hook>.Empty,
                             ImmutableSortedDictionary<string, string>.Empty,
                             ImmutableSortedDictionary<string, string>.Empty,
                             analytics.ToImmutable(),
                             errorMessage != null ? $"{errorMessage}{Environment.NewLine}{log}" : log);
                     })))
             .Reduce(new ConnectorResult(ImmutableArray<StepDefinition>.Empty,
+                ImmutableArray<Reqnroll.VisualStudio.ReqnrollConnector.Models.Hook>.Empty,
                 ImmutableSortedDictionary<string, string>.Empty,
                 ImmutableSortedDictionary<string, string>.Empty,
                 analytics.ToImmutable(),

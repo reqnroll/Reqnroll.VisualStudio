@@ -2,15 +2,14 @@
 
 namespace Reqnroll.VisualStudio.Discovery;
 
-public class ProjectStepDefinitionBinding
+public class ProjectStepDefinitionBinding : ProjectBinding
 {
     public ProjectStepDefinitionBinding(ScenarioBlock stepDefinitionType, Regex regex, Scope scope,
-        ProjectStepDefinitionImplementation implementation, string specifiedExpression = null, string error = null)
+        ProjectBindingImplementation implementation, string specifiedExpression = null, string error = null)
+    : base(implementation, scope)
     {
         StepDefinitionType = stepDefinitionType;
         Regex = regex;
-        Scope = scope;
-        Implementation = implementation;
         SpecifiedExpression = specifiedExpression;
         Error = error;
     }
@@ -20,8 +19,6 @@ public class ProjectStepDefinitionBinding
     public ScenarioBlock StepDefinitionType { get; }
     public string SpecifiedExpression { get; }
     public Regex Regex { get; }
-    public Scope Scope { get; }
-    public ProjectStepDefinitionImplementation Implementation { get; }
 
     public string Expression => SpecifiedExpression ?? GetSpecifiedExpressionFromRegex();
 
@@ -53,16 +50,8 @@ public class ProjectStepDefinitionBinding
         if (!match.Success)
             return null;
 
-        //check scope
-        if (Scope != null)
-        {
-            if (Scope.Tag != null && !Scope.Tag.Evaluate(context.GetTagNames()))
-                return null;
-            if (Scope.FeatureTitle != null && context.AncestorOrSelfNode<Feature>()?.Name != Scope.FeatureTitle)
-                return null;
-            if (Scope.ScenarioTitle != null && context.AncestorOrSelfNode<Scenario>()?.Name != Scope.ScenarioTitle)
-                return null;
-        }
+        if (!MatchScope(context))
+            return null;
 
         var parameterMatch = MatchParameter(step, match);
         return MatchResultItem.CreateMatch(this, parameterMatch);

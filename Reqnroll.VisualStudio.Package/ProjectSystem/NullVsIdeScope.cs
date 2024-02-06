@@ -163,6 +163,10 @@ public class NullVsIdeScope : IVsIdeScope
         {
         }
 
+        public void MonitorCommandGoToHook()
+        {
+        }
+
         public void MonitorCommandAutoFormatTable()
         {
         }

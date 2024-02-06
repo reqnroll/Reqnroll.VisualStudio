@@ -27,7 +27,10 @@ public partial class UiTesterWindow : Window
             new ContextMenuItem("Defined step [regex]", command, "StepDefinitionsDefined"),
             new ContextMenuItem("Invalid defined step [regex]", command, "StepDefinitionsDefinedInvalid"),
             new ContextMenuItem("Ambiguous step [regex]", command, "StepDefinitionsAmbiguous"),
-            new ContextMenuItem("Undefined step", command, "StepDefinitionsUndefined"));
+            new ContextMenuItem("Undefined step", command, "StepDefinitionsUndefined"),
+            new ContextMenuItem("Before hook", command, "BeforeHook"),
+            new ContextMenuItem("After hook", command, "AfterHook")
+            );
         return contextMenu;
     }
 

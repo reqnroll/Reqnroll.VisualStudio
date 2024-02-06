@@ -13,7 +13,7 @@ public class DeveroomFeatureEditorCommandBroker : DeveroomEditorCommandBroker<ID
         [ImportMany] IEnumerable<IDeveroomFeatureEditorCommand> commands, IDeveroomLogger logger)
         : base(adaptersFactory, commands, logger)
     {
-        Debug.Assert(_commands.Count == 8, "There have to be 8 feature file editor Reqnroll commands");
+        Debug.Assert(_commands.Count == 9, "There have to be 9 feature file editor Reqnroll commands");
     }
 }
 

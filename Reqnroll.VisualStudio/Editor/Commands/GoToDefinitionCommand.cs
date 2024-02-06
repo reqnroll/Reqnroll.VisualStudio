@@ -3,12 +3,12 @@
 namespace Reqnroll.VisualStudio.Editor.Commands;
 
 [Export(typeof(IDeveroomFeatureEditorCommand))]
-public class GoToStepDefinitionCommand : DeveroomEditorCommandBase, IDeveroomFeatureEditorCommand
+public class GoToDefinitionCommand : DeveroomEditorCommandBase, IDeveroomFeatureEditorCommand
 {
-    private const string PopupHeader = "Go to step definitions";
+    private const string GoToStepDefinitionsPopupHeader = "Go to step definitions";
 
     [ImportingConstructor]
-    public GoToStepDefinitionCommand(
+    public GoToDefinitionCommand(
         IIdeScope ideScope,
         IBufferTagAggregatorFactoryService aggregatorFactory,
         IDeveroomTaggerProvider taggerProvider)
@@ -24,10 +24,9 @@ public class GoToStepDefinitionCommand : DeveroomEditorCommandBase, IDeveroomFea
     public override bool PreExec(IWpfTextView textView, DeveroomEditorCommandTargetKey commandKey,
         IntPtr inArgs = default) => InvokeCommand(textView);
 
-    internal bool InvokeCommand(IWpfTextView textView,
-        Action<ProjectStepDefinitionBinding> continueWithAfterJump = null)
+    internal bool InvokeCommand(IWpfTextView textView, Action<ProjectBinding> continueWithAfterJump = null)
     {
-        Logger.LogVerbose("Go To Step Definition");
+        Logger.LogVerbose("Go To Definition");
 
         var textBuffer = textView.TextBuffer;
 
@@ -46,11 +45,16 @@ public class GoToStepDefinitionCommand : DeveroomEditorCommandBase, IDeveroomFea
             else
             {
                 Logger.LogVerbose($"Jump to list step: {matchResult}");
-                IdeScope.Actions.ShowSyncContextMenu(PopupHeader, matchResult.Items.Select(m =>
+                IdeScope.Actions.ShowSyncContextMenu(GoToStepDefinitionsPopupHeader, matchResult.Items.Select(m =>
                     new ContextMenuItem(m.ToString(),
                         _ => { PerformGoToDefinition(m, textBuffer, continueWithAfterJump); }, GetIcon(m))
                 ).ToArray());
             }
+        }
+        else
+        {
+            var goToHookCommand = new GoToHooksCommand(IdeScope, AggregatorFactory, DeveroomTaggerProvider);
+            goToHookCommand.InvokeCommand(textView, continueWithAfterJump);
         }
 
         return true;
@@ -67,32 +71,9 @@ public class GoToStepDefinitionCommand : DeveroomEditorCommandBase, IDeveroomFea
                 break;
             case MatchResultType.Defined:
             case MatchResultType.Ambiguous:
-                PerformJump(match, continueWithAfterJump);
+
+                PerformJump(match, match.MatchedStepDefinition, match.MatchedStepDefinition?.Implementation, continueWithAfterJump);
                 break;
-        }
-    }
-
-    private void PerformJump(MatchResultItem match, Action<ProjectStepDefinitionBinding> continueWithAfterJump)
-    {
-        var sourceLocation = match.MatchedStepDefinition.Implementation.SourceLocation;
-        if (sourceLocation == null)
-        {
-            Logger.LogWarning($"Cannot jump to {match}: no source location");
-            IdeScope.Actions.ShowProblem("Unable to jump to the step definition. No source location detected.");
-            return;
-        }
-
-        Logger.LogInfo($"Jumping to {match} at {sourceLocation}");
-        if (IdeScope.Actions.NavigateTo(sourceLocation))
-        {
-            continueWithAfterJump?.Invoke(match.MatchedStepDefinition);
-        }
-        else
-        {
-            Logger.LogWarning(
-                $"Cannot jump to {match}: invalid source file or position. Try to build the project to refresh positions.");
-            IdeScope.Actions.ShowProblem(
-                $"Unable to jump to the step definition. Invalid source file or file position.{Environment.NewLine}{sourceLocation}");
         }
     }
 
@@ -109,7 +90,7 @@ public class GoToStepDefinitionCommand : DeveroomEditorCommandBase, IDeveroomFea
         var snippet = snippetService.GetStepDefinitionSkeletonSnippet(match.UndefinedStep,
             snippetService.DefaultExpressionStyle, indent, newLine);
 
-        IdeScope.Actions.ShowQuestion(new QuestionDescription(PopupHeader,
+        IdeScope.Actions.ShowQuestion(new QuestionDescription(GoToStepDefinitionsPopupHeader,
             $"The step is undefined. Do you want to copy a step definition skeleton snippet to the clipboard?{Environment.NewLine}{Environment.NewLine}{snippet}",
             _ => PerformCopySnippet(snippet.Indent(indent + indent))));
     }

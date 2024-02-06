@@ -1,5 +1,6 @@
 #nullable disable
 using Reqnroll.VisualStudio.Discovery.TagExpressions;
+using Reqnroll.VisualStudio.ReqnrollConnector.Models;
 
 namespace Reqnroll.VisualStudio.Discovery;
 
@@ -10,7 +11,7 @@ public class BindingImporter
     private static readonly string[] DoubleStringParameterTypes = {TypeShortcuts.StringType, TypeShortcuts.StringType};
     private static readonly string[] SingleIntParameterTypes = {TypeShortcuts.Int32Type};
     private static readonly string[] SingleDataTableParameterTypes = {TypeShortcuts.ReqnrollTableType};
-    private readonly Dictionary<string, ProjectStepDefinitionImplementation> _implementations = new();
+    private readonly Dictionary<string, ProjectBindingImplementation> _implementations = new();
 
     private readonly IDeveroomLogger _logger;
     private readonly Dictionary<string, string> _sourceFiles;
@@ -29,8 +30,9 @@ public class BindingImporter
     {
         try
         {
-            var stepDefinitionType = (ScenarioBlock) Enum.Parse(typeof(ScenarioBlock),
-                stepDefinition.Type ?? ScenarioBlock.Unknown.ToString());
+            var stepDefinitionType = Enum.TryParse<ScenarioBlock>(stepDefinition.Type, out var parsedHookType)
+                ? parsedHookType
+                : ScenarioBlock.Unknown;
             var regex = ParseRegex(stepDefinition);
             var sourceLocation = ParseSourceLocation(stepDefinition.SourceLocation);
             var scope = ParseScope(stepDefinition.Scope);
@@ -39,7 +41,7 @@ public class BindingImporter
             if (!_implementations.TryGetValue(stepDefinition.Method, out var implementation))
             {
                 implementation =
-                    new ProjectStepDefinitionImplementation(stepDefinition.Method, parameterTypes, sourceLocation);
+                    new ProjectBindingImplementation(stepDefinition.Method, parameterTypes, sourceLocation);
                 _implementations.Add(stepDefinition.Method, implementation);
             }
 
@@ -48,7 +50,33 @@ public class BindingImporter
         }
         catch (Exception ex)
         {
-            _logger.LogWarning($"Invalid binding: {ex.Message}");
+            _logger.LogWarning($"Invalid step definition binding: {ex.Message}");
+            return null;
+        }
+    }
+
+    public ProjectHookBinding ImportHook(Hook hook)
+    {
+        try
+        {
+            var hookType = Enum.TryParse<HookType>(hook.Type, out var parsedHookType)
+                ? parsedHookType
+                : HookType.Unknown;
+            var sourceLocation = ParseSourceLocation(hook.SourceLocation);
+            var scope = ParseScope(hook.Scope);
+
+            if (!_implementations.TryGetValue(hook.Method, out var implementation))
+            {
+                implementation =
+                    new ProjectBindingImplementation(hook.Method, null, sourceLocation);
+                _implementations.Add(hook.Method, implementation);
+            }
+
+            return new ProjectHookBinding(implementation, scope, hookType, hook.HookOrder);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning($"Invalid hook binding: {ex.Message}");
             return null;
         }
     }

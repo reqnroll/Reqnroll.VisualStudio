@@ -1,4 +1,3 @@
-#nullable enable
 namespace Reqnroll.VisualStudio.Discovery;
 
 internal class DiscoveryInvoker
@@ -37,12 +36,12 @@ internal class DiscoveryInvoker
             .AndProjectIsReqnrollProject()
             .AndBindingSourceIsValid()
             .AndDiscoveryProviderSucceed(_discoveryResultProvider)
-            .ThenImportStepDefinitions(_projectScope.ProjectName)
+            .ThenImportBindings(_projectScope.ProjectName)
             .AndCreateBindingRegistry(_monitoringService);
         stopwatch.Stop();
 
         _logger.LogVerbose(
-            $"{bindingRegistry.StepDefinitions.Length} step definitions discovered in {stopwatch.Elapsed}");
+            $"{bindingRegistry.StepDefinitions.Length} step definitions and {bindingRegistry.Hooks.Length} hooks discovered in {stopwatch.Elapsed}");
         return bindingRegistry;
     }
 
@@ -54,6 +53,7 @@ internal class DiscoveryInvoker
         private DiscoveryResult _discoveryResult;
         private ProjectSettings _projectSettings;
         private ImmutableArray<ProjectStepDefinitionBinding> _stepDefinitions;
+        private ImmutableArray<ProjectHookBinding> _hooks;
         private ConfigSource _testAssemblySource;
 
         public Discovery(IDeveroomLogger logger, IDeveroomErrorListServices errorListServices,
@@ -124,7 +124,7 @@ internal class DiscoveryInvoker
             return new FailedDiscovery();
         }
 
-        public IDiscovery ThenImportStepDefinitions(string projectName)
+        public IDiscovery ThenImportBindings(string projectName)
         {
             var bindingImporter =
                 new BindingImporter(_discoveryResult.SourceFiles, _discoveryResult.TypeNames, _logger);
@@ -134,8 +134,13 @@ internal class DiscoveryInvoker
                 .Where(psd => psd != null)
                 .ToImmutableArray();
 
+            _hooks = _discoveryResult.Hooks
+                .Select(sd => bindingImporter.ImportHook(sd))
+                .Where(psd => psd != null)
+                .ToImmutableArray();
+
             _logger.LogInfo(
-                $"{_stepDefinitions.Length} step definitions discovered for project {projectName}");
+                $"{_stepDefinitions.Length} step definitions and {_hooks.Length} hooks discovered for project {projectName}");
 
             ReportInvalidStepDefinitions();
 
@@ -150,7 +155,7 @@ internal class DiscoveryInvoker
             var projectHash = _invoker.CreateProjectHash(_projectSettings, _testAssemblySource);
 
             var bindingRegistry =
-                new ProjectBindingRegistry(_stepDefinitions, projectHash);
+                new ProjectBindingRegistry(_stepDefinitions, _hooks, projectHash);
             return bindingRegistry;
         }
 
@@ -195,7 +200,7 @@ internal class DiscoveryInvoker
         public IDiscovery AndProjectIsReqnrollProject() => this;
         public IDiscovery AndBindingSourceIsValid() => this;
         public IDiscovery AndDiscoveryProviderSucceed(IDiscoveryResultProvider discoveryResultProvider) => this;
-        public IDiscovery ThenImportStepDefinitions(string projectName) => this;
+        public IDiscovery ThenImportBindings(string projectName) => this;
 
         public ProjectBindingRegistry AndCreateBindingRegistry(IMonitoringService monitoringService) =>
             ProjectBindingRegistry.Invalid;
@@ -206,7 +211,7 @@ internal class DiscoveryInvoker
         IDiscovery AndProjectIsReqnrollProject();
         IDiscovery AndBindingSourceIsValid();
         IDiscovery AndDiscoveryProviderSucceed(IDiscoveryResultProvider discoveryResultProvider);
-        IDiscovery ThenImportStepDefinitions(string projectName);
+        IDiscovery ThenImportBindings(string projectName);
         ProjectBindingRegistry AndCreateBindingRegistry(IMonitoringService monitoringService);
     }
 }

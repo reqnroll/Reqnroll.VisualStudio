@@ -1,4 +1,5 @@
 #nullable disable
+using Microsoft.Build.Framework.XamlTypes;
 using ScenarioBlock = Reqnroll.VisualStudio.Editor.Services.Parser.ScenarioBlock;
 
 namespace Reqnroll.VisualStudio.Specs.StepDefinitions;
@@ -13,7 +14,9 @@ public class ProjectSystemSteps : Steps
     private DeveroomEditorCommandBase _invokedCommand;
     private InMemoryStubProjectScope _projectScope;
     private ProjectStepDefinitionBinding _stepDefinitionBinding;
+    private ProjectHookBinding _hookBinding;
     private StubWpfTextView _wpfTextView;
+    private Random _rnd = new(42);
 
     public ProjectSystemSteps(StubIdeScope stubIdeScope)
     {
@@ -128,13 +131,21 @@ public class ProjectSystemSteps : Steps
         RegisterStepDefinitions(stepDefinitions);
     }
 
+    [Given("the following hooks in the project:")]
+    public void GivenTheFollowingHooksInTheProject(DataTable hooksTable)
+    {
+        var hooks = hooksTable.CreateSet(CreateHookFromTableRow).ToArray();
+        RegisterHooks(hooks);
+    }
+
     private StepDefinition CreateStepDefinitionFromTableRow(DataTableRow tableRow)
     {
         var filePath = @"X:\ProjectMock\CalculatorSteps.cs";
+        var line = _rnd.Next(1, 30);
         var stepDefinition = new StepDefinition
         {
             Method = $"M{Guid.NewGuid():N}",
-            SourceLocation = filePath + "|12|5"
+            SourceLocation = filePath + $"|{line}|5"
         };
 
         tableRow.TryGetValue("tag scope", out var tagScope);
@@ -161,13 +172,55 @@ public class ProjectSystemSteps : Steps
         return stepDefinition;
     }
 
+    private Hook CreateHookFromTableRow(DataTableRow tableRow)
+    {
+        var filePath = @"X:\ProjectMock\Hooks.cs";
+        var line = _rnd.Next(1, 30);
+        var hook = new Hook
+        {
+            Method = $"M{Guid.NewGuid():N}",
+            SourceLocation = filePath + $"|{line}|8"
+        };
+
+        tableRow.TryGetValue("tag scope", out var tagScope);
+        tableRow.TryGetValue("feature scope", out var featureScope);
+        tableRow.TryGetValue("scenario scope", out var scenarioScope);
+
+        if (string.IsNullOrEmpty(tagScope))
+            tagScope = null;
+        if (string.IsNullOrEmpty(featureScope))
+            featureScope = null;
+        if (string.IsNullOrEmpty(scenarioScope))
+            scenarioScope = null;
+
+        if (tagScope != null || featureScope != null || scenarioScope != null)
+            hook.Scope = new StepScope
+            {
+                Tag = tagScope,
+                FeatureTitle = featureScope,
+                ScenarioTitle = scenarioScope
+            };
+
+        _projectScope.AddFile(filePath, string.Empty);
+
+        return hook;
+    }
+
     private void RegisterStepDefinitions(params StepDefinition[] stepDefinitions)
     {
         _discoveryService.LastDiscoveryResult = new DiscoveryResult
         {
-            StepDefinitions = _discoveryService.LastDiscoveryResult.StepDefinitions.Concat(
-                stepDefinitions
-            ).ToArray()
+            StepDefinitions = _discoveryService.LastDiscoveryResult.StepDefinitions.Concat(stepDefinitions).ToArray(),
+            Hooks = _discoveryService.LastDiscoveryResult.Hooks
+        };
+    }
+
+    private void RegisterHooks(params Hook[] hooks)
+    {
+        _discoveryService.LastDiscoveryResult = new DiscoveryResult
+        {
+            StepDefinitions = _discoveryService.LastDiscoveryResult.StepDefinitions,
+            Hooks = _discoveryService.LastDiscoveryResult.Hooks.Concat(hooks).ToArray()
         };
     }
 
@@ -308,7 +361,16 @@ public class ProjectSystemSteps : Steps
         {
             case "Go To Definition":
             {
-                _invokedCommand = new GoToStepDefinitionCommand(
+                _invokedCommand = new GoToDefinitionCommand(
+                    _ideScope,
+                    aggregatorFactoryService,
+                    taggerProvider);
+                _invokedCommand.PreExec(_wpfTextView, _invokedCommand.Targets.First());
+                return;
+            }
+            case "Go To Hooks":
+            {
+                _invokedCommand = new GoToHooksCommand(
                     _ideScope,
                     aggregatorFactoryService,
                     taggerProvider);
@@ -582,7 +644,21 @@ public class ProjectSystemSteps : Steps
 
         ActionsMock.LastNavigateToSourceLocation.Should().NotBeNull();
         ActionsMock.LastNavigateToSourceLocation.SourceFile.Should()
-            .Be(_stepDefinitionBinding.Implementation.SourceLocation.SourceFile);
+            .Be(_stepDefinitionBinding.Implementation.SourceLocation!.SourceFile);
+    }
+
+    [Then("the source file of the {string} hook is opened")]
+    public void ThenTheSourceFileOfTheHookIsOpened(string hookMethodName)
+    {
+        _hookBinding = _discoveryService.BindingRegistryCache.Value.Hooks
+            .FirstOrDefault(b => b.Implementation.Method == hookMethodName);
+        _hookBinding.Should().NotBeNull($"there has to be a {hookMethodName} hook");
+
+        ActionsMock.LastNavigateToSourceLocation.Should().NotBeNull();
+        ActionsMock.LastNavigateToSourceLocation.SourceFile.Should()
+            .Be(_hookBinding.Implementation.SourceLocation!.SourceFile);
+        ActionsMock.LastNavigateToSourceLocation.SourceFileLine.Should()
+            .Be(_hookBinding.Implementation.SourceLocation!.SourceFileLine);
     }
 
     [Then(@"the caret is positioned to the step definition method")]
@@ -601,9 +677,12 @@ public class ProjectSystemSteps : Steps
                 new StepDefinitionJumpListData
                 {
                     StepDefinition = Regex.Match(i.Label, @"\((?<stepdef>.*?)\)").Groups["stepdef"].Value,
-                    StepType = Regex.Match(i.Label, @"\[(?<stepdeftype>.*?)\(").Groups["stepdeftype"].Value
+                    StepType = Regex.Match(i.Label, @"\[(?<stepdeftype>.*?)\(").Groups["stepdeftype"].Value,
+                    Hook = Regex.Match(i.Label, @"\]\:\s*(?<hook>.*)").Groups["hook"].Value,
+                    HookScope = Regex.Match(i.Label, @"\((?<hookScope>.*?)\)").Groups["hookScope"].Value,
+                    HookType = Regex.Match(i.Label, @"\[(?<hookType>.*?)[\(\]]").Groups["hookType"].Value,
                 }).ToArray();
-        expectedJumpListItemsTable.CompareToSet(actualStepDefs);
+        expectedJumpListItemsTable.CompareToSet(actualStepDefs, true);
     }
 
     [Then(@"a jump list ""(.*)"" is opened with the following steps")]
@@ -632,6 +711,14 @@ public class ProjectSystemSteps : Steps
         InvokeFirstContextMenuItem();
 
         ThenTheSourceFileOfTheStepDefinitionIsOpened(stepRegex, stepType);
+    }
+
+    [Then("invoking the first item from the jump list navigates to the {string} hook")]
+    public void ThenInvokingTheFirstItemFromTheJumpListNavigatesToTheHook(string hookMethodName)
+    {
+        InvokeFirstContextMenuItem();
+
+        ThenTheSourceFileOfTheHookIsOpened(hookMethodName);
     }
 
     [Then(@"invoking the first item from the jump list navigates to the ""([^""]*)"" step in ""([^""]*)"" line (.*)")]
@@ -854,6 +941,9 @@ public class ProjectSystemSteps : Steps
     {
         public string StepDefinition { get; set; }
         public string StepType { get; set; }
+        public string HookType { get; set; }
+        public string Hook { get; set; }
+        public string HookScope { get; set; }
     }
 
     private class StepDefinitionSnippetData

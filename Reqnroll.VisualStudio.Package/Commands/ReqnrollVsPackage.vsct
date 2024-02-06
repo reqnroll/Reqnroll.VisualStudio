@@ -68,20 +68,20 @@
           <ToolTipText>Creates step definition skeleton snippets for the undefined steps of the current feature file.</ToolTipText>
         </Strings>
       </Button>
-      <Button guid="guidReqnrollPackageCmdSet" id="FindStepDefinitionUsagesCommandId" priority="0x0101" type="Button">
-        <Parent guid="guidReqnrollPackageCmdSet" id="EditorContextMenuGroup" />
-        <Icon guid="guidImages" id="bmpReqnroll" />
-        <CommandFlag>DynamicVisibility</CommandFlag>
-        <CommandFlag>DefaultInvisible</CommandFlag>
-        <Strings>
-          <ButtonText>Find Step Definition Usages</ButtonText>
-          <CommandName>Reqnroll - Find Step Definition Usages</CommandName>
-          <CanonicalName>Reqnroll.FindStepDefinitionUsages</CanonicalName>
-          <LocCanonicalName>Reqnroll.FindStepDefinitionUsages</LocCanonicalName>
-          <ToolTipText>Finds usages of the step definition in feature files.</ToolTipText>
-        </Strings>
+      <Button guid="guidReqnrollPackageCmdSet" id="GoToHookCommandId" priority="0x0101" type="Button">
+	      <Parent guid="guidReqnrollPackageCmdSet" id="EditorContextMenuGroup" />
+	      <Icon guid="guidImages" id="bmpReqnroll" />
+	      <CommandFlag>DynamicVisibility</CommandFlag>
+	      <CommandFlag>DefaultInvisible</CommandFlag>
+	      <Strings>
+		      <ButtonText>Go To Hooks</ButtonText>
+		      <CommandName>Reqnroll - Go To Hooks</CommandName>
+		      <CanonicalName>Reqnroll.GoToHooks</CanonicalName>
+		      <LocCanonicalName>Reqnroll.GoToHooks</LocCanonicalName>
+		      <ToolTipText>Navigates to related hooks.</ToolTipText>
+	      </Strings>
       </Button>
-      <Button guid="guidReqnrollPackageCmdSet" id="RenameStepCommandId" priority="0x0101" type="Button">
+      <Button guid="guidReqnrollPackageCmdSet" id="RenameStepCommandId" priority="0x0102" type="Button">
 	      <Parent guid="guidReqnrollPackageCmdSet" id="EditorContextMenuGroup" />
 	      <Icon guid="guidImages" id="bmpReqnroll" />
 	      <CommandFlag>DynamicVisibility</CommandFlag>
@@ -94,18 +94,18 @@
 		      <ToolTipText>Rephrases scenario step text.</ToolTipText>
 	      </Strings>
       </Button>
-      <Button guid="guidReqnrollPackageCmdSet" id="RegenerateAllFeatureFileCodeBehindCommandId" priority="0x0101" type="Button">
-        <Parent guid="guidReqnrollPackageCmdSet" id="ProjectContextMenuGroup" />
-        <Icon guid="guidImages" id="bmpReqnroll" />
-        <CommandFlag>DynamicVisibility</CommandFlag>
-        <CommandFlag>DefaultInvisible</CommandFlag>
-        <Strings>
-          <ButtonText>Regenerate All Feature File Code-behind</ButtonText>
-          <CommandName>Reqnroll - Regenerate All Feature File Code-behind</CommandName>
-          <CanonicalName>Reqnroll.RegenerateAllFeatureFileCodeBehind</CanonicalName>
-          <LocCanonicalName>Reqnroll.RegenerateAllFeatureFileCodeBehind</LocCanonicalName>
-          <ToolTipText>Regenerates the feature file code-behind for all feature files in the project.</ToolTipText>
-        </Strings>
+      <Button guid="guidReqnrollPackageCmdSet" id="FindStepDefinitionUsagesCommandId" priority="0x0100" type="Button">
+	      <Parent guid="guidReqnrollPackageCmdSet" id="EditorContextMenuGroup" />
+	      <Icon guid="guidImages" id="bmpReqnroll" />
+	      <CommandFlag>DynamicVisibility</CommandFlag>
+	      <CommandFlag>DefaultInvisible</CommandFlag>
+	      <Strings>
+		      <ButtonText>Find Step Definition Usages</ButtonText>
+		      <CommandName>Reqnroll - Find Step Definition Usages</CommandName>
+		      <CanonicalName>Reqnroll.FindStepDefinitionUsages</CanonicalName>
+		      <LocCanonicalName>Reqnroll.FindStepDefinitionUsages</LocCanonicalName>
+		      <ToolTipText>Finds usages of the step definition in feature files.</ToolTipText>
+	      </Strings>
       </Button>
     </Buttons>
 
@@ -124,6 +124,7 @@
     <KeyBinding guid="guidReqnrollPackageCmdSet" id="DefineStepsCommandId" editor="guidVSStd97" key1="B" mod1="Control" key2="D" />
     <KeyBinding guid="guidReqnrollPackageCmdSet" id="FindStepDefinitionUsagesCommandId" editor="guidVSStd97" key1="B" mod1="Control" key2="F" />
     <KeyBinding guid="guidReqnrollPackageCmdSet" id="RenameStepCommandId" editor="guidVSStd97" key1="B" mod1="Control" key2="R" />
+    <KeyBinding guid="guidReqnrollPackageCmdSet" id="GoToHookCommandId" editor="guidVSStd97" key1="B" mod1="Control" key2="H" />
   </KeyBindings>
 
   <Symbols>
@@ -137,8 +138,8 @@
 
       <IDSymbol name="DefineStepsCommandId" value="0x0100" />
       <IDSymbol name="FindStepDefinitionUsagesCommandId" value="0x0101" />
-      <IDSymbol name="RegenerateAllFeatureFileCodeBehindCommandId" value="0x0102" />
       <IDSymbol name="RenameStepCommandId" value="0x0103" />
+      <IDSymbol name="GoToHookCommandId" value="0x0104" />
     </GuidSymbol>
 
     <GuidSymbol name="guidImages" value="{027c70d2-dbf1-49ee-ba67-c4796aa26a87}" >

@@ -43,7 +43,7 @@ public class ReprocessStepDefinitionFileTests
 
         //assert
         ProjectBindingRegistry bindingRegistry =
-            ProjectBindingRegistry.FromStepDefinitions(projectStepDefinitionBindings);
+            ProjectBindingRegistry.FromBindings(projectStepDefinitionBindings);
         _projectScope.IdeScope.Logger.LogVerbose(
             $"test retrieved reg v{bindingRegistry.Version} has {bindingRegistry.StepDefinitions.Length}");
         var dumped = Dump(bindingRegistry);
@@ -68,7 +68,7 @@ public class Foo{
 }");
 
         ProjectBindingRegistry bindingRegistry = ProjectBindingRegistry
-            .FromStepDefinitions(new[]
+            .FromBindings(new[]
             {
                 BuildProjectStepDefinitionBinding("^outdated expression$", "Method", stepDefinitionFilePath),
                 BuildProjectStepDefinitionBinding("^expression$", "MethodInOtherFile", otherStepDefinitionFilePath)
@@ -98,7 +98,7 @@ public class Foo{
     private static ProjectStepDefinitionBinding BuildProjectStepDefinitionBinding(string regex, string method,
         string otherStepDefinitionFilePath) =>
         new(ScenarioBlock.Given, new Regex(regex), null,
-            new ProjectStepDefinitionImplementation(method, Array.Empty<string>(),
+            new ProjectBindingImplementation(method, Array.Empty<string>(),
                 new SourceLocation(otherStepDefinitionFilePath, 0, 0)));
 
     private async Task<MockableDiscoveryService> CreateSut(StepDefinition[] initialStepDefinitions)
@@ -162,7 +162,7 @@ public class Foo{
         return sb.ToString();
     }
 
-    public string Dump(ProjectStepDefinitionImplementation implementation)
+    public string Dump(ProjectBindingImplementation implementation)
     {
         IncreaseIndent();
         var sb = new StringBuilder();

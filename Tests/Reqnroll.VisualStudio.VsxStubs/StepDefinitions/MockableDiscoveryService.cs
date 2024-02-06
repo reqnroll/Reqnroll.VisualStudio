@@ -8,7 +8,11 @@ public class MockableDiscoveryService : DiscoveryService
     {
     }
 
-    public DiscoveryResult LastDiscoveryResult { get; set; } = new() {StepDefinitions = Array.Empty<StepDefinition>()};
+    public DiscoveryResult LastDiscoveryResult { get; set; } = new()
+    {
+        StepDefinitions = Array.Empty<StepDefinition>(),
+        Hooks = Array.Empty<Hook>()
+    };
 
     public static MockableDiscoveryService Setup(IProjectScope projectScope, TimeSpan discoveryDelay) =>
         SetupWithInitialStepDefinitions(projectScope, Array.Empty<StepDefinition>(), discoveryDelay);
@@ -20,7 +24,11 @@ public class MockableDiscoveryService : DiscoveryService
 
         var discoveryService = new MockableDiscoveryService(projectScope, discoveryResultProviderMock)
         {
-            LastDiscoveryResult = new DiscoveryResult {StepDefinitions = stepDefinitions}
+            LastDiscoveryResult = new DiscoveryResult
+            {
+                StepDefinitions = stepDefinitions,
+                Hooks = Array.Empty<Hook>()
+            }
         };
 
         InMemoryStubProjectBuilder.CreateOutputAssembly(projectScope);

@@ -1,3 +1,5 @@
+using Reqnroll.VisualStudio.ReqnrollConnector.Models;
+
 namespace ReqnrollConnector.ReqnrollProxies;
 
 public record StepDefinition(

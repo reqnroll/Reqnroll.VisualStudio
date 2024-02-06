@@ -11,7 +11,7 @@ public class StepDefinitionSamplerTests
     {
         parameterTypes = parameterTypes ?? new string[0];
         return new ProjectStepDefinitionBinding(ScenarioBlock.Given, new Regex("^" + regex + "$"), null,
-            new ProjectStepDefinitionImplementation("M1", parameterTypes, null));
+            new ProjectBindingImplementation("M1", parameterTypes, null));
     }
 
     [Fact]

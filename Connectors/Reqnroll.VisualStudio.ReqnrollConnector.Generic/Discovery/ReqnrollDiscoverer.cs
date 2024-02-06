@@ -1,10 +1,14 @@
+using Reqnroll.VisualStudio.ReqnrollConnector.Models;
+using StepDefinition = ReqnrollConnector.ReqnrollProxies.StepDefinition;
+
 namespace ReqnrollConnector.Discovery;
 
 public class ReqnrollDiscoverer
 {
     private readonly IAnalyticsContainer _analytics;
-    private readonly ILogger _log;
     private readonly SymbolReaderCache _symbolReaders;
+    // ReSharper disable once NotAccessedField.Local
+    private readonly ILogger _log;
 
     public ReqnrollDiscoverer(ILogger log, IAnalyticsContainer analytics)
     {
@@ -21,8 +25,10 @@ public class ReqnrollDiscoverer
         var typeNames = ImmutableSortedDictionary.CreateBuilder<string, string>();
         var sourcePaths = ImmutableSortedDictionary.CreateBuilder<string, string>();
 
-        var stepDefinitions = bindingRegistryFactory
-            .GetBindingRegistry(assemblyLoadContext, testAssembly, configFile)
+        var bindingRegistryAdapter = bindingRegistryFactory
+            .GetBindingRegistry(assemblyLoadContext, testAssembly, configFile);
+
+        var stepDefinitions = bindingRegistryAdapter
             .GetStepDefinitions()
             .Select(sdb => CreateStepDefinition(sdb,
                 sdb2 => GetParamTypes(sdb2.ParamTypes, parameterTypeName => GetKey(typeNames, parameterTypeName)),
@@ -33,12 +39,24 @@ public class ReqnrollDiscoverer
             .OrderBy(sd => sd.SourceLocation)
             .ToImmutableArray();
 
+        var hooks = bindingRegistryAdapter.
+            GetHooks()
+            .Select(sdb => CreateHook(sdb,
+                sourcePath => GetKey(sourcePaths, sourcePath),
+                assemblyLoadContext,
+                testAssembly)
+            )
+            .OrderBy(sd => sd.SourceLocation)
+            .ToImmutableArray();
+
+
         _analytics.AddAnalyticsProperty("TypeNames", typeNames.Count.ToString());
         _analytics.AddAnalyticsProperty("SourcePaths", sourcePaths.Count.ToString());
         _analytics.AddAnalyticsProperty("StepDefinitions", stepDefinitions.Length.ToString());
 
         return new DiscoveryResult(
             stepDefinitions,
+            hooks,
             sourcePaths.ToImmutable(),
             typeNames.ToImmutable()
         );
@@ -52,14 +70,31 @@ public class ReqnrollDiscoverer
         var stepDefinition = new StepDefinition
         (
             sdb.StepDefinitionType,
-            sdb.Regex.Map(r => r.ToString()).Reduce((string) null!),
+            sdb.Regex,
             sdb.Method.ToString()!,
             getParameterTypes(sdb),
             GetScope(sdb),
             GetSourceExpression(sdb),
-            GetErrorMessage(sdb),
+            sdb.Error,
             sourceLocation.Reduce((string) null!)
         );
+
+        return stepDefinition;
+    }
+
+    private Hook CreateHook(HookBindingAdapter sdb,
+        Func<string, string> getSourcePathId,
+        AssemblyLoadContext assemblyLoadContext, Assembly testAssembly)
+    {
+        var sourceLocation = GetSourceLocation(sdb.Method, getSourcePathId, assemblyLoadContext, testAssembly);
+        var stepDefinition = new Hook
+        {
+            Type = sdb.HookType,
+            HookOrder = sdb.HookOrder,
+            Method = sdb.Method.ToString(),
+            Scope = GetScope(sdb), 
+            SourceLocation = sourceLocation.Reduce((string)null!)
+        };
 
         return stepDefinition;
     }
@@ -93,23 +128,24 @@ public class ReqnrollDiscoverer
         return $"#{key}";
     }
 
-    private static StepScope? GetScope(StepDefinitionBindingAdapter stepDefinitionBinding)
+    private static StepScope? GetScope(IScopedBindingAdapter scopedBinding)
     {
-        if (!stepDefinitionBinding.IsScoped)
+        if (!scopedBinding.IsScoped)
             return null;
 
-        return new StepScope(
-            stepDefinitionBinding.BindingScopeTag.Map(tag => $"@{tag}").Reduce((string) null!),
-            stepDefinitionBinding.BindingScopeFeatureTitle,
-            stepDefinitionBinding.BindingScopeScenarioTitle
-        );
+        return new StepScope
+        {
+            Tag = scopedBinding.BindingScopeTag,
+            FeatureTitle = scopedBinding.BindingScopeFeatureTitle,
+            ScenarioTitle = scopedBinding.BindingScopeScenarioTitle
+        };
     }
 
     private static string? GetSourceExpression(StepDefinitionBindingAdapter sdb)
-        => sdb.GetProperty<string>("SourceExpression").Reduce(() => GetSpecifiedExpressionFromRegex(sdb)!);
+        => sdb.Expression ?? GetSpecifiedExpressionFromRegex(sdb);
 
     private static string? GetSpecifiedExpressionFromRegex(StepDefinitionBindingAdapter sdb) =>
-        sdb.Regex
+        sdb.Regex?
             .Map(regex => regex.ToString())
             .Map(regexString =>
             {
@@ -118,11 +154,7 @@ public class ReqnrollDiscoverer
                 if (regexString.EndsWith("$"))
                     regexString = regexString.Substring(0, regexString.Length - 1);
                 return regexString;
-            })
-            .Reduce((string) null!);
-
-    private static string? GetErrorMessage(StepDefinitionBindingAdapter sdb)
-        => sdb.GetProperty<string>("ErrorMessage").Reduce((string)null!);
+            });
 
     private Option<string> GetSourceLocation(BindingMethodAdapter bindingMethod, Func<string, string> getSourcePathId,
         AssemblyLoadContext assemblyLoadContext, Assembly testAssembly)

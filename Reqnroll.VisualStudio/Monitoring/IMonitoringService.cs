@@ -18,6 +18,7 @@ public interface IMonitoringService
     void MonitorCommandDefineSteps(CreateStepDefinitionsDialogResult action, int snippetCount);
     void MonitorCommandFindStepDefinitionUsages(int usagesCount, bool isCancelled);
     void MonitorCommandGoToStepDefinition(bool generateSnippet);
+    void MonitorCommandGoToHook();
     void MonitorCommandAutoFormatTable();
     void MonitorCommandAutoFormatDocument(bool isSelectionFormatting);
     void MonitorCommandAddFeatureFile(ProjectSettings projectSettings);

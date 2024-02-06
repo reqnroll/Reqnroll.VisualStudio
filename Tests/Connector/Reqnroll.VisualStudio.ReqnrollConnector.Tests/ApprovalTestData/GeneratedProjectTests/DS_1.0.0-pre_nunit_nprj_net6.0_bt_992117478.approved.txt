@@ -1,5 +1,6 @@
 {
   "stepDefinitions": [],
+  "hooks": [],
   "sourceFiles": {},
   "typeNames": {},
   "analyticsProperties": {

@@ -66,7 +66,7 @@ public class RenameStepViewModel : INotifyPropertyChanged
             ScenarioBlock.Given,
             new Regex("^invalid$"),
             new Scope(),
-            new ProjectStepDefinitionImplementation(
+            new ProjectBindingImplementation(
                 "WhenIPressAdd",
                 Array.Empty<string>(),
                 new SourceLocation("Steps.cs", 10, 9))

@@ -33,7 +33,7 @@ public class StepDefinitionFileParser
                 methodBodyEndPosition.Line + 1,
                 methodBodyEndPosition.Character + 1);
             var implementation =
-                new ProjectStepDefinitionImplementation(FullMethodName(method), parameterTypes, sourceLocation);
+                new ProjectBindingImplementation(FullMethodName(method), parameterTypes, sourceLocation);
 
             foreach (var (attribute, token) in attributes)
             {

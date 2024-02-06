@@ -21,7 +21,7 @@ public class UndefinedStepDescriptor
 
 public class MatchResultItem
 {
-    private static readonly string[] EmptyErrors = new string[0];
+    private static readonly string[] EmptyErrors = Array.Empty<string>();
 
     private MatchResultItem(MatchResultType type, ProjectStepDefinitionBinding matchedStepDefinition,
         ParameterMatch parameterMatch, string[] errors, UndefinedStepDescriptor undefinedStep)

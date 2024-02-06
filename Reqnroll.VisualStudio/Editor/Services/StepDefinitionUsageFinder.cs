@@ -94,7 +94,7 @@ public class StepDefinitionUsageFinder
         if (featureNode == null)
             yield break;
 
-        var dummyRegistry = ProjectBindingRegistry.FromStepDefinitions(stepDefinitions);
+        var dummyRegistry = ProjectBindingRegistry.FromBindings(stepDefinitions);
 
         var featureContext = new UsageFinderContext(featureNode);
 

@@ -8,6 +8,7 @@ public static class DeveroomTagTypes
     public const string FeatureBlock = nameof(FeatureBlock);
     public const string RuleBlock = nameof(RuleBlock);
     public const string ScenarioDefinitionBlock = nameof(ScenarioDefinitionBlock);
+    public const string ScenarioHookReference = nameof(ScenarioHookReference);
     public const string StepBlock = nameof(StepBlock);
     public const string ExamplesBlock = nameof(ExamplesBlock);
     public const string StepKeyword = nameof(StepKeyword);

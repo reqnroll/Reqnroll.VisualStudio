@@ -55,6 +55,7 @@ public class GeneratorOptions
 
     public bool AddUnicodeBinding { get; set; }
     public bool AddAsyncStep { get; set; }
+    public bool AddBeforeScenarioHook { get; set; }
 
     public bool IsBuilt { get; set; }
 
@@ -128,6 +129,8 @@ public class GeneratorOptions
             result.Append("unic_");
         if (AddAsyncStep)
             result.Append("async_");
+        if (AddBeforeScenarioHook)
+            result.Append("hbs_");
         if (IsBuilt)
             result.Append("bt_");
 
