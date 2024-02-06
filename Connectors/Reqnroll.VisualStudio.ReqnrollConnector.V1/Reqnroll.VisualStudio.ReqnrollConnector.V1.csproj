@@ -15,7 +15,7 @@
   <ItemGroup>
     <PackageReference Include="dnlib" Version="3.3.5" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Reqnroll.CustomPlugin" Version="1.0.0-pre20240129-77" />
+    <PackageReference Include="Reqnroll.CustomPlugin" Version="1.0.0" />
     <PackageReference Include="MSTest.TestFramework" Version="2.2.7" />
   </ItemGroup>
 
