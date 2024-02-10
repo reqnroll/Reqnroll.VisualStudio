@@ -18,7 +18,7 @@ public class ReportErrorDialogViewModel
 
     internal const string INIT_ERROR = @"
             Reqnroll Visual Studio Extension detected an issue during initialization. Please try updating your Visual Studio to the latest
-            version. (The version of your Viusal Studio can be found in the '*Help / About*' dialog.) 
+            version. (The version of your Visual Studio can be found in the '*Help / About*' dialog.) 
 
             If the problem persists even after updating Visual Studio, please report the error above in our issue tracker at 
             https://github.com/reqnroll/Reqnroll.VS/issues.
