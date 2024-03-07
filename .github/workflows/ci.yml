@@ -142,10 +142,10 @@ jobs:
         name: specs-results
         path: "**/specs-results.trx"
     - name: Test Report
-      uses: dorny/test-reporter@v1
-      if: success() || failure() 
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      if: always()
       with:
-        name: Specs
-        path: "**/specs-results.trx"
-        reporter: dotnet-trx   
+        check_name: Specs
+        files: "**/specs-results.trx"
+        comment_mode: off
     
