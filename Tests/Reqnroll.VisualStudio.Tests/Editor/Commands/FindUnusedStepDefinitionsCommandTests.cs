@@ -36,7 +36,7 @@ public class FindUnusedStepDefinitionsCommandTests : CommandTestBase<FindUnusedS
         await InvokeAndWaitAnalyticsEvent(command, textView);
 
         (ProjectScope.IdeScope.Actions as StubIdeActions)!.LastShowContextMenuItems.Should()
-            .Contain(mi => mi.Label == "Steps.cs(9,9): WhenIPressAdd");
+            .Contain(mi => mi.Label == @"Steps.cs(9,9): [When(""I choose add"")] WhenIPressAdd");
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public class FindUnusedStepDefinitionsCommandTests : CommandTestBase<FindUnusedS
 
         (ProjectScope.IdeScope.Actions as StubIdeActions)!.LastShowContextMenuItems.Should()
             .HaveCount(2).And
-            .Contain(mi => mi.Label == "Steps.cs(10,9): WhenIPressAdd");
+            .Contain(mi => mi.Label == "Steps.cs(10,9): [When(\"I choose add\")] WhenIPressAdd");
     }
     /*
         [Theory]

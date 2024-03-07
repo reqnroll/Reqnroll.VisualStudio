@@ -6,6 +6,9 @@
     <LangVersion>latest</LangVersion>
     <NoWarn>VSTHRD200<!--Use "Async" suffix in names of methods that return an awaitable type.--></NoWarn>
   </PropertyGroup>
+  <ItemGroup>
+    <ReqnrollObsoleteCodeBehindFiles Remove="Features\Editor\Commands\FindStepDefinitionUsagesCommand - Copy.feature.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="System.IO.Abstractions.TestingHelpers" Version="13.2.47" />
@@ -34,6 +37,19 @@
     <ProjectReference Include="..\..\Reqnroll.VisualStudio\Reqnroll.VisualStudio.csproj" />
     <ProjectReference Include="..\Reqnroll.SampleProjectGenerator.Core\Reqnroll.SampleProjectGenerator.Core.csproj" />
     <ProjectReference Include="..\Reqnroll.VisualStudio.VsxStubs\Reqnroll.VisualStudio.VsxStubs.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Features\Editor\Commands\FindUnusedStepDefinitionCommand.feature.cs">
+      <DependentUpon>FindUnusedStepDefinitionCommand.feature</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ReqnrollFeatureFiles Update="Features\Editor\Commands\FindUnusedStepDefinitionCommand.feature">
+      <Visible>$(UsingMicrosoftNETSdk)</Visible>
+      <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
+    </ReqnrollFeatureFiles>
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

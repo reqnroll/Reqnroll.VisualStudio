@@ -387,6 +387,16 @@ public class ProjectSystemSteps : Steps
                 Wait.For(() => ActionsMock.IsComplete.Should().BeTrue());
                 return;
             }
+            case "Find Unused Step Definitions":
+                {
+                    _invokedCommand = new FindUnusedStepDefinitionsCommand(
+                        _ideScope,
+                        aggregatorFactoryService,
+                        taggerProvider);
+                    _invokedCommand.PreExec(_wpfTextView, _invokedCommand.Targets.First());
+                    Wait.For(() => ActionsMock.IsComplete.Should().BeTrue());
+                    return;
+                }
             case "Comment":
             {
                _invokedCommand = new CommentCommand(

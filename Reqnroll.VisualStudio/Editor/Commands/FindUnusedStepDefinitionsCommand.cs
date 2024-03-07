@@ -4,9 +4,9 @@
 
     public class FindUnusedStepDefinitionsCommand : DeveroomEditorCommandBase, IDeveroomCodeEditorCommand
     {
-        private const string PopupHeader = "Unused Step definitions";
+        private const string PopupHeader = "Unused Step Definitions";
 
-        private readonly StepDefinitionsUnusedFinder _stepDefinitionsUnusedFinder;
+        private readonly UnusedStepDefinitionsFinder _stepDefinitionsUnusedFinder;
 
         [ImportingConstructor]
         public FindUnusedStepDefinitionsCommand(
@@ -15,7 +15,7 @@
             IDeveroomTaggerProvider taggerProvider)
             : base(ideScope, aggregatorFactory, taggerProvider)
         {
-            _stepDefinitionsUnusedFinder = new StepDefinitionsUnusedFinder(ideScope);
+            _stepDefinitionsUnusedFinder = new UnusedStepDefinitionsFinder(ideScope);
         }
 
 
@@ -168,7 +168,12 @@
         {
             return new SourceLocationContextMenuItem(
                 stepDefinition.Implementation.SourceLocation, project.ProjectFolder,
-                $"{stepDefinition.Implementation.Method}", _ => { PerformJump(stepDefinition); }, null);
+                GetUsageLabel(stepDefinition), _ => { PerformJump(stepDefinition); }, null);
+        }
+
+        private static string GetUsageLabel(ProjectStepDefinitionBinding stepDefinition)
+        {
+            return $"[{stepDefinition.StepDefinitionType}(\"{stepDefinition.Expression}\")] {stepDefinition.Implementation.Method}";
         }
 
         //TODO: near duplicate of similar method in FindStepDefinitionUsagesCommand

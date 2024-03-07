@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 #nullable disable
 namespace Reqnroll.VisualStudio.Editor.Services;
 
-public class StepDefinitionsUnusedFinder
+public class UnusedStepDefinitionsFinder
 {
     private readonly IIdeScope _ideScope;
 
-    public StepDefinitionsUnusedFinder(IIdeScope ideScope)
+    public UnusedStepDefinitionsFinder(IIdeScope ideScope)
     {
         _ideScope = ideScope;
     }
@@ -50,7 +50,6 @@ public class StepDefinitionsUnusedFinder
         {
             var context = new UnusedFinderContext(scenarioDefinition, featureContext);
 
-            // this iterates over steps in the scenario and finds those that are bound or not bound. We need to change the way the Registry works to match by Step Definition.
             foreach (var step in scenarioDefinition.Steps)
             {
                 var matchResult = dummyRegistry.MatchStep(step, context);
