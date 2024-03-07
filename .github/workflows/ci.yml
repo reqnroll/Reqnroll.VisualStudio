@@ -140,7 +140,7 @@ jobs:
         project_path: Tests/Reqnroll.VisualStudio.Specs
         no_build: true
         msbuild_configuration: ${{ steps.versions.outputs.product_configuration }}
-        msbuild_verbosity: normal
+        # msbuild_verbosity: normal
         set_check_status_from_test_outcome: true
         fail_build_on_failed_tests: true
         extra_test_parameters: '--filter "Category!=quarantaine"'
