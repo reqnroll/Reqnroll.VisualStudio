@@ -135,17 +135,26 @@ jobs:
     - name: Connector V1 Tests
       run: dotnet test ./Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.V1.Tests/Reqnroll.VisualStudio.ReqnrollConnector.V1.Tests.csproj ${{ steps.versions.outputs.test_params }}
     - name: Specs Tests
-      run: dotnet test ./Tests/Reqnroll.VisualStudio.Specs/Reqnroll.VisualStudio.Specs.csproj ${{ steps.versions.outputs.test_params }} --filter "Category!=quarantaine" --logger "trx;LogFileName=specs-results.trx"
+      uses: zyborg/dotnet-tests-report@v1
+      with:
+        project_path: Tests/Reqnroll.VisualStudio.Specs
+        no_build: true
+        msbuild_configuration: ${{ steps.versions.outputs.product_configuration }}
+        msbuild_verbosity: normal
+        set_check_status_from_test_outcome: true
+        fail_build_on_failed_tests: true
+        extra_test_parameters: '--filter "Category!=quarantaine"'
+        report_name: specs
+        report_title: Reqnroll.VisualStudio Specs
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        # gist_name: reqnroll_visualstudio_specs.md
+        # gist_badge_label: 'Reqnroll.VisualStudio Specs: %Counters_passed%/%Counters_total%'
+        # gist_token: ${{ secrets.GIST_TOKEN }}
+
+      # run: dotnet test ./Tests/Reqnroll.VisualStudio.Specs/Reqnroll.VisualStudio.Specs.csproj ${{ steps.versions.outputs.test_params }} --filter "Category!=quarantaine" --logger "trx;LogFileName=specs-results.trx"
     - uses: actions/upload-artifact@v4
       if: success() || failure()      
       with:
-        name: specs-results
-        path: "**/specs-results.trx"
-    # - name: Test Report
-    #   uses: EnricoMi/publish-unit-test-result-action@v2
-    #   if: always()
-    #   with:
-    #     check_name: Specs
-    #     files: "**/specs-results.trx"
-    #     comment_mode: off
+        name: test-results
+        path: "**/*.trx"
     
