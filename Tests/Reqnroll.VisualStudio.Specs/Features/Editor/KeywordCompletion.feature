@@ -23,6 +23,7 @@ Scenario: In the beginning of the file it offers Language, Tag and Feature
 	When I invoke the "Complete" command
 	Then a completion list should pop up with the following items
 		| item           |
+		| simulated error|
 		| #language:     |
 		| @tag1          |
 		| Feature:       |
