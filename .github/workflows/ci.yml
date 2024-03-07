@@ -141,11 +141,11 @@ jobs:
       with:
         name: specs-results
         path: "**/specs-results.trx"
-    - name: Test Report
-      uses: EnricoMi/publish-unit-test-result-action@v2
-      if: always()
-      with:
-        check_name: Specs
-        files: "**/specs-results.trx"
-        comment_mode: off
+    # - name: Test Report
+    #   uses: EnricoMi/publish-unit-test-result-action@v2
+    #   if: always()
+    #   with:
+    #     check_name: Specs
+    #     files: "**/specs-results.trx"
+    #     comment_mode: off
     
