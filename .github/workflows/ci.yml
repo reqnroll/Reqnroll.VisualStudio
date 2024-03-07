@@ -147,9 +147,10 @@ jobs:
         report_name: specs
         report_title: Reqnroll.VisualStudio Specs
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        # gist_name: reqnroll_visualstudio_specs.md
-        # gist_badge_label: 'Reqnroll.VisualStudio Specs: %Counters_passed%/%Counters_total%'
-        # gist_token: ${{ secrets.GIST_TOKEN }}
+        skip_check_run: true
+        gist_name: reqnroll_visualstudio_specs.md
+        gist_badge_label: 'Reqnroll.VisualStudio Specs: %Counters_passed%/%Counters_total%'
+        gist_token: ${{ secrets.TEST_GIST_TOKEN }}
 
       # run: dotnet test ./Tests/Reqnroll.VisualStudio.Specs/Reqnroll.VisualStudio.Specs.csproj ${{ steps.versions.outputs.test_params }} --filter "Category!=quarantaine" --logger "trx;LogFileName=specs-results.trx"
     - uses: actions/upload-artifact@v4
