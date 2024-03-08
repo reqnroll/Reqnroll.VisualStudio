@@ -45,8 +45,6 @@
             Logger.LogVerbose("Find Unused Step Definitions");
 
             var textBuffer = textView.TextBuffer;
-            var fileName = GetEditorDocumentPath(textBuffer);
-            var triggerPoint = textView.Caret.Position.BufferPosition;
 
             var project = IdeScope.GetProject(textBuffer);
             if (project == null || !project.GetProjectSettings().IsReqnrollProject)
@@ -69,20 +67,18 @@
 
             var asyncContextMenu = IdeScope.Actions.ShowAsyncContextMenu(PopupHeader);
             Task.Run(
-                () => FindUnusedStepDefinitionsInProjectsAsync(reqnrollTestProjects, fileName, triggerPoint, asyncContextMenu,
+                () => FindUnusedStepDefinitionsInProjectsAsync(reqnrollTestProjects, asyncContextMenu,
                     asyncContextMenu.CancellationToken), asyncContextMenu.CancellationToken);
             return true;
         }
 
-        private async Task FindUnusedStepDefinitionsInProjectsAsync(IProjectScope[] reqnrollTestProjects, string fileName,
-            SnapshotPoint triggerPoint, IAsyncContextMenu asyncContextMenu, CancellationToken cancellationToken)
+        private async Task FindUnusedStepDefinitionsInProjectsAsync(IProjectScope[] reqnrollTestProjects, IAsyncContextMenu asyncContextMenu, CancellationToken cancellationToken)
         {
             var summary = new UnusedStepDefinitionSummary();
 
             try
             {
-                await FindUsagesInternalAsync(reqnrollTestProjects, fileName, triggerPoint, asyncContextMenu,
-                    cancellationToken, summary);
+                await FindUsagesInternalAsync(reqnrollTestProjects, asyncContextMenu, cancellationToken, summary);
             }
             catch (Exception ex)
             {
@@ -92,15 +88,15 @@
 
             if (summary.WasError)
                 asyncContextMenu.AddItems(new ContextMenuItem("Could not complete find operation because of an error"));
+            else if (summary.FoundStepDefinitions == 0)
+                asyncContextMenu.AddItems(
+                    new ContextMenuItem("Could not find any step definitions in the current solution"));
             else if (summary.UnusedStepDefinitions == 0)
                 asyncContextMenu.AddItems(
-                    new ContextMenuItem("Could not find any unused step definitions at the current position"));
-            //TODO: determine if this required/needed
-            //else if (summary.UsagesFound == 0) asyncContextMenu.AddItems(new ContextMenuItem("Could not find any usage"));
+                    new ContextMenuItem("There are no unused step definitions"));
 
-            //TODO: modify monitoring to include finding unused step definitions
-            //MonitoringService.MonitorCommandFindStepDefinitionUsages(summary.UsagesFound,
-            //    cancellationToken.IsCancellationRequested);
+            MonitoringService.MonitorCommandFindUnusedStepDefinitions(summary.UnusedStepDefinitions, summary.ScannedFeatureFiles,
+                cancellationToken.IsCancellationRequested);
             if (cancellationToken.IsCancellationRequested)
                 Logger.LogVerbose("Finding unused step definitions cancelled");
             else
@@ -108,23 +104,30 @@
             asyncContextMenu.Complete();
             Finished.Set();
         }
-        private async Task FindUsagesInternalAsync(IProjectScope[] reqnrollTestProjects, string fileName,
-    SnapshotPoint triggerPoint, IAsyncContextMenu asyncContextMenu, CancellationToken cancellationToken,
-    UnusedStepDefinitionSummary summary)
+        private async Task FindUsagesInternalAsync(IProjectScope[] reqnrollTestProjects, IAsyncContextMenu asyncContextMenu,
+            CancellationToken cancellationToken, UnusedStepDefinitionSummary summary)
         {
             foreach (var project in reqnrollTestProjects)
             {
                 if (cancellationToken.IsCancellationRequested)
                     break;
 
-                var stepDefinitions = await GetStepDefinitionsAsync(project, fileName, triggerPoint);
-                //summary.FoundStepDefinitions += stepDefinitions.Length;
-                if (stepDefinitions.Length == 0)
+                var bindingRegistry = project.GetDiscoveryService().BindingRegistryCache.Value;
+                if (bindingRegistry == ProjectBindingRegistry.Invalid)
+                {
+                    Logger.LogWarning(
+                        $"Unable to get step definitions from project '{project.ProjectName}', usages will not be found for this project.");
+                    continue;
+                }
+                var stepDefinitionCount = bindingRegistry.StepDefinitions.Length;
+
+                summary.FoundStepDefinitions += stepDefinitionCount;
+                if (stepDefinitionCount == 0)
                     continue;
 
                 var featureFiles = project.GetProjectFiles(".feature");
                 var configuration = project.GetDeveroomConfiguration();
-                var projectUnusedStepDefinitions = _stepDefinitionsUnusedFinder.FindUnused(stepDefinitions, featureFiles, configuration);
+                var projectUnusedStepDefinitions = _stepDefinitionsUnusedFinder.FindUnused(bindingRegistry, featureFiles, configuration);
                 foreach (var unused in projectUnusedStepDefinitions)
                 {
                     if (cancellationToken.IsCancellationRequested)
@@ -132,8 +135,7 @@
 
                     //await Task.Delay(500);
 
-                    //TODO: create menu item - what type of menu item?
-                    asyncContextMenu.AddItems(CreateMenuItem(unused, project));
+                    asyncContextMenu.AddItems(CreateMenuItem(unused, project, GetUsageLabel(unused), unused.Implementation.Method));
                     summary.UnusedStepDefinitions++;
                 }
 
@@ -141,62 +143,22 @@
             }
         }
 
-        private async Task<ProjectStepDefinitionBinding[]> GetStepDefinitionsAsync(IProjectScope project, string fileName,
-     SnapshotPoint triggerPoint)
-        {
-            var discoveryService = project.GetDiscoveryService();
-            var bindingRegistry = await discoveryService.BindingRegistryCache.GetLatest();
-            if (bindingRegistry == ProjectBindingRegistry.Invalid)
-                Logger.LogWarning(
-                    $"Unable to get step definitions from project '{project.ProjectName}', usages will not be found for this project.");
-            return GetStepDefinitions(fileName, triggerPoint, bindingRegistry);
-        }
-
-        //TODO: since this Command doesn't need to filter the set of StepDefinitions, this can be merged with the method above
-        internal static ProjectStepDefinitionBinding[] GetStepDefinitions(string fileName, SnapshotPoint triggerPoint,
-            ProjectBindingRegistry bindingRegistry)
-        {
-            return bindingRegistry.StepDefinitions
-                    //                .Where(sd => sd.Implementation?.SourceLocation != null &&
-                    //                             sd.Implementation.SourceLocation.SourceFile == fileName &&
-                    //
-                    .ToArray();
-        }
-
-        //TODO: near duplicate of similar method in FindStepDefinitionUsagesCommand
-        private ContextMenuItem CreateMenuItem(ProjectStepDefinitionBinding stepDefinition, IProjectScope project)
-        {
-            return new SourceLocationContextMenuItem(
-                stepDefinition.Implementation.SourceLocation, project.ProjectFolder,
-                GetUsageLabel(stepDefinition), _ => { PerformJump(stepDefinition); }, null);
-        }
-
         private static string GetUsageLabel(ProjectStepDefinitionBinding stepDefinition)
         {
             return $"[{stepDefinition.StepDefinitionType}(\"{stepDefinition.Expression}\")] {stepDefinition.Implementation.Method}";
         }
+        private string GetIcon() => null;
 
-        //TODO: near duplicate of similar method in FindStepDefinitionUsagesCommand
-        private void PerformJump(ProjectStepDefinitionBinding binding)
+        private ContextMenuItem CreateMenuItem(ProjectStepDefinitionBinding stepDefinition, IProjectScope project, string menuLabel, string shortDescription)
         {
-            var sourceLocation = binding.Implementation.SourceLocation;
-            if (sourceLocation == null)
-            {
-                Logger.LogWarning($"Cannot jump to {binding.Implementation.Method}: no source location");
-                IdeScope.Actions.ShowProblem("Unable to jump to the step. No source location detected.");
-                return;
-            }
-
-            Logger.LogInfo($"Jumping to {binding.Implementation.Method} at {sourceLocation}");
-            if (!IdeScope.Actions.NavigateTo(sourceLocation))
-            {
-                Logger.LogWarning($"Cannot jump to {binding.Implementation.Method}: invalid source file or position");
-                IdeScope.Actions.ShowProblem(
-                    $"Unable to jump to the step. Invalid source file or file position.{Environment.NewLine}{sourceLocation}");
-            }
+            return new SourceLocationContextMenuItem(
+                stepDefinition.Implementation.SourceLocation, project.ProjectFolder,
+                menuLabel, _ => { PerformJump<string>(shortDescription, "", stepDefinition.Implementation, _ => { }  ); }, GetIcon());
         }
+
         private class UnusedStepDefinitionSummary
         {
+            public int FoundStepDefinitions { get; set; }
             public int UnusedStepDefinitions { get; set; }
             public int ScannedFeatureFiles { get; set; }
             public bool WasError { get; set; }

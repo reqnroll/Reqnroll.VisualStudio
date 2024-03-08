@@ -17,6 +17,7 @@ public interface IMonitoringService
     void MonitorCommandCommentUncomment();
     void MonitorCommandDefineSteps(CreateStepDefinitionsDialogResult action, int snippetCount);
     void MonitorCommandFindStepDefinitionUsages(int usagesCount, bool isCancelled);
+    void MonitorCommandFindUnusedStepDefinitions(int unusedStepDefinitions, int scannedFeatureFiles, bool isCancellationRequested);
     void MonitorCommandGoToStepDefinition(bool generateSnippet);
     void MonitorCommandGoToHook();
     void MonitorCommandAutoFormatTable();
