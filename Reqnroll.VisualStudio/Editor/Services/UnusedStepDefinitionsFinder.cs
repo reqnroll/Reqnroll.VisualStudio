@@ -19,7 +19,18 @@ public class UnusedStepDefinitionsFinder : StepFinderBase
     public IEnumerable<ProjectStepDefinitionBinding> FindUnused(ProjectBindingRegistry bindingRegistry,
                                                         string[] featureFiles, DeveroomConfiguration configuration)
     {
-        return featureFiles.SelectMany(ff => FindUnused(bindingRegistry, ff, configuration));
+        Dictionary<ProjectStepDefinitionBinding, int> stepDefUsageAggregator = new Dictionary<ProjectStepDefinitionBinding, int>();
+        foreach (var method in bindingRegistry.StepDefinitions)
+        {
+            stepDefUsageAggregator.Add(method, 0);
+        }
+        foreach (var ff in featureFiles)
+        {
+            var usedSteps = FindUnused(bindingRegistry, ff, configuration);
+            foreach (var step in usedSteps) stepDefUsageAggregator[step]++;
+        }    
+            
+        return stepDefUsageAggregator.Where(x => x.Value == 0).Select(x => x.Key);
     }
 
     public IEnumerable<ProjectStepDefinitionBinding> FindUnused(ProjectBindingRegistry bindingRegistry, 
@@ -39,10 +50,8 @@ public class UnusedStepDefinitionsFinder : StepFinderBase
         if (featureNode == null)
             return Enumerable.Empty<ProjectStepDefinitionBinding>();
 
-        //this set keeps track of which step definitions have not been used. We start with ALL step definitions, and will subtract those that match steps in the feature file
-        HashSet<ProjectStepDefinitionBinding> stepDefinitionsSet = new(bindingRegistry.StepDefinitions);
-
         var featureContext = new StepFinderContext(featureNode);
+        var usedSteps = new List<ProjectStepDefinitionBinding>();
 
         foreach (var scenarioDefinition in featureNode.FlattenStepsContainers())
         {
@@ -52,14 +61,12 @@ public class UnusedStepDefinitionsFinder : StepFinderBase
             {
                 var matchResult = bindingRegistry.MatchStep(step, context);
 
-                var usedSteps = matchResult.Items.Where(m => m.Type == MatchResultType.Defined || m.Type == MatchResultType.Ambiguous)
-                                                 .Select(i => i.MatchedStepDefinition)
-                                                 .ToHashSet<ProjectStepDefinitionBinding>();
-                stepDefinitionsSet.ExceptWith(usedSteps);
+                usedSteps.AddRange(matchResult.Items.Where(m => m.Type == MatchResultType.Defined || m.Type == MatchResultType.Ambiguous)
+                                                 .Select(i => i.MatchedStepDefinition));
             }
         }
 
-        return stepDefinitionsSet.ToList();
+        return usedSteps;
 
     }
 }

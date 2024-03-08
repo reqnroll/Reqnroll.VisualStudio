@@ -75,7 +75,7 @@
         private async Task FindUnusedStepDefinitionsInProjectsAsync(IProjectScope[] reqnrollTestProjects, IAsyncContextMenu asyncContextMenu, CancellationToken cancellationToken)
         {
             var summary = new UnusedStepDefinitionSummary();
-
+            summary.ScannedProjects = reqnrollTestProjects.Length;
             try
             {
                 await FindUsagesInternalAsync(reqnrollTestProjects, asyncContextMenu, cancellationToken, summary);
@@ -100,7 +100,7 @@
             if (cancellationToken.IsCancellationRequested)
                 Logger.LogVerbose("Finding unused step definitions cancelled");
             else
-                Logger.LogInfo($"Found {summary.UnusedStepDefinitions} unused step definitions in {summary.ScannedFeatureFiles} feature files");
+                Logger.LogInfo($"Found {summary.UnusedStepDefinitions} unused step definitions in {summary.ScannedProjects} Projects");
             asyncContextMenu.Complete();
             Finished.Set();
         }
@@ -161,6 +161,7 @@
             public int FoundStepDefinitions { get; set; }
             public int UnusedStepDefinitions { get; set; }
             public int ScannedFeatureFiles { get; set; }
+            public int ScannedProjects { get; set; }
             public bool WasError { get; set; }
 
         }
