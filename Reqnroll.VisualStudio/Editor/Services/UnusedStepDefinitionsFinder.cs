@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 #nullable disable
+
 namespace Reqnroll.VisualStudio.Editor.Services;
 
 public class UnusedStepDefinitionsFinder : StepFinderBase
@@ -19,22 +21,18 @@ public class UnusedStepDefinitionsFinder : StepFinderBase
     public IEnumerable<ProjectStepDefinitionBinding> FindUnused(ProjectBindingRegistry bindingRegistry,
                                                         string[] featureFiles, DeveroomConfiguration configuration)
     {
-        Dictionary<ProjectStepDefinitionBinding, int> stepDefUsageAggregator = new Dictionary<ProjectStepDefinitionBinding, int>();
-        foreach (var method in bindingRegistry.StepDefinitions)
-        {
-            stepDefUsageAggregator.Add(method, 0);
-        }
+        var stepDefUsageCounts = bindingRegistry.StepDefinitions.ToDictionary(stepDef => stepDef, _ => 0);
         foreach (var ff in featureFiles)
         {
             var usedSteps = FindUnused(bindingRegistry, ff, configuration);
-            foreach (var step in usedSteps) stepDefUsageAggregator[step]++;
-        }    
-            
-        return stepDefUsageAggregator.Where(x => x.Value == 0).Select(x => x.Key);
+            foreach (var step in usedSteps) stepDefUsageCounts[step]++;
+        }
+
+        return stepDefUsageCounts.Where(x => x.Value == 0).Select(x => x.Key);
     }
 
-    public IEnumerable<ProjectStepDefinitionBinding> FindUnused(ProjectBindingRegistry bindingRegistry, 
-        string featureFilePath, DeveroomConfiguration configuration) => 
+    public IEnumerable<ProjectStepDefinitionBinding> FindUnused(ProjectBindingRegistry bindingRegistry,
+        string featureFilePath, DeveroomConfiguration configuration) =>
         LoadContent(featureFilePath, out string featureFileContent)
         ? FindUsagesFromContent(bindingRegistry, featureFileContent, featureFilePath, configuration)
         : Enumerable.Empty<ProjectStepDefinitionBinding>();
@@ -67,6 +65,5 @@ public class UnusedStepDefinitionsFinder : StepFinderBase
         }
 
         return usedSteps;
-
     }
 }

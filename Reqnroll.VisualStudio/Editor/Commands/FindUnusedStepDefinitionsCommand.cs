@@ -54,16 +54,7 @@
                 return true;
             }
 
-            var reqnrollTestProjects = IdeScope.GetProjectsWithFeatureFiles()
-                .Where(p => p.GetProjectSettings().IsReqnrollTestProject)
-                .ToArray();
-
-            if (reqnrollTestProjects.Length == 0)
-            {
-                IdeScope.Actions.ShowProblem(
-                    "Unable to find step definition usages: could not find any Reqnroll project with feature files.");
-                return true;
-            }
+            var reqnrollTestProjects = new IProjectScope[] { project };
 
             var asyncContextMenu = IdeScope.Actions.ShowAsyncContextMenu(PopupHeader);
             Task.Run(
