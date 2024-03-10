@@ -29,9 +29,10 @@ public class FindStepDefinitionUsagesCommand : DeveroomEditorCommandBase, IDever
     {
         var status = base.QueryStatus(textView, commandKey);
 
+        var heuristicTest = textView.TextBuffer.CurrentSnapshot.GetText().Contains("Reqnroll") || textView.TextBuffer.CurrentSnapshot.GetText().Contains("SpecFlow");
         if (status != DeveroomEditorCommandStatus.NotSupported)
-            // very basic heuristic: if the word "Reqnroll" is in the content of the file, it might be a binding class
-            status = textView.TextBuffer.CurrentSnapshot.GetText().Contains("Reqnroll")
+            // very basic heuristic: if the word "Reqnroll" (or "SpecFlow" for backwards compatibility) is in the content of the file, it might be a binding class
+            status = heuristicTest
                 ? DeveroomEditorCommandStatus.Supported
                 : DeveroomEditorCommandStatus.NotSupported;
 
