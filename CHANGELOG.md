@@ -1,5 +1,6 @@
 # [vNext]
-
+* FIX for Create Step Definition Snippets Generates Reqnroll Using Statements for SpecFlow Projects #6
+* 
 # v2024.1.49 - 2024-02-08
 
 * Support for .NET 8 projects

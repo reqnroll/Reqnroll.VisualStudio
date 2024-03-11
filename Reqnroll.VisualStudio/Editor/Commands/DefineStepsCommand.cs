@@ -126,9 +126,12 @@ public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEdi
             targetFolder = stepDefinitionsFolder;
             fileNamespace = fileNamespace + ".StepDefinitions";
         }
+        var projectTraits = projectScope.GetProjectSettings().ReqnrollProjectTraits;
+        var isSpecFlow = projectTraits.HasFlag(ReqnrollProjectTraits.LegacySpecFlow) || projectTraits.HasFlag(ReqnrollProjectTraits.SpecFlowCompatibility);
+        var libraryNameSpace = isSpecFlow ? "SpecFlow" : "Reqnroll";
 
         var template = "using System;" + newLine +
-                       "using Reqnroll;" + newLine +
+                       $"using {libraryNameSpace};" + newLine +
                        newLine +
                        $"namespace {fileNamespace}" + newLine +
                        "{" + newLine +
