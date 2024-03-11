@@ -1,4 +1,5 @@
 # [vNext]
+* Fix for GH7 - "Find step definitions usages command not visible for SpecFlow projects
 
 # v2024.1.49 - 2024-02-08
 
