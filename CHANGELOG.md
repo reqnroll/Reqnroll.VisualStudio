@@ -1,4 +1,6 @@
 # [vNext]
+
+* FIX for Create Step Definition Snippets Generates Reqnroll Using Statements for SpecFlow Projects #6
 * Fix for GH7 - "Find step definitions usages command not visible for SpecFlow projects
 
 # v2024.1.49 - 2024-02-08
