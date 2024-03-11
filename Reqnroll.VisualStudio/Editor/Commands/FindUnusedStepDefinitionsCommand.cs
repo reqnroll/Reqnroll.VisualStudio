@@ -30,9 +30,11 @@
         {
             var status = base.QueryStatus(textView, commandKey);
 
+            var heuristicTest = textView.TextBuffer.CurrentSnapshot.GetText().Contains("Reqnroll") || textView.TextBuffer.CurrentSnapshot.GetText().Contains("SpecFlow");
+
             if (status != DeveroomEditorCommandStatus.NotSupported)
-                // very basic heuristic: if the word "Reqnroll" is in the content of the file, it might be a binding class
-                status = textView.TextBuffer.CurrentSnapshot.GetText().Contains("Reqnroll")
+                // very basic heuristic: if the word "Reqnroll" or "SpecFlow" is in the content of the file, it might be a binding class
+                status = heuristicTest
                     ? DeveroomEditorCommandStatus.Supported
                     : DeveroomEditorCommandStatus.NotSupported;
 
@@ -110,7 +112,14 @@
                         $"Unable to get step definitions from project '{project.ProjectName}', usages will not be found for this project.");
                     continue;
                 }
-                var stepDefinitionCount = bindingRegistry.StepDefinitions.Length;
+
+                // At this point, the binding registry contains StepDefinitions from the current project and any referenced assemblies that contain StepDefinitions.
+                // We need to filter out any step definitions that are not from the current project.
+
+                var projectCodeFiles = project.GetProjectFiles(".cs");
+                var projectScopedBindingRegistry = bindingRegistry.Where(sd => projectCodeFiles.Contains(sd.Implementation?.SourceLocation?.SourceFile));
+
+                var stepDefinitionCount = projectScopedBindingRegistry.StepDefinitions.Length;
 
                 summary.FoundStepDefinitions += stepDefinitionCount;
                 if (stepDefinitionCount == 0)
@@ -118,7 +127,7 @@
 
                 var featureFiles = project.GetProjectFiles(".feature");
                 var configuration = project.GetDeveroomConfiguration();
-                var projectUnusedStepDefinitions = _stepDefinitionsUnusedFinder.FindUnused(bindingRegistry, featureFiles, configuration);
+                var projectUnusedStepDefinitions = _stepDefinitionsUnusedFinder.FindUnused(projectScopedBindingRegistry, featureFiles, configuration);
                 foreach (var unused in projectUnusedStepDefinitions)
                 {
                     if (cancellationToken.IsCancellationRequested)

@@ -24,14 +24,14 @@ public class UnusedStepDefinitionsFinder : StepFinderBase
         var stepDefUsageCounts = bindingRegistry.StepDefinitions.ToDictionary(stepDef => stepDef, _ => 0);
         foreach (var ff in featureFiles)
         {
-            var usedSteps = FindUnused(bindingRegistry, ff, configuration);
+            var usedSteps = FindUsed(bindingRegistry, ff, configuration);
             foreach (var step in usedSteps) stepDefUsageCounts[step]++;
         }
 
         return stepDefUsageCounts.Where(x => x.Value == 0).Select(x => x.Key);
     }
 
-    public IEnumerable<ProjectStepDefinitionBinding> FindUnused(ProjectBindingRegistry bindingRegistry,
+    protected IEnumerable<ProjectStepDefinitionBinding> FindUsed(ProjectBindingRegistry bindingRegistry,
         string featureFilePath, DeveroomConfiguration configuration) =>
         LoadContent(featureFilePath, out string featureFileContent)
         ? FindUsagesFromContent(bindingRegistry, featureFileContent, featureFilePath, configuration)

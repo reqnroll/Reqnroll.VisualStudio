@@ -58,7 +58,7 @@ public class VsProjectScope : IProjectScope
         {
             return VsUtils.GetPhysicalFileProjectItems(_project)
                 .Select(VsUtils.GetFilePath)
-                .Where(fp => FileSystemHelper.IsOfType(fp, ".feature"))
+                .Where(fp => FileSystemHelper.IsOfType(fp, extension))
                 .ToArray();
         }
         catch (Exception e)

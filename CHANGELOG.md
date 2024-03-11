@@ -1,4 +1,6 @@
 # [vNext]
+* FEATURE: FindUnused Step Definitions Command - from within a binding class a new context menu command, "FindUsusedStepDefinitions", is available. 
+	* This will list any Step Definition methods that are not matched by one or more Feature steps in the current project.
 
 # v2024.1.49 - 2024-02-08
 
