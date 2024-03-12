@@ -159,6 +159,10 @@ public class NullVsIdeScope : IVsIdeScope
         {
         }
 
+        public void MonitorCommandFindUnusedStepDefinitions(int unusedStepDefinitions, int scannedFeatureFiles, bool isCancellationRequested)
+        {
+        }
+
         public void MonitorCommandGoToStepDefinition(bool generateSnippet)
         {
         }
@@ -232,5 +236,6 @@ public class NullVsIdeScope : IVsIdeScope
         public void TransmitEvent(IAnalyticsEvent runtimeEvent)
         {
         }
+
     }
 }

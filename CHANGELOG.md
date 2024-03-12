@@ -1,4 +1,6 @@
 # [vNext]
+* FEATURE: FindUnused Step Definitions Command - from within a binding class a new context menu command, "FindUsusedStepDefinitions", is available. 
+	* This will list any Step Definition methods that are not matched by one or more Feature steps in the current project.
 
 * FIX for Create Step Definition Snippets Generates Reqnroll Using Statements for SpecFlow Projects #6
 * Fix for GH7 - "Find step definitions usages command not visible for SpecFlow projects

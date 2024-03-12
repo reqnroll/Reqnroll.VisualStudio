@@ -104,6 +104,17 @@ public class MonitoringService : IMonitoringService
             }));
     }
 
+    public void MonitorCommandFindUnusedStepDefinitions(int unusedStepDefinitions, int scannedFeatureFiles, bool isCancelled)
+    {
+        _analyticsTransmitter.TransmitEvent(new GenericEvent("FindUnusedStepDefinitions command executed",
+            new Dictionary<string, object>
+            {
+                {"UnusedStepDefinitions", unusedStepDefinitions},
+                {"ScannedFeatureFiles", scannedFeatureFiles},
+                {"IsCancelled", isCancelled}
+            }));
+    }
+
     public void MonitorCommandGoToStepDefinition(bool generateSnippet)
     {
         _analyticsTransmitter.TransmitEvent(new GenericEvent("GoToStepDefinition command executed",

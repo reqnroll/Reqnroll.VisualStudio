@@ -107,6 +107,19 @@
 		      <ToolTipText>Finds usages of the step definition in feature files.</ToolTipText>
 	      </Strings>
       </Button>
+      <Button guid="guidReqnrollPackageCmdSet" id="FindUnusedStepDefinitionsCommandId" priority="0x0103" type="Button">
+        <Parent guid="guidReqnrollPackageCmdSet" id="EditorContextMenuGroup" />
+        <Icon guid="guidImages" id="bmpReqnroll" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Find Unused Step Definitions</ButtonText>
+          <CommandName>Reqnroll - Find Unused Step Definitions</CommandName>
+          <CanonicalName>Reqnroll.FindUnusedStepDefinitions</CanonicalName>
+          <LocCanonicalName>Reqnroll.FindUnusedStepDefinitions</LocCanonicalName>
+          <ToolTipText>Finds step definitions that are not used in feature files.</ToolTipText>
+        </Strings>
+      </Button>
     </Buttons>
 
     <!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
@@ -140,6 +153,7 @@
       <IDSymbol name="FindStepDefinitionUsagesCommandId" value="0x0101" />
       <IDSymbol name="RenameStepCommandId" value="0x0103" />
       <IDSymbol name="GoToHookCommandId" value="0x0104" />
+      <IDSymbol name="FindUnusedStepDefinitionsCommandId" value="0x0102" />
     </GuidSymbol>
 
     <GuidSymbol name="guidImages" value="{027c70d2-dbf1-49ee-ba67-c4796aa26a87}" >

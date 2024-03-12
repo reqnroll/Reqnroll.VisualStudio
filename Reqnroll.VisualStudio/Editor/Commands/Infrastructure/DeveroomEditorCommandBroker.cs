@@ -27,7 +27,7 @@ public class DeveroomCodeEditorCommandBroker : DeveroomEditorCommandBroker<IDeve
         [ImportMany] IEnumerable<IDeveroomCodeEditorCommand> commands, IDeveroomLogger logger)
         : base(adaptersFactory, commands, logger)
     {
-        Debug.Assert(_commands.Count == 2, "There have to be 2 code file editor Reqnroll commands");
+        Debug.Assert(_commands.Count == 3, "There have to be 3 code file editor Reqnroll commands");
     }
 }
 
