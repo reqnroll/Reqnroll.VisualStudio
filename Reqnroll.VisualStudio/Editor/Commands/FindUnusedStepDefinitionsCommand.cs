@@ -49,10 +49,21 @@
             var textBuffer = textView.TextBuffer;
 
             var project = IdeScope.GetProject(textBuffer);
-            if (project == null || !project.GetProjectSettings().IsReqnrollProject)
+            bool bindingsNotYetLoaded = false;
+            bool projectNotYetLoaded = project == null;
+            if (!projectNotYetLoaded)
+            {
+                Logger.LogVerbose("Find Unused Step Definitions: PreExec: project loaded");
+                var bindingRegistry = project.GetDiscoveryService().BindingRegistryCache;
+                bindingsNotYetLoaded = (bindingRegistry == null || bindingRegistry.Value == ProjectBindingRegistry.Invalid);
+                if (bindingsNotYetLoaded)
+                    Logger.LogVerbose($"Find Unused Step Definitions: PreExec: binding registry not available: {(bindingRegistry == null ? "null" : "invalid")}");
+            }
+
+            if (project == null || !project.GetProjectSettings().IsReqnrollProject || bindingsNotYetLoaded)
             {
                 IdeScope.Actions.ShowProblem(
-                    "Unable to find step definition usages: the project is not detected to be a Reqnroll project or it is not initialized yet.");
+                    "Unable to find unused step definitions: the project is not detected to be a Reqnroll project or it is not initialized yet.");
                 return true;
             }
 

@@ -1,4 +1,6 @@
 #nullable disable
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+
 namespace Reqnroll.VisualStudio.Editor.Commands;
 
 [Export(typeof(IDeveroomCodeEditorCommand))]
@@ -49,7 +51,18 @@ public class FindStepDefinitionUsagesCommand : DeveroomEditorCommandBase, IDever
         var triggerPoint = textView.Caret.Position.BufferPosition;
 
         var project = IdeScope.GetProject(textBuffer);
-        if (project == null || !project.GetProjectSettings().IsReqnrollProject)
+        bool bindingsNotYetLoaded = false;
+        bool projectNotYetLoaded = project == null;
+        if (!projectNotYetLoaded)
+        {
+            Logger.LogVerbose("Find Step Definition Usages:PreExec: project loaded");
+            var bindingRegistry = project.GetDiscoveryService().BindingRegistryCache;
+            bindingsNotYetLoaded = (bindingRegistry == null || bindingRegistry.Value == ProjectBindingRegistry.Invalid);
+            if (bindingsNotYetLoaded)
+                Logger.LogVerbose($"Find Step Definition Usages: PreExec: binding registry not available: {(bindingRegistry == null ? "null" : "invalid")}");
+        }
+
+        if (project == null || !project.GetProjectSettings().IsReqnrollProject || bindingsNotYetLoaded )
         {
             IdeScope.Actions.ShowProblem(
                 "Unable to find step definition usages: the project is not detected to be a Reqnroll project or it is not initialized yet.");
