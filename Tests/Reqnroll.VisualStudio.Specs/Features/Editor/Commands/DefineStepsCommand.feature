@@ -48,7 +48,7 @@ Scenario: Two undefined step has the same step definition skeleton
 	When I invoke the "Define Steps" command
 	Then the define steps dialog should be opened with the following step definition skeletons
 		| type  | expression                        |
-		| Given | the operand (.*) has been entered |
+		| Given | the operand {int} has been entered |
 
 Scenario: All steps are defined
 	Given there is a Reqnroll project scope
