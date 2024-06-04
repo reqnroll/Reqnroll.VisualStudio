@@ -19,6 +19,13 @@ public class ReqnrollConfigDeserializer : IConfigDeserializer<DeveroomConfigurat
         if (reqnrollJsonConfiguration.BindingCulture != null &&
             reqnrollJsonConfiguration.BindingCulture.TryGetValue("name", out var bindingCultureFromSpecFlow))
             config.ConfiguredBindingCulture = bindingCultureFromSpecFlow;
+        if (reqnrollJsonConfiguration.Trace != null &&
+            reqnrollJsonConfiguration.Trace.TryGetValue("stepDefinitionSkeletonStyle", out var sdSnippetStyle)) {
+            if (sdSnippetStyle == "CucumberExpressionAttribute")
+                config.SnippetExpressionStyle = SnippetExpressionStyle.CucumberExpression;
+            if (sdSnippetStyle == "RegexAttribute")
+                config.SnippetExpressionStyle = SnippetExpressionStyle.RegularExpression;
+        }
     }
 
     private class ReqnrollJsonConfiguration
@@ -26,5 +33,6 @@ public class ReqnrollConfigDeserializer : IConfigDeserializer<DeveroomConfigurat
         public DeveroomConfiguration Ide { get; set; }
         public Dictionary<string, string> Language { get; set; }
         public Dictionary<string, string> BindingCulture { get; set; }
+        public Dictionary<string, string> Trace { get; set; }
     }
 }

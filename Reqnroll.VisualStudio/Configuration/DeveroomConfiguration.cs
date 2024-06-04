@@ -19,6 +19,8 @@ public class DeveroomConfiguration
     public string DefaultFeatureLanguage { get; set; } = "en-US";
     public string ConfiguredBindingCulture { get; set; } = null;
     public string BindingCulture => ConfiguredBindingCulture ?? DefaultFeatureLanguage;
+    public SnippetExpressionStyle SnippetExpressionStyle { get; set; } = SnippetExpressionStyle.CucumberExpression;
+
 
     private void FixEmptyContainers()
     {

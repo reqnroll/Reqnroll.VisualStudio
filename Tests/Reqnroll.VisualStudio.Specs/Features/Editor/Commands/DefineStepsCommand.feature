@@ -21,7 +21,7 @@ Scenario: There are undefined steps
 	And the following feature file in the editor
 		"""
 		Feature: Addition
-
+		
 		Scenario: Add two numbers
 			Given the operands have been entered
 			When I press multiply
@@ -39,7 +39,7 @@ Scenario: Two undefined step has the same step definition skeleton
 	And the following feature file in the editor
 		"""
 		Feature: Addition
-
+		
 		Scenario: Add two numbers
 			Given the operand 4 has been entered
 			And the operand 2 has been entered
@@ -53,12 +53,12 @@ Scenario: Two undefined step has the same step definition skeleton
 Scenario: All steps are defined
 	Given there is a Reqnroll project scope
 	And the following step definitions in the project:
-		| type  | regex                     |
+		| type  | regex                          |
 		| Given | the operands have been entered |
 	And the following feature file in the editor
 		"""
 		Feature: Addition
-
+		
 		Scenario: Add two numbers
 			Given the operands have been entered
 		"""
@@ -71,7 +71,7 @@ Scenario: Selected step definition skeletons are copied to clipboard
 	And the following feature file in the editor
 		"""
 		Feature: Addition
-
+		
 		Scenario: Add two numbers
 			Given the operands have been entered
 			When I press multiply
@@ -91,7 +91,7 @@ Scenario: Selected step definition skeletons are saved to a new file
 	And the following feature file in the editor
 		"""
 		Feature: Addition
-
+		
 		Scenario: Add two numbers
 			Given the operands have been entered
 			When I press multiply
@@ -105,4 +105,25 @@ Scenario: Selected step definition skeletons are saved to a new file
 		| type  | expression                     |
 		| Given | the operands have been entered |
 		| When  | I press multiply               |
+
+Scenario: DefineSteps command abides by reqnroll.json configuration for regex skeleton style
+	Given there is a Reqnroll project scope
+	And the following feature file in the editor
+		"""
+		Feature: Feature Using Regex Style
+		
+		Scenario: Client has a simple basket
+			Given the client added 1 pcs to the basket
+		"""
+	And the reqnroll.json configuration file contains
+		"""
+		{ 
+			"trace": { "stepDefinitionSkeletonStyle": "RegexAttribute" }
+		}
+		"""
+		And the project is built and the initial binding discovery is performed
+		When I invoke the "Define Steps" command
+		Then the define steps dialog should be opened with the following step definition skeletons
+			| type  | expression                        |
+			| Given | the client added (.*) pcs to the basket |
 
