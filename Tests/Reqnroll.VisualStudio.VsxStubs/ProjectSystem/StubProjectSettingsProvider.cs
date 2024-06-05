@@ -14,7 +14,7 @@ public class StubProjectSettingsProvider : Mock<IProjectSettingsProvider>, IProj
             new NuGetVersion("3.9.40", "3.9.40"),
             string.Empty,
             string.Empty,
-            ReqnrollProjectTraits.None,
+            ReqnrollProjectTraits.CucumberExpression,
             ProjectProgrammingLanguage.CSharp
         );
 

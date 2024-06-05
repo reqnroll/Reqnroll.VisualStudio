@@ -13,9 +13,7 @@ public class SnippetService
     }
 
     public SnippetExpressionStyle DefaultExpressionStyle =>
-        _projectScope.GetProjectSettings().ReqnrollProjectTraits.HasFlag(ReqnrollProjectTraits.CucumberExpression)
-            ? SnippetExpressionStyle.CucumberExpression
-            : SnippetExpressionStyle.RegularExpression;
+        _projectScope.GetDeveroomConfiguration().SnippetExpressionStyle;
 
     public string GetStepDefinitionSkeletonSnippet(UndefinedStepDescriptor undefinedStep,
         SnippetExpressionStyle expressionStyle, string indent = "    ", string newLine = null)
