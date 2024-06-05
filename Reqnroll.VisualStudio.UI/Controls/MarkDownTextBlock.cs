@@ -14,6 +14,8 @@ namespace Reqnroll.VisualStudio.UI.Controls;
 [ContentProperty("MarkDownText")]
 public class MarkDownTextBlock : RichTextBox
 {
+    public const string IssueUrlTemplate = "https://github.com/reqnroll/Reqnroll.VisualStudio/issues/";
+
     public MarkDownTextBlock()
     {
         IsDocumentEnabled = true;
@@ -40,12 +42,16 @@ public class MarkDownTextBlock : RichTextBox
             while (specialParagraphMatch.Success)
             {
                 var text = specialParagraphMatch.Groups["text"].Value;
+                text = Regex.Replace(text, @"#(?<number>\d+)", m => $"[#{m.Groups["number"].Value}]({IssueUrlTemplate}{m.Groups["number"].Value})");
                 if (specialParagraphMatch.Groups["headline"].Success)
                 {
-                    if (specialParagraphMatch.Groups["headline"].Length == 1)
+                    var headingLevel = specialParagraphMatch.Groups["headline"].Length;
+                    if (headingLevel == 1)
                         document.Blocks.Add(new H1(text));
-                    else
+                    else if (headingLevel == 2)
                         document.Blocks.Add(new H2(text));
+                    else 
+                        document.Blocks.Add(new H3(text));
                 }
                 else if (specialParagraphMatch.Groups["list"].Success)
                 {
@@ -141,6 +147,12 @@ public class MarkDownTextBlock : RichTextBox
         h2Style.Setters.Add(new Setter(Block.MarginProperty, new Thickness(0, 6, 0, 3)));
         document.Resources.Add(typeof(H2), h2Style);
 
+        var h3Style = new Style(typeof(H3));
+        h3Style.Setters.Add(new Setter(TextElement.FontSizeProperty, document.FontSize));
+        h3Style.Setters.Add(new Setter(TextElement.FontWeightProperty, FontWeights.Bold));
+        h3Style.Setters.Add(new Setter(Block.MarginProperty, new Thickness(0, 6, 0, 3)));
+        document.Resources.Add(typeof(H3), h3Style);
+
         var listStyle = new Style(typeof(List));
         listStyle.Setters.Add(new Setter(Block.MarginProperty, new Thickness(0, 2, 0, 3)));
         listStyle.Setters.Add(new Setter(Block.PaddingProperty, new Thickness(20, 0, 0, 0)));
@@ -174,6 +186,13 @@ public class MarkDownTextBlock : RichTextBox
     public class H2 : Paragraph
     {
         public H2(string text) : base(new Run(text))
+        {
+        }
+    }
+
+    public class H3 : Paragraph
+    {
+        public H3(string text) : base(new Run(text))
         {
         }
     }

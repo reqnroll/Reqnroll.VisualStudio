@@ -28,14 +28,16 @@ public class UpgradeDialogViewModel : WizardViewModel
         """;
 
 #if DEBUG
-    public static UpgradeDialogViewModel DesignData = new("1.0.99", @"# v1.0.1 - 2019-02-27
+    public static UpgradeDialogViewModel DesignData = new("1.0.99",
+        """
+        # v1.0.1 - 2019-02-27
 
-Bug fixes:
+        ## Bug fixes:
 
-* CreatePersistentTrackingPosition Exception / Step navigation error
-* .NET Core Bindings: Unable to load BoDi.dll (temporary fix)
+        * CreatePersistentTrackingPosition Exception / Step navigation error (#3)
+        * .NET Core Bindings: Unable to load BoDi.dll (temporary fix)
 
-");
+        """);
 #endif
 
     public UpgradeDialogViewModel(string newVersion, string changeLog) : base("Close", "Welcome to Reqnroll",
@@ -52,7 +54,7 @@ Bug fixes:
 
     private static string GetChangesText(string newVersion, string changeLog)
     {
-        changeLog = Regex.Replace(changeLog, @"^#\s", m => "#" + m.Value, RegexOptions.Multiline);
+        changeLog = Regex.Replace(changeLog, @"^#+\s", m => "#" + m.Value, RegexOptions.Multiline);
         return UPGRADE_HEADER_TEMPLATE.Replace("{newVersion}", newVersion) + Environment.NewLine + changeLog;
     }
 }
