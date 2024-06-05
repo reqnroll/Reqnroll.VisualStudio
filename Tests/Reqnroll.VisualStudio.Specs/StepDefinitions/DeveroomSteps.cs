@@ -82,7 +82,7 @@ public class DeveroomSteps : Steps
         GivenThereIsASmallReqnrollProject();
         _generatorOptions.AddExternalBindingPackage = true;
         _generatorOptions.ExternalBindingPackageName =
-            $"Deveroom.SampleReqnroll{DomainDefaults.LatestReqnrollVersion.ToShortVersionString()}.ExternalBindings";
+            $"Deveroom.SampleReqnrollV{DomainDefaults.LatestReqnrollVersion.Version.Major}.ExternalBindings";
     }
 
     [Given(@"there is a small Reqnroll project with async bindings")]
@@ -101,7 +101,7 @@ public class DeveroomSteps : Steps
             ReqnrollPackageVersion = reqnrollVersion.ToString(),
             AddGeneratorPlugin = true,
             AddRuntimePlugin = true,
-            PluginName = $"Deveroom.SampleReqnroll{reqnrollVersion.ToShortVersionString()}.ReqnrollPlugin"
+            PluginName = $"Deveroom.SampleReqnrollV{reqnrollVersion.Version.Major}.ReqnrollPlugin"
         };
     }
 
@@ -114,7 +114,7 @@ public class DeveroomSteps : Steps
             ReqnrollPackageVersion = reqnrollVersion.ToString(),
             AddExternalBindingPackage = true,
             ExternalBindingPackageName =
-                $"Deveroom.SampleReqnroll{reqnrollVersion.ToShortVersionString()}.ExternalBindings"
+                $"Deveroom.SampleReqnrollV{reqnrollVersion.Version.Major}.ExternalBindings"
         };
     }
 
