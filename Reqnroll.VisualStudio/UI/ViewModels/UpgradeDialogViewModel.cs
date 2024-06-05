@@ -30,13 +30,15 @@ public class UpgradeDialogViewModel : WizardViewModel
 
 #if DEBUG
     public static UpgradeDialogViewModel DesignData = new("1.0.99",
-        @"# v1.0.1 - 2019-02-27
+        """
+        $# v1.0.1 - 2019-02-27
 
-## Bug fixes:
+        $## Bug fixes:
 
-* CreatePersistentTrackingPosition Exception / Step navigation error (#3)
-* .NET Core Bindings: Unable to load BoDi.dll (temporary fix)
-");
+        * CreatePersistentTrackingPosition Exception / Step navigation error (#3)
+        * .NET Core Bindings: Unable to load BoDi.dll (temporary fix)
+
+        """.Replace("$#", "#")); // # on a line start confuses compiler
 #endif
 
     public UpgradeDialogViewModel(string newVersion, string changeLog) : base("Close", "Welcome to Reqnroll",
