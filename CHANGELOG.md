@@ -1,5 +1,7 @@
 # [vNext]
 
+# v2024.2.93 - 2024-06-05
+
 ## Improvements:
 
 * Find Unused Step Definitions Command: There is a new command available from within a binding class, "Find Usused Step Definitions". This will list any Step Definition methods that are not matched by one or more Feature steps in the current project. (#8)
