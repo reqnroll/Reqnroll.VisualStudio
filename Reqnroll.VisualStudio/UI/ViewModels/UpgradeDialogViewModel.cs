@@ -22,7 +22,8 @@ public class UpgradeDialogViewModel : WizardViewModel
         report it on GitHub: https://github.com/reqnroll/Reqnroll.VisualStudio/issues.
         
         For all other communication (questions, feature suggestions, discussions), please 
-        use the GitHub discussion board: https://github.com/reqnroll/Reqnroll/discussions.
+        use the GitHub discussion board: https://github.com/reqnroll/Reqnroll/discussions
+        our our [Discord server channel](https://go.reqnroll.net/discord-invite).
 
         Further contact details can be found on our website: https://reqnroll.net/contact/.
         """;
