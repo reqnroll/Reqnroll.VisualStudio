@@ -1,4 +1,5 @@
 # [vNext]
+* Fixed a mispelling in an error message in the DefineStepsCommand.
 
 # v2024.2.93 - 2024-06-05
 
