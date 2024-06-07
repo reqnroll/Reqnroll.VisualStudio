@@ -148,7 +148,7 @@ public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEdi
 
         if (IdeScope.FileSystem.File.Exists(targetFile.FullName))
             if (IdeScope.Actions.ShowSyncQuestion("Overwrite file?",
-                    $"The selected step definition file '{targetFile}' already exists. By overwriting the existing file you might loose work. {Environment.NewLine}Do you want to overwrite the file?",
+                    $"The selected step definition file '{targetFile}' already exists. By overwriting the existing file you might lose work. {Environment.NewLine}Do you want to overwrite the file?",
                     defaultButton: MessageBoxResult.No) != MessageBoxResult.Yes)
                 return;
 
