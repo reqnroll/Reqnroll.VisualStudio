@@ -343,6 +343,10 @@ public abstract class ProjectGenerator : IProjectGenerator
             var resultJson = JObject.Parse(result.StdOutput);
             latestVersion = (resultJson["searchResult"] as JArray)?.FirstOrDefault()?["packages"]?.LastOrDefault()?["latestVersion"]?.Value<string>();
         }
+        else
+        {
+            throw new Exception($"exit code: {result.ExitCode}, StdOut: {result.StdOutput}, StdErr: {result.StdError}");
+        }
 
         _latestVersionCache[packageName] = latestVersion;
 
