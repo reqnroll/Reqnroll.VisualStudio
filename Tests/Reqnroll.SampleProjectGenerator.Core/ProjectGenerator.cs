@@ -341,17 +341,8 @@ public abstract class ProjectGenerator : IProjectGenerator
         if (result.ExitCode == 0)
         {
             var resultJson = JObject.Parse(result.StdOutput);
-            latestVersion = (resultJson["searchResult"] as JArray)?.FirstOrDefault()?["packages"]?.LastOrDefault()?["latestVersion"]?.Value<string>();
-
-            if (latestVersion == null)
-            {
-                var lastPackage = (resultJson["searchResult"] as JArray)?.FirstOrDefault()?["packages"]?.LastOrDefault();
-                throw new Exception($"exit code: {result.ExitCode}, last package: {lastPackage}, StdOut: {result.StdOutput}, StdErr: {result.StdError}");
-            }
-        }
-        else
-        {
-            //throw new Exception($"exit code: {result.ExitCode}, StdOut: {result.StdOutput}, StdErr: {result.StdError}");
+            var lastPackage = (resultJson["searchResult"] as JArray)?.FirstOrDefault()?["packages"]?.LastOrDefault();
+            latestVersion = lastPackage?["latestVersion"]?.Value<string>() ?? lastPackage?["version"]?.Value<string>();
         }
 
         _latestVersionCache[packageName] = latestVersion;
