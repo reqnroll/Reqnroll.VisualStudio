@@ -1,5 +1,8 @@
 #nullable disable
 
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
 namespace Reqnroll.SampleProjectGenerator;
 
 public abstract class ProjectGenerator : IProjectGenerator
@@ -319,10 +322,32 @@ public abstract class ProjectGenerator : IProjectGenerator
     protected void InstallNuGetPackage(ProjectChanger projectChanger, string packagesFolder, string packageName,
         string sourcePlatform = "net462", string packageVersion = null, bool dependency = false)
     {
+        packageVersion ??= DetectLatestPackage(packageName);
         var package =
             projectChanger.InstallNuGetPackage(packagesFolder, packageName, sourcePlatform, packageVersion, dependency);
         if (package != null)
             InstalledNuGetPackages.Add(package);
+    }
+
+    private readonly Dictionary<string, string> _latestVersionCache = new();
+
+    private string DetectLatestPackage(string packageName)
+    {
+        if (_latestVersionCache.TryGetValue(packageName, out var version))
+            return version;
+
+        var result = ExecDotNet("package", "search", packageName, "--source", "https://api.nuget.org/v3/index.json", "--exact-match", "--format", "json");
+        string latestVersion = null;
+        if (result.ExitCode == 0)
+        {
+            var resultJson = JObject.Parse(result.StdOutput);
+            var lastPackage = (resultJson["searchResult"] as JArray)?.FirstOrDefault()?["packages"]?.LastOrDefault();
+            latestVersion = lastPackage?["latestVersion"]?.Value<string>() ?? lastPackage?["version"]?.Value<string>();
+        }
+
+        _latestVersionCache[packageName] = latestVersion;
+
+        return latestVersion;
     }
 
     private void EnsureEmptyFolder(string folder)
@@ -383,10 +408,14 @@ public abstract class ProjectGenerator : IProjectGenerator
         ToolLocator.GetToolPath(ExternalTools.Git, _consoleWriteLine), args);
 
 
-    protected int ExecDotNet(params string[] args) => Exec(_options.TargetFolder,
+    protected ProcessResult ExecDotNet(params string[] args) => ExecInternal(_options.TargetFolder,
         Environment.ExpandEnvironmentVariables(@"%ProgramW6432%\dotnet\dotnet.exe"), args);
 
     protected int Exec(string workingDirectory, string tool, params string[] args)
+        => ExecInternal(workingDirectory, tool, args).ExitCode;
+
+
+    protected ProcessResult ExecInternal(string workingDirectory, string tool, string[] args)
     {
         var arguments = string.Join(" ", args);
         _consoleWriteLine($"{tool} {arguments}");
@@ -394,6 +423,6 @@ public abstract class ProjectGenerator : IProjectGenerator
         var psi = new ProcessStartInfoEx(workingDirectory, tool, arguments);
         var ph = new ProcessHelper();
         ProcessResult result = ph.RunProcess(psi, _consoleWriteLine);
-        return result.ExitCode;
+        return result;
     }
 }
