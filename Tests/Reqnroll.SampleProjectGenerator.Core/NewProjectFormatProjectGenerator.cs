@@ -41,7 +41,7 @@ public class NewProjectFormatProjectGenerator : ProjectGenerator
             args.Add($"\"https://api.nuget.org/v3/index.json;{_options.FallbackNuGetPackageSource}\"");
         }
     
-        var exitCode = ExecDotNet(args.ToArray());
+        var exitCode = ExecDotNet(args.ToArray()).ExitCode;
         if (exitCode != 0)
         {
             _consoleWriteLine($"dotnet restore exit code: {exitCode}");
@@ -51,5 +51,5 @@ public class NewProjectFormatProjectGenerator : ProjectGenerator
         base.BuildProject();
     }
 
-    protected override int ExecBuild() => ExecDotNet("build", "--no-restore");
+    protected override int ExecBuild() => ExecDotNet("build", "--no-restore").ExitCode;
 }
