@@ -329,7 +329,7 @@ public abstract class ProjectGenerator : IProjectGenerator
             InstalledNuGetPackages.Add(package);
     }
 
-    private Dictionary<string, string> _latestVersionCache = new();
+    private readonly Dictionary<string, string> _latestVersionCache = new();
 
     private string DetectLatestPackage(string packageName)
     {
@@ -342,10 +342,16 @@ public abstract class ProjectGenerator : IProjectGenerator
         {
             var resultJson = JObject.Parse(result.StdOutput);
             latestVersion = (resultJson["searchResult"] as JArray)?.FirstOrDefault()?["packages"]?.LastOrDefault()?["latestVersion"]?.Value<string>();
+
+            if (latestVersion == null)
+            {
+                var lastPackage = (resultJson["searchResult"] as JArray)?.FirstOrDefault()?["packages"]?.LastOrDefault();
+                throw new Exception($"exit code: {result.ExitCode}, last package: {lastPackage}, StdOut: {result.StdOutput}, StdErr: {result.StdError}");
+            }
         }
         else
         {
-            throw new Exception($"exit code: {result.ExitCode}, StdOut: {result.StdOutput}, StdErr: {result.StdError}");
+            //throw new Exception($"exit code: {result.ExitCode}, StdOut: {result.StdOutput}, StdErr: {result.StdError}");
         }
 
         _latestVersionCache[packageName] = latestVersion;
