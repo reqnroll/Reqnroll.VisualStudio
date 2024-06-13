@@ -18,8 +18,7 @@ public class UnusedStepDefinitionsFinder : StepFinderBase
         _ideScope = ideScope;
     }
 
-    public IEnumerable<ProjectStepDefinitionBinding> FindUnused(ProjectBindingRegistry bindingRegistry,
-                                                        string[] featureFiles, DeveroomConfiguration configuration)
+    public IEnumerable<ProjectStepDefinitionBinding> FindUnused(ProjectBindingRegistry bindingRegistry, string[] featureFiles, DeveroomConfiguration configuration)
     {
         var stepDefUsageCounts = bindingRegistry.StepDefinitions.ToDictionary(stepDef => stepDef, _ => 0);
         foreach (var ff in featureFiles)
@@ -28,7 +27,9 @@ public class UnusedStepDefinitionsFinder : StepFinderBase
             foreach (var step in usedSteps) stepDefUsageCounts[step]++;
         }
 
-        return stepDefUsageCounts.Where(x => x.Value == 0).Select(x => x.Key);
+        var allUsedSteps = stepDefUsageCounts.Where(x => x.Value > 0).Select(x => x.Key).ToList();
+        var allUnusedSteps = stepDefUsageCounts.Where(x => x.Value == 0).Select(x => x.Key);
+        return allUnusedSteps.Where(x => !allUsedSteps.Any(y => y.Expression.Equals(x.Expression) && ReferenceEquals(x.Implementation, y.Implementation)));
     }
 
     protected IEnumerable<ProjectStepDefinitionBinding> FindUsed(ProjectBindingRegistry bindingRegistry,
