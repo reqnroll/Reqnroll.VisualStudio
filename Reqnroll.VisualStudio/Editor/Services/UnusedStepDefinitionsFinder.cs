@@ -18,8 +18,7 @@ public class UnusedStepDefinitionsFinder : StepFinderBase
         _ideScope = ideScope;
     }
 
-    public IEnumerable<ProjectStepDefinitionBinding> FindUnused(ProjectBindingRegistry bindingRegistry, 
-        string[] featureFiles, DeveroomConfiguration configuration)
+    public IEnumerable<ProjectStepDefinitionBinding> FindUnused(ProjectBindingRegistry bindingRegistry, string[] featureFiles, DeveroomConfiguration configuration)
     {
         var stepDefUsageCounts = bindingRegistry.StepDefinitions.ToDictionary(stepDef => stepDef, _ => 0);
         foreach (var ff in featureFiles)
