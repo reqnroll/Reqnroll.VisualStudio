@@ -39,4 +39,19 @@ public class FindUnusedStepDefinitionsCommandTests : CommandTestBase<FindUnusedS
             .HaveCount(2).And
             .Contain(mi => mi.Label == "Steps.cs(10,9): [When(\"I choose add\")] WhenIPressAdd");
     }
+
+
+    [Fact]
+    public async Task Cannot_find_an_unused_StepDefinition_With_StepDefinition_Attribute()
+    {
+        var stepDefinition = ArrangeStepDefinition(@"""I press add""", "StepDefinition");
+        var featureFile = ArrangeOneFeatureFile();
+        var (textView, command) = await ArrangeSut(stepDefinition, featureFile);
+
+        await InvokeAndWaitAnalyticsEvent(command, textView);
+
+        (ProjectScope.IdeScope.Actions as StubIdeActions)!.LastShowContextMenuItems.Should()
+            .HaveCount(1).And
+            .Contain(mi => mi.Label == "There are no unused step definitions");
+    }
 }
