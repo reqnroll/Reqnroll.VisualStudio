@@ -26,7 +26,15 @@ The Debug build will automatically install the package to the Visual Studio Expe
 
 As the build installs the package to the Visual Studio Experimental Instance, you can simply start the experimental instance and test the plugin behavior manually. Just like with any other apps, you can also attach to the Visual Studio Experimental Instance (devenv.exe) process with your Visual Studio that you used to build and you can debug (set breakpoints, stop at exceptions, etc.).
 
-You can also set the `Reqnroll.VisualStudio.Package` project as startup project. It is configured in a way that if you use the Start Debugging command (F5) it will automatically start the Visual Studio Experimental Instance with the debugger attached. So you can debug the full life-cycle of the extension, right from the loading. (Similarly, the "Start Without Debugging" (Ctrl+F5) is also working that simply starts Visual Studio Experimental Instance and you don't have to find it in the Start menu.)
+You can also set the `Reqnroll.VisualStudio.Package` project as startup project and configure a debug profile for the execution. (You can set the lunch profile by selecting the "Reqnroll.VisualStudio.Package Debug Properties" option from the toolbar run button dropdown or from the "Debug" section of the project properties window.) The launch profile has to be configured as:
+
+* Use "Create a new profile" button and choose "Executable"
+* Set `C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\devenv.exe` as "Executable"
+* Set `/rootsuffix Exp` as "Command line arguments"
+* Delete the other project-based profile
+* Rename the profile to something more meaningful
+
+Once the launch profile has been configured, yoy can use the Start Debugging command (F5) and it will automatically start the Visual Studio Experimental Instance with the debugger attached. So you can debug the full life-cycle of the extension, right from the loading. (Similarly, the "Start Without Debugging" (Ctrl+F5) is also working that simply starts Visual Studio Experimental Instance and you don't have to find it in the Start menu.)
 
 ## Test UI
 
