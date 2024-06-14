@@ -26,7 +26,7 @@ public class AutoFormatTableCommandTests
     public AutoFormatTableCommandTests(ITestOutputHelper testOutputHelper)
     {
         _ideScope = new StubIdeScope(testOutputHelper);
-        _taggerProvider = new DeveroomTaggerProvider(_ideScope);
+        _taggerProvider = new DeveroomTaggerProvider(_ideScope, new SpecFlowExtensionDetection.SpecFlowExtensionDetectionService(_ideScope));
     }
 
     private StubWpfTextView CreateTextView(TestText inputText, string newLine) =>

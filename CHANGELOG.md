@@ -3,6 +3,7 @@
 ## Improvements:
 
 * Find Unused Step Definitions Command: Improved handling of Step Definitions decorated with the 'StepDefinition' attribute. If a Step Definition is used in any Given/Then/When step in a Feature file, the step will no longer show in the 'Find Unused Step Definitions' context menu. (#24)
+* Detects Existence of SpecFlow for Visual Studio extension and show a warning (GH#16)
 
 ## Bug fixes:
 
