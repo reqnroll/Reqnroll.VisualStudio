@@ -1,3 +1,6 @@
+using Gherkin.CucumberMessages.Types;
+using Newtonsoft.Json;
+
 namespace Reqnroll.VisualStudio.VsxStubs.StepDefinitions;
 
 public class MockableDiscoveryService : DiscoveryService
@@ -22,11 +25,34 @@ public class MockableDiscoveryService : DiscoveryService
     {
         var discoveryResultProviderMock = new Mock<IDiscoveryResultProvider>(MockBehavior.Strict);
 
+        var allStepDefinitions = new List<StepDefinition>();
+        foreach (var stepDefinition in stepDefinitions)
+        {
+            if (stepDefinition.Type.Equals("StepDefinition"))
+            {
+                var serialized = JsonConvert.SerializeObject(stepDefinition);
+                var stepDefAttributes = new List<string>() { "Given", "Then", "When" };
+                foreach (string stepDefAttribute in stepDefAttributes)
+                {
+                    StepDefinition? clonedStepDef = JsonConvert.DeserializeObject<StepDefinition>(serialized);
+                    if (clonedStepDef != null)
+                    {
+                        clonedStepDef.Type = stepDefAttribute;
+                        allStepDefinitions.Add(clonedStepDef);
+                    }
+                }
+            }
+            else
+            {
+                allStepDefinitions.Add(stepDefinition);
+            }
+        }
+
         var discoveryService = new MockableDiscoveryService(projectScope, discoveryResultProviderMock)
         {
             LastDiscoveryResult = new DiscoveryResult
             {
-                StepDefinitions = stepDefinitions,
+                StepDefinitions = allStepDefinitions.ToArray(),
                 Hooks = Array.Empty<Hook>()
             }
         };
