@@ -6,17 +6,17 @@ namespace Reqnroll.VisualStudio.Editor.Classification;
 
 internal static class DeveroomClassifications
 {
-    public const string Keyword = "deveroom.keyword";
-    public const string Tag = "deveroom.tag";
-    public const string Description = "deveroom.description";
-    public const string Comment = "deveroom.comment";
-    public const string DocString = "deveroom.doc_string";
-    public const string DataTable = "deveroom.data_table";
-    public const string DataTableHeader = "deveroom.data_table_header";
+    public const string Keyword = "reqnroll.keyword";
+    public const string Tag = "reqnroll.tag";
+    public const string Description = "reqnroll.description";
+    public const string Comment = "reqnroll.comment";
+    public const string DocString = "reqnroll.doc_string";
+    public const string DataTable = "reqnroll.data_table";
+    public const string DataTableHeader = "reqnroll.data_table_header";
 
-    public const string UndefinedStep = "deveroom.undefined_step";
-    public const string StepParameter = "deveroom.step_parameter";
-    public const string ScenarioOutlinePlaceholder = "deveroom.scenario_outline_placeholder";
+    public const string UndefinedStep = "reqnroll.undefined_step";
+    public const string StepParameter = "reqnroll.step_parameter";
+    public const string ScenarioOutlinePlaceholder = "reqnroll.scenario_outline_placeholder";
 
     // This disables "The field is never used" compiler's warning. Justification: the field is used by MEF.
 #pragma warning disable 169
@@ -203,7 +203,7 @@ internal static class DeveroomClassifications
 
 
 #if DEBUG
-    public const string DebugMarker = "deveroom.debug_marker";
+    public const string DebugMarker = "reqnroll.debug_marker";
 
     [Export] [Name(DebugMarker)] private static ClassificationTypeDefinition _debugEditorClassificationTypeDefinition;
 
