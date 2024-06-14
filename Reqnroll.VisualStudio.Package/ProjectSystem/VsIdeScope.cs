@@ -24,7 +24,7 @@ public class VsIdeScope : IVsIdeScope
     [ImportingConstructor]
     public VsIdeScope([Import(typeof(SVsServiceProvider))] IServiceProvider serviceProvider,
         IVsSolutionEventListener solutionEventListener, IMonitoringService monitoringService,
-        IDeveroomWindowManager windowManager, IFileSystem fileSystem, DeveroomCompositeLogger compositeLogger)
+        IDeveroomWindowManager windowManager, IFileSystemForVs fileSystem, DeveroomCompositeLogger compositeLogger)
     {
         Logger = compositeLogger;
         ServiceProvider = serviceProvider;
@@ -65,7 +65,7 @@ public class VsIdeScope : IVsIdeScope
     public IMonitoringService MonitoringService { get; }
     public IIdeActions Actions { get; }
     public IDeveroomWindowManager WindowManager { get; }
-    public IFileSystem FileSystem { get; }
+    public IFileSystemForVs FileSystem { get; }
     public IDeveroomOutputPaneServices DeveroomOutputPaneServices { get; }
     public IDeveroomErrorListServices DeveroomErrorListServices { get; }
 

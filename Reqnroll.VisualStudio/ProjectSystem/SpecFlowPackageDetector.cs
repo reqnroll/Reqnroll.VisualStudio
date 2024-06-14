@@ -36,9 +36,9 @@ internal class SpecFlowPackageDetector
         new(SpecSyncPackageRe)
     };
 
-    private readonly IFileSystem _fileSystem;
+    private readonly IFileSystemForVs _fileSystem;
 
-    public SpecFlowPackageDetector(IFileSystem fileSystem)
+    public SpecFlowPackageDetector(IFileSystemForVs fileSystem)
     {
         _fileSystem = fileSystem;
     }

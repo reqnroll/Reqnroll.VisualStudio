@@ -4,7 +4,7 @@ public record ConfigSource(string FilePath, DateTimeOffset LastChangeTime, strin
 {
     public bool IsValid => !string.IsNullOrEmpty(FilePath);
 
-    public static ConfigSource TryGetConfigSource(string filePath, IFileSystem fileSystem, IDeveroomLogger logger)
+    public static ConfigSource TryGetConfigSource(string filePath, IFileSystemForVs fileSystem, IDeveroomLogger logger)
     {
         if (string.IsNullOrEmpty(filePath))
             return CreateInvalid("Test assembly path could not be detected, therefore some Reqnroll Visual Studio Extension features are disabled. Try to rebuild the project or restart Visual Studio.");

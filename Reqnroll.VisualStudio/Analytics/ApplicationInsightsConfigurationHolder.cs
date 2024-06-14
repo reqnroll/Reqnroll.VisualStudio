@@ -3,10 +3,10 @@ namespace Reqnroll.VisualStudio.Analytics;
 [Export(typeof(ITelemetryConfigurationHolder))]
 public class ApplicationInsightsConfigurationHolder : ITelemetryConfigurationHolder
 {
-    private readonly IContextInitializer _contextInitializer;
+    private readonly IReqnrollContextInitializer _contextInitializer;
 
     [ImportingConstructor]
-    public ApplicationInsightsConfigurationHolder(IContextInitializer contextInitializer)
+    public ApplicationInsightsConfigurationHolder(IReqnrollContextInitializer contextInitializer)
     {
         _contextInitializer = contextInitializer;
     }

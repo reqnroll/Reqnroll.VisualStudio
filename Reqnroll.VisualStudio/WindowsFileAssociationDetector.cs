@@ -8,10 +8,10 @@ public class WindowsFileAssociationDetector
     private const string ProgId = "Reqnroll.GherkinFile";
     private const string FriendlyTypeName = "Gherkin Specification File for Reqnroll";
 
-    private readonly IFileSystem _fileSystem;
+    private readonly IFileSystemForVs _fileSystem;
     private readonly IIdeScope _ideScope;
 
-    public WindowsFileAssociationDetector(IFileSystem fileSystem, IIdeScope ideScope)
+    public WindowsFileAssociationDetector(IFileSystemForVs fileSystem, IIdeScope ideScope)
     {
         _fileSystem = fileSystem;
         _ideScope = ideScope;

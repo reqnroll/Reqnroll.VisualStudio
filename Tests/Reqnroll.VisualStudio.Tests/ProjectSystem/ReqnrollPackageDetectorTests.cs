@@ -14,7 +14,7 @@ public class ReqnrollPackageDetectorTests
         @"C:\MyProject\packages\SpecSync.AzureDevOps.Reqnroll.2-4.2.0.0";
 
     private const string SpecFlow240PackagePathSolutionPackages = @"C:\MyProject\packages\Reqnroll.2.4.0";
-    private readonly MockFileSystem _mockFileSystem = new();
+    private readonly MockFileSystemForVs _mockFileSystem = new();
 
     public ReqnrollPackageDetectorTests()
     {

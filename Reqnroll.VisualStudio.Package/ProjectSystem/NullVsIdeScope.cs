@@ -13,7 +13,7 @@ public class NullVsIdeScope : IVsIdeScope
         MonitoringService = monitoringService;
         ServiceProvider = serviceProvider;
         WindowManager = new DeveroomWindowManager(serviceProvider, monitoringService);
-        FileSystem = new FileSystem();
+        FileSystem = new FileSystemForVs();
         Actions = new NullIdeActions(this);
         Dte = null;
         DeveroomOutputPaneServices = null;
@@ -26,7 +26,7 @@ public class NullVsIdeScope : IVsIdeScope
     public IMonitoringService MonitoringService { get; }
     public IIdeActions Actions { get; }
     public IDeveroomWindowManager WindowManager { get; }
-    public IFileSystem FileSystem { get; }
+    public IFileSystemForVs FileSystem { get; }
 
     public event EventHandler<EventArgs> WeakProjectsBuilt
     {

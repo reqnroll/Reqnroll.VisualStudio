@@ -10,7 +10,7 @@ public class LoggingTests
     public void MessageIsLogged(TraceLevel logLevel)
     {
         //arrange
-        var fileSystem = new MockFileSystem();
+        var fileSystem = new MockFileSystemForVs();
         var logger = AsynchronousFileLogger.CreateInstance(fileSystem);
         Warmup(logger, fileSystem);
 
@@ -29,7 +29,7 @@ public class LoggingTests
             $"{message.TimeStamp:yyyy-MM-ddTHH\\:mm\\:ss.fffzzz}, {message.Level}@{message.ManagedThreadId}, {message.CallerMethod}: {message.Message}");
     }
 
-    private void Warmup(AsynchronousFileLogger logger, IFileSystem fileSystem)
+    private void Warmup(AsynchronousFileLogger logger, IFileSystemForVs fileSystem)
     {
         var message = new LogMessage(TraceLevel.Error, "warmup", nameof(MessageIsLogged));
         logger.Log(message);
@@ -43,7 +43,7 @@ public class LoggingTests
     public void DisposeStopsLogging()
     {
         //arrange
-        var fileSystem = new MockFileSystem();
+        var fileSystem = new MockFileSystemForVs();
         var logger = AsynchronousFileLogger.CreateInstance(fileSystem);
         Warmup(logger, fileSystem);
 

@@ -11,7 +11,7 @@ public interface IWelcomeService
 public class WelcomeService : IWelcomeService
 {
     private static DispatcherTimer _welcomeMessageTimer;
-    private readonly IFileSystem _fileSystem;
+    private readonly IFileSystemForVs _fileSystem;
     private readonly IGuidanceConfiguration _guidanceConfiguration;
     private readonly IRegistryManager _registryManager;
     private readonly IServiceProvider _serviceProvider;
@@ -22,7 +22,7 @@ public class WelcomeService : IWelcomeService
     [ImportingConstructor]
     public WelcomeService([Import(typeof(SVsServiceProvider))] IServiceProvider serviceProvider,
         IRegistryManager registryManager, IVersionProvider versionProvider,
-        IGuidanceConfiguration guidanceConfiguration, IFileSystem fileSystem)
+        IGuidanceConfiguration guidanceConfiguration, IFileSystemForVs fileSystem)
     {
         _serviceProvider = serviceProvider;
         _registryManager = registryManager;

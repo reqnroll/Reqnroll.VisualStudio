@@ -2,10 +2,17 @@
 
 namespace Reqnroll.VisualStudio;
 
-[Export(typeof(IFileSystem))]
-public class FileSystemWrapper : IFileSystem
+// We cannot directly use IFileSystem as dependency (with MEF), because there might be other extensions (e.g. SpecFlow)
+// that also export an implementation of IFileSystem. We need to have a separate contract for "our" file system.
+public interface IFileSystemForVs : IFileSystem
 {
-    private readonly IFileSystem _fileSystem = new FileSystem();
+
+}
+
+[Export(typeof(IFileSystemForVs))]
+public class FileSystemForVs : IFileSystemForVs
+{
+    private readonly FileSystem _fileSystem = new();
 
     public IFile File => _fileSystem.File;
     public IDirectory Directory => _fileSystem.Directory;

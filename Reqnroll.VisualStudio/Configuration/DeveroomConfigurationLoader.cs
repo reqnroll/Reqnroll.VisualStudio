@@ -6,20 +6,20 @@ namespace Reqnroll.VisualStudio.Configuration;
 public class DeveroomConfigurationLoader
 {
     private readonly IConfigDeserializer<DeveroomConfiguration> _configDeserializer;
-    private readonly IFileSystem _fileSystem;
+    private readonly IFileSystemForVs _fileSystem;
 
     private DeveroomConfigurationLoader(
         IConfigDeserializer<DeveroomConfiguration> configDeserializer,
-        IFileSystem fileSystem)
+        IFileSystemForVs fileSystem)
     {
         _configDeserializer = configDeserializer;
         _fileSystem = fileSystem;
     }
 
-    public static DeveroomConfigurationLoader CreateReqnrollJsonConfigurationLoader(IFileSystem fileSystem) =>
+    public static DeveroomConfigurationLoader CreateReqnrollJsonConfigurationLoader(IFileSystemForVs fileSystem) =>
         new(new ReqnrollConfigDeserializer(), fileSystem);
 
-    public static DeveroomConfigurationLoader CreateDeveroomJsonConfigurationLoader(IFileSystem fileSystem) =>
+    public static DeveroomConfigurationLoader CreateDeveroomJsonConfigurationLoader(IFileSystemForVs fileSystem) =>
         new(new JsonNetConfigDeserializer<DeveroomConfiguration>(), fileSystem);
 
     public DeveroomConfiguration Load(string configFilePath)

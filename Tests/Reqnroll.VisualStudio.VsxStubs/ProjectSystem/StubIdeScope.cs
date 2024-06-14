@@ -61,7 +61,7 @@ public class StubIdeScope : Mock<IIdeScope>, IIdeScope, IDisposable
     public IDeveroomLogger Logger => CompositeLogger;
     public IIdeActions Actions { get; set; }
     public IDeveroomWindowManager WindowManager => StubWindowManager;
-    public IFileSystem FileSystem { get; private set; } = new MockFileSystem();
+    public IFileSystemForVs FileSystem { get; private set; } = new MockFileSystemForVs();
 
     public IDeveroomOutputPaneServices DeveroomOutputPaneServices { get; } =
         new Mock<IDeveroomOutputPaneServices>().Object;
@@ -189,7 +189,7 @@ public class StubIdeScope : Mock<IIdeScope>, IIdeScope, IDisposable
 
     public void UsePhysicalFileSystem()
     {
-        FileSystem = new FileSystem();
+        FileSystem = new FileSystemForVs();
     }
 
     public void Dispose()

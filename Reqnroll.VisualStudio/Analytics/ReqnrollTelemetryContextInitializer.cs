@@ -1,7 +1,13 @@
 namespace Reqnroll.VisualStudio.Analytics;
 
-[System.Composition.Export(typeof(IContextInitializer))]
-public class ReqnrollTelemetryContextInitializer : IContextInitializer
+// We cannot directly use IContextInitializer as dependency (with MEF), because there might be other extensions (e.g. SpecFlow)
+// that also export an implementation of IContextInitializer. We need to have a separate contract for "our" context initializer.
+public interface IReqnrollContextInitializer : IContextInitializer
+{
+}
+
+[System.Composition.Export(typeof(IReqnrollContextInitializer))]
+public class ReqnrollTelemetryContextInitializer : IReqnrollContextInitializer
 {
     private readonly IUserUniqueIdStore _userUniqueIdStore;
     private readonly IVersionProvider _versionProvider;

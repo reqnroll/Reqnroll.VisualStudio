@@ -11,12 +11,12 @@ public interface IUserUniqueIdStore
 public class FileUserIdStore : IUserUniqueIdStore
 {
     public static readonly string UserIdFilePath = Environment.ExpandEnvironmentVariables(@"%APPDATA%\Reqnroll\userid");
-    private readonly IFileSystem _fileSystem;
+    private readonly IFileSystemForVs _fileSystem;
 
     private readonly Lazy<string> _lazyUniqueUserId;
 
     [ImportingConstructor]
-    public FileUserIdStore(IFileSystem fileSystem)
+    public FileUserIdStore(IFileSystemForVs fileSystem)
     {
         _fileSystem = fileSystem;
         _lazyUniqueUserId = new Lazy<string>(FetchAndPersistUserId);
