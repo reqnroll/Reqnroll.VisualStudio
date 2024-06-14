@@ -2,9 +2,7 @@
 
 ## Improvements:
 
-* Find Unused Step Definitions Command: Improved handling of Step Definitions decorated with the 'StepDefinition' attribute. If a Step Definition is used in any Given/Then/When step in a Feature file, the step will no longer show.
-
-## Bug fixes:
+* Find Unused Step Definitions Command: Improved handling of Step Definitions decorated with the 'StepDefinition' attribute. If a Step Definition is used in any Given/Then/When step in a Feature file, the step will no longer show in the 'Find Unused Step Definitions' context menu.
 
 *Contributors of this release (in alphabetical order):* @UL-ChrisGlew
 
