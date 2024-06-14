@@ -2,9 +2,13 @@
 
 ## Improvements:
 
-* Find Unused Step Definitions Command: Improved handling of Step Definitions decorated with the 'StepDefinition' attribute. If a Step Definition is used in any Given/Then/When step in a Feature file, the step will no longer show in the 'Find Unused Step Definitions' context menu.
+* Find Unused Step Definitions Command: Improved handling of Step Definitions decorated with the 'StepDefinition' attribute. If a Step Definition is used in any Given/Then/When step in a Feature file, the step will no longer show in the 'Find Unused Step Definitions' context menu. (#24)
 
-*Contributors of this release (in alphabetical order):* @UL-ChrisGlew
+## Bug fixes:
+
+* Fix: Using the extension side-by-side with the SpecFlow for Visual Studio extension causes CompositionFailedException (#25)
+
+*Contributors of this release (in alphabetical order):* @gasparnagy, @UL-ChrisGlew
 
 # v2024.2.93 - 2024-06-05
 
