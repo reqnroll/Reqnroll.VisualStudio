@@ -13,7 +13,7 @@ public class ReportErrorDialogViewModel
             This issue causes instability or blocks important features such as navigation or auto-complete.
             
             *Please help us and other Reqnroll users* by reporting this issue in our issue tracker at 
-            https://github.com/reqnroll/Reqnroll.VS/issues.
+            https://github.com/reqnroll/Reqnroll.VisualStudio/issues.
         ";
 
     internal const string INIT_ERROR = @"
@@ -21,7 +21,7 @@ public class ReportErrorDialogViewModel
             version. (The version of your Visual Studio can be found in the '*Help / About*' dialog.) 
 
             If the problem persists even after updating Visual Studio, please report the error above in our issue tracker at 
-            https://github.com/reqnroll/Reqnroll.VS/issues.
+            https://github.com/reqnroll/Reqnroll.VisualStudio/issues.
         ";
 
 #if DEBUG

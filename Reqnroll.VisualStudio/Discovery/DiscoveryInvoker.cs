@@ -109,7 +109,7 @@ internal class DiscoveryInvoker
             _logger.LogWarning(
                 "The project bindings (e.g. step definitions) could not be discovered." +
                 " Navigation, step completion and other features are disabled. " + Environment.NewLine +
-                "  Please check the error message above and report to https://github.com/reqnroll/Reqnroll.VS/issues if you cannot fix.");
+                "  Please check the error message above and report to https://github.com/reqnroll/Reqnroll.VisualStudio/issues if you cannot fix.");
 
             _errorListServices.AddErrors(new[]
             {
