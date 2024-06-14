@@ -4,7 +4,7 @@ internal class DiscoveryInvoker
 {
     private readonly IDiscoveryResultProvider _discoveryResultProvider;
     private readonly IDeveroomErrorListServices _errorListServices;
-    private readonly IFileSystem _fileSystem;
+    private readonly IFileSystemForVs _fileSystem;
     private readonly IDeveroomLogger _logger;
     private readonly IMonitoringService _monitoringService;
     private readonly IProjectScope _projectScope;

@@ -26,7 +26,7 @@ public class ProjectScopeDeveroomConfigurationProvider : IDeveroomConfigurationP
 
     private IDeveroomLogger Logger => _projectScope.IdeScope.Logger;
     private IMonitoringService MonitoringService => _projectScope.IdeScope.MonitoringService;
-    private IFileSystem FileSystem => _projectScope.IdeScope.FileSystem;
+    private IFileSystemForVs FileSystem => _projectScope.IdeScope.FileSystem;
 
     public event EventHandler<EventArgs> WeakConfigurationChanged
     {

@@ -3,7 +3,7 @@ namespace Reqnroll.VisualStudio.Diagnostics;
 public class SynchronousFileLogger : AsynchronousFileLogger
 {
     public SynchronousFileLogger()
-        : base(new FileSystem(), TraceLevel.Verbose)
+        : base(new FileSystemForVs(), TraceLevel.Verbose)
     {
         EnsureLogFolder();
     }

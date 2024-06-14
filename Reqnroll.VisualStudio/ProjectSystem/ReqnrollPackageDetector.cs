@@ -33,9 +33,9 @@ internal class ReqnrollPackageDetector
         new(SpecSyncPackageRe)
     };
 
-    private readonly IFileSystem _fileSystem;
+    private readonly IFileSystemForVs _fileSystem;
 
-    public ReqnrollPackageDetector(IFileSystem fileSystem)
+    public ReqnrollPackageDetector(IFileSystemForVs fileSystem)
     {
         _fileSystem = fileSystem;
     }

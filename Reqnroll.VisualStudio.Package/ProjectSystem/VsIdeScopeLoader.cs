@@ -44,7 +44,7 @@ public class VsIdeScopeLoader : IVsIdeScope
     {
         try
         {
-            var fileSystem = VsUtils.ResolveMefDependency<IFileSystem>(serviceProvider);
+            var fileSystem = VsUtils.ResolveMefDependency<IFileSystemForVs>(serviceProvider);
             var asyncLogger = AsynchronousFileLogger.CreateInstance(fileSystem);
             var compositeLogger = VsUtils.ResolveMefDependency<DeveroomCompositeLogger>(serviceProvider);
             compositeLogger.Add(asyncLogger);
@@ -114,7 +114,7 @@ public class VsIdeScopeLoader : IVsIdeScope
 
     public IDeveroomWindowManager WindowManager => VsIdeScope.WindowManager;
 
-    public IFileSystem FileSystem => VsIdeScope.FileSystem;
+    public IFileSystemForVs FileSystem => VsIdeScope.FileSystem;
 
     public event EventHandler<EventArgs> WeakProjectsBuilt
     {

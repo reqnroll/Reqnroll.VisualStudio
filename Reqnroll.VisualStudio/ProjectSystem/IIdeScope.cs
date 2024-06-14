@@ -9,7 +9,7 @@ public interface IIdeScope
     IDeveroomWindowManager WindowManager { get; }
     IDeveroomOutputPaneServices DeveroomOutputPaneServices { get; }
     IDeveroomErrorListServices DeveroomErrorListServices { get; }
-    IFileSystem FileSystem { get; }
+    IFileSystemForVs FileSystem { get; }
     IProjectScope? GetProject(ITextBuffer textBuffer);
     event EventHandler<EventArgs> WeakProjectsBuilt;
     event EventHandler<EventArgs> WeakProjectOutputsUpdated;

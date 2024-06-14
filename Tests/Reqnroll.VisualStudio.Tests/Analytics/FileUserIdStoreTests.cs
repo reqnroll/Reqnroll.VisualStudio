@@ -4,7 +4,7 @@ namespace Reqnroll.VisualStudio.Tests.Analytics;
 public class FileUserIdStoreTests
 {
     private const string UserId = "491ed5c0-9f25-4c27-941a-19b17cc81c87";
-    private Mock<IFileSystem> fileSystemStub;
+    private Mock<IFileSystemForVs> fileSystemStub;
 
     [Fact]
     public void Should_GetUserIdFromFile_WhenFileExists()
@@ -36,7 +36,7 @@ public class FileUserIdStoreTests
 
     public FileUserIdStore CreateSut()
     {
-        fileSystemStub = new Mock<IFileSystem>();
+        fileSystemStub = new Mock<IFileSystemForVs>();
         return new FileUserIdStore(fileSystemStub.Object);
     }
 

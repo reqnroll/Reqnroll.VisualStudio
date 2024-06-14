@@ -3,10 +3,10 @@ namespace Reqnroll.VisualStudio.Diagnostics;
 public class AsynchronousFileLogger : IDeveroomLogger, IDisposable
 {
     private readonly Channel<LogMessage> _channel;
-    private readonly IFileSystem _fileSystem;
+    private readonly IFileSystemForVs _fileSystem;
     private readonly CancellationTokenSource _stopTokenSource;
 
-    protected AsynchronousFileLogger(IFileSystem fileSystem, TraceLevel level)
+    protected AsynchronousFileLogger(IFileSystemForVs fileSystem, TraceLevel level)
     {
         _fileSystem = fileSystem;
         Level = level;
@@ -41,7 +41,7 @@ public class AsynchronousFileLogger : IDeveroomLogger, IDisposable
 #endif
     }
 
-    public static AsynchronousFileLogger CreateInstance(IFileSystem fileSystem)
+    public static AsynchronousFileLogger CreateInstance(IFileSystemForVs fileSystem)
     {
         var fileLogger = new AsynchronousFileLogger(fileSystem, TraceLevel.Verbose);
         Task.Factory.StartNew(
