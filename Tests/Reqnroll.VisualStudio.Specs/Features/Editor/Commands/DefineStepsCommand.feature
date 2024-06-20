@@ -134,13 +134,13 @@ Scenario: DefineSteps command properly escapes empty brackets when using Cucumbe
 		Feature: Scenario using empty brackets
 		
 		Scenario: Client has a simple basket
-			When I call the integer.ToString() method
+			When I use (parenthesis), {curly braces} and/or \ backslash
 		"""
 	And the project is built and the initial binding discovery is performed
 	When I invoke the "Define Steps" command
 	Then the define steps dialog should be opened with the following step definition skeletons
 		| type | expression                                 |
-		| When | I call the integer\\.ToString\\(\\) method |
+		| When | I use \\(parenthesis), \\{curly braces} and\\/or \\\ backslash |
 
 Scenario: DefineSteps command properly escapes empty brackets when using Regex expressions
 	Given there is a Reqnroll project scope
@@ -149,7 +149,7 @@ Scenario: DefineSteps command properly escapes empty brackets when using Regex e
 		Feature: Scenario using empty brackets
 		
 		Scenario: Client has a simple basket
-			When I call the integer.ToString() method
+			When I use (parenthesis), {curly braces}, \ backslash, and/or . period
 		"""
 	And the reqnroll.json configuration file contains
 		"""
@@ -160,6 +160,6 @@ Scenario: DefineSteps command properly escapes empty brackets when using Regex e
 	And the project is built and the initial binding discovery is performed
 	When I invoke the "Define Steps" command
 	Then the define steps dialog should be opened with the following step definition skeletons
-		| type | expression                                 |
-		| When | I call the integer\\.ToString\\(\\) method |
+		| type | expression |
+		| When | I use \\(parenthesis\), \\{curly braces}, \\\ backslash, and/or \\. period |
 
