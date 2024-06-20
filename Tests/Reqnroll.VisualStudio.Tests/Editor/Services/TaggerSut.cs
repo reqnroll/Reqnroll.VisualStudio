@@ -55,7 +55,7 @@ public record TaggerSut
     public ITagger<DeveroomTag> BuildFeatureFileTagger()
     {
         ProjectScope.Properties.AddProperty(typeof(IDeveroomTagParser), TagParser.Object);
-        var taggerProvider = new DeveroomTaggerProvider(IdeScope);
+        var taggerProvider = new DeveroomTaggerProvider(IdeScope, new SpecFlowExtensionDetection.SpecFlowExtensionDetectionService(IdeScope));
 
         var tagger = BuildTagger<FeatureFileTagger>(taggerProvider);
         tagger.TagsChanged += DeveroomTagger_TagsChanged;

@@ -171,7 +171,7 @@ public abstract class EditorTestBase
 
     protected static DeveroomTaggerProvider CreateTaggerProvider(IIdeScope ideScope)
     {
-        var taggerProvider = new DeveroomTaggerProvider(ideScope);
+        var taggerProvider = new DeveroomTaggerProvider(ideScope, new SpecFlowExtensionDetection.SpecFlowExtensionDetectionService(ideScope));
 
         return taggerProvider;
     }

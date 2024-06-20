@@ -495,7 +495,7 @@ public class ProjectSystemSteps : Steps
 
     private IDeveroomTaggerProvider CreateTaggerProvider()
     {
-        var taggerProvider = new DeveroomTaggerProvider(_ideScope);
+        var taggerProvider = new DeveroomTaggerProvider(_ideScope, new SpecFlowExtensionDetection.SpecFlowExtensionDetectionService(_ideScope));
         var tagger = taggerProvider.CreateTagger<DeveroomTag>(_ideScope.CurrentTextView.TextBuffer);
         var span = new SnapshotSpan(_ideScope.CurrentTextView.TextSnapshot, 0, 0);
         tagger.GetUpToDateDeveroomTagsForSpan(span);

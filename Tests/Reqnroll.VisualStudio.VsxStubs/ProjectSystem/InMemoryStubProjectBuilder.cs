@@ -1,3 +1,5 @@
+using Reqnroll.VisualStudio.SpecFlowExtensionDetection;
+
 namespace Reqnroll.VisualStudio.VsxStubs.ProjectSystem;
 
 public class InMemoryStubProjectBuilder : IDisposable
@@ -15,7 +17,7 @@ public class InMemoryStubProjectBuilder : IDisposable
         bindingRegistryCache = project.Properties.GetProperty<IDiscoveryService>(typeof(IDiscoveryService))
             .BindingRegistryCache;
 
-        var taggerProvider = new DeveroomTaggerProvider(project.IdeScope);
+        var taggerProvider = new DeveroomTaggerProvider(project.IdeScope, new SpecFlowExtensionDetectionService(project.IdeScope));
         _tagger = taggerProvider.CreateTagger<DeveroomTag>(VisibleTextBuffer);
 
         _bindingRegistryChanged = new AsyncManualResetEvent();

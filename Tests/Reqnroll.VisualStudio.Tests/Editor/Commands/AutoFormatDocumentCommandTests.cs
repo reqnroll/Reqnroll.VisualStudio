@@ -9,7 +9,7 @@ public class AutoFormatDocumentCommandTests
     public AutoFormatDocumentCommandTests(ITestOutputHelper testOutputHelper)
     {
         _ideScope = new StubIdeScope(testOutputHelper);
-        _deveroomTaggerProvider = new DeveroomTaggerProvider(_ideScope);
+        _deveroomTaggerProvider = new DeveroomTaggerProvider(_ideScope, new SpecFlowExtensionDetection.SpecFlowExtensionDetectionService(_ideScope));
     }
 
     private AutoFormatDocumentCommand CreateSUT() => new(
