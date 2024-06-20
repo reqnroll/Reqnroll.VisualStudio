@@ -127,3 +127,39 @@ Scenario: DefineSteps command abides by reqnroll.json configuration for regex sk
 			| type  | expression                        |
 			| Given | the client added (.*) pcs to the basket |
 
+Scenario: DefineSteps command properly escapes empty brackets when using Cucumber expressions
+	Given there is a Reqnroll project scope
+	And the following feature file in the editor
+		"""
+		Feature: Scenario using empty brackets
+		
+		Scenario: Client has a simple basket
+			When I use (parenthesis), {curly braces} and/or \ backslash
+		"""
+	And the project is built and the initial binding discovery is performed
+	When I invoke the "Define Steps" command
+	Then the define steps dialog should be opened with the following step definition skeletons
+		| type | expression                                 |
+		| When | I use \\(parenthesis), \\{curly braces} and\\/or \\\ backslash |
+
+Scenario: DefineSteps command properly escapes empty brackets when using Regex expressions
+	Given there is a Reqnroll project scope
+	And the following feature file in the editor
+		"""
+		Feature: Scenario using empty brackets
+		
+		Scenario: Client has a simple basket
+			When I use (parenthesis), {curly braces}, \ backslash, and/or . period
+		"""
+	And the reqnroll.json configuration file contains
+		"""
+		{ 
+			"trace": { "stepDefinitionSkeletonStyle": "RegexAttribute" }
+		}
+		"""
+	And the project is built and the initial binding discovery is performed
+	When I invoke the "Define Steps" command
+	Then the define steps dialog should be opened with the following step definition skeletons
+		| type | expression |
+		| When | I use \\(parenthesis\), \\{curly braces}, \\\ backslash, and/or \\. period |
+

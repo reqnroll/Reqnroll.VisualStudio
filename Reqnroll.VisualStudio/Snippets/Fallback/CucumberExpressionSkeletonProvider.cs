@@ -28,7 +28,7 @@ public class CucumberExpressionSkeletonProvider : DeveroomStepDefinitionSkeleton
 
     private string EscapeCucumberExpression(string text)
     {
-        var escapedCukeEx = text.Replace(@"\", @"\\").Replace(@"{", @"\{").Replace("(", @"\");
+        var escapedCukeEx = text.Replace(@"\", @"\\").Replace(@"{", @"\{").Replace("(", @"\(").Replace("/", @"\/");
         var escapedCSharpString = escapedCukeEx.Replace(@"\", @"\\").Replace(@"""", @"\""");
         return escapedCSharpString;
     }
