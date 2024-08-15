@@ -224,13 +224,13 @@ public class ReqnrollProjectSettingsProvider
         return configFilePath;
     }
 
-    private static string GetConfigFileInPath(IFileSystemForVs fileSystem, string projectFolder)
+    private static string GetConfigFileInPath(IFileSystemForVs fileSystem, string folder)
     {
-      return fileSystem.GetFilePathIfExists(Path.Combine(projectFolder,
+      return fileSystem.GetFilePathIfExists(Path.Combine(folder,
                ProjectScopeDeveroomConfigurationProvider.ReqnrollJsonConfigFileName)) ??
-             fileSystem.GetFilePathIfExists(Path.Combine(projectFolder,
+             fileSystem.GetFilePathIfExists(Path.Combine(folder,
                ProjectScopeDeveroomConfigurationProvider.SpecFlowJsonConfigFileName)) ??
-             fileSystem.GetFilePathIfExists(Path.Combine(projectFolder,
+             fileSystem.GetFilePathIfExists(Path.Combine(folder,
                ProjectScopeDeveroomConfigurationProvider.SpecFlowAppConfigFileName));
     }
 }
