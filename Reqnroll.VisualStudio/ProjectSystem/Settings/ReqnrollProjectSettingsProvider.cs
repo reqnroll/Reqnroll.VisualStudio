@@ -215,11 +215,8 @@ public class ReqnrollProjectSettingsProvider
 
         var configFilePath = GetConfigFileInPath(fileSystem, projectScope.ProjectFolder);
 
-        if (assemblyDirectory != null)
-        {
+        if (assemblyDirectory != null) 
           configFilePath ??= GetConfigFileInPath(fileSystem, assemblyDirectory);
-          configFilePath ??= GetConfigFileInPath(fileSystem, Path.Combine(assemblyDirectory, "..", ".."));
-        }
         
         return configFilePath;
     }
