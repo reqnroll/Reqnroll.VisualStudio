@@ -210,13 +210,24 @@ public class ReqnrollProjectSettingsProvider
 
     private string GetReqnrollConfigFilePath(IProjectScope projectScope)
     {
-        var projectFolder = projectScope.ProjectFolder;
         var fileSystem = projectScope.IdeScope.FileSystem;
-        return fileSystem.GetFilePathIfExists(Path.Combine(projectFolder,
-                   ProjectScopeDeveroomConfigurationProvider.ReqnrollJsonConfigFileName)) ??
-               fileSystem.GetFilePathIfExists(Path.Combine(projectFolder,
-                   ProjectScopeDeveroomConfigurationProvider.SpecFlowJsonConfigFileName)) ??
-               fileSystem.GetFilePathIfExists(Path.Combine(projectFolder,
-                   ProjectScopeDeveroomConfigurationProvider.SpecFlowAppConfigFileName));
+        var assemblyDirectory = Path.GetDirectoryName(projectScope.OutputAssemblyPath);
+
+        var configFilePath = GetConfigFileInPath(fileSystem, projectScope.ProjectFolder);
+
+        if (assemblyDirectory != null) 
+          configFilePath ??= GetConfigFileInPath(fileSystem, assemblyDirectory);
+        
+        return configFilePath;
+    }
+
+    private static string GetConfigFileInPath(IFileSystemForVs fileSystem, string folder)
+    {
+      return fileSystem.GetFilePathIfExists(Path.Combine(folder,
+               ProjectScopeDeveroomConfigurationProvider.ReqnrollJsonConfigFileName)) ??
+             fileSystem.GetFilePathIfExists(Path.Combine(folder,
+               ProjectScopeDeveroomConfigurationProvider.SpecFlowJsonConfigFileName)) ??
+             fileSystem.GetFilePathIfExists(Path.Combine(folder,
+               ProjectScopeDeveroomConfigurationProvider.SpecFlowAppConfigFileName));
     }
 }
