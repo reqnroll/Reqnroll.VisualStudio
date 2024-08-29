@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.Common;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+// ReSharper disable once CheckNamespace
 namespace SpecFlow.VisualStudio.SpecFlowConnector.Discovery;
 
 internal class FakeTestContext : TestContext
@@ -19,32 +20,32 @@ internal class FakeTestContext : TestContext
         throw new NotImplementedException();
     }
 
-    public override void BeginTimer(string timerName)
+    //public override void BeginTimer(string timerName)
+    //{
+    //    throw new NotImplementedException();
+    //}
+
+    //public override void EndTimer(string timerName)
+    //{
+    //    throw new NotImplementedException();
+    //}
+
+    public override void Write(string? message)
     {
         throw new NotImplementedException();
     }
 
-    public override void EndTimer(string timerName)
+    public override void Write(string format, params object?[] args)
     {
         throw new NotImplementedException();
     }
 
-    public override void Write(string message)
+    public override void WriteLine(string? message)
     {
         throw new NotImplementedException();
     }
 
-    public override void Write(string format, params object[] args)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override void WriteLine(string message)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override void WriteLine(string format, params object[] args)
+    public override void WriteLine(string format, params object?[] args)
     {
         throw new NotImplementedException();
     }
