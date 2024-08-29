@@ -3,7 +3,7 @@
     <TargetFramework>net481</TargetFramework>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\reqnroll.snk</AssemblyOriginatorKeyFile>
-    <VsEditorAssembliesLocation Condition="'$(VsEditorAssembliesLocation)' == ''">..\ExternalTestDependencies\VS\</VsEditorAssembliesLocation>
+    <VsEditorAssembliesLocation Condition="'$(VsEditorAssembliesLocation)' == ''">$(MSBuildThisFileDirectory)..\ExternalTestDependencies\VS\</VsEditorAssembliesLocation>
     <NoWarn>CS0067;VSTHRD200</NoWarn>
     <!--CS0067: The event 'xxx' is never used-->
     <!--VSTHRD200: Use "Async" suffix in names of methods that return an awaitable type.-->
