@@ -14,7 +14,8 @@
 
   <ItemGroup>
     <PackageReference Include="dnlib" Version="4.4.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="2.1.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="8.0.1" />
     <ProjectReference Include="..\SpecFlow.VisualStudio.SpecFlowConnector.Models\SpecFlow.VisualStudio.SpecFlowConnector.Models.csproj" />
     <PackageReference Include="SpecFlow.CustomPlugin" Version="3.9.40" />
   </ItemGroup>
