@@ -4,8 +4,8 @@ namespace Reqnroll.VisualStudio.Editor.Services.Parser;
 
 public class DeveroomGherkinStep : Step
 {
-    public DeveroomGherkinStep(Location location, string keyword, string text, StepArgument argument,
-        StepKeyword stepKeyword, ScenarioBlock scenarioBlock) : base(location, keyword, text, argument)
+    public DeveroomGherkinStep(Location location, string keyword, StepKeywordType keywordType, string text, StepArgument argument,
+        StepKeyword stepKeyword, ScenarioBlock scenarioBlock) : base(location, keyword, keywordType, text, argument)
     {
         StepKeyword = stepKeyword;
         ScenarioBlock = scenarioBlock;

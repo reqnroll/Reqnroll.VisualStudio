@@ -52,14 +52,14 @@ internal class DeveroomGherkinAstBuilder : AstBuilder<DeveroomGherkinDocument>, 
         return StepKeyword.And;
     }
 
-    protected override Step CreateStep(Location location, string keyword, string text, StepArgument argument,
+    protected override Step CreateStep(Location location, string keyword, StepKeywordType keywordType, string text, StepArgument argument,
         AstNode node)
     {
         var token = node.GetToken(TokenType.StepLine);
         var stepKeyword = GetStepKeyword(token.MatchedGherkinDialect, keyword);
         _scenarioBlock = stepKeyword.ToScenarioBlock() ?? _scenarioBlock;
 
-        return new DeveroomGherkinStep(location, keyword, text, argument, stepKeyword, _scenarioBlock);
+        return new DeveroomGherkinStep(location, keyword, keywordType, text, argument, stepKeyword, _scenarioBlock);
     }
 
     private void ResetBlock()

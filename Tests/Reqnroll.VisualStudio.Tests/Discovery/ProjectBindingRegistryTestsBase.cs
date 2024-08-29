@@ -1,4 +1,6 @@
 #nullable disable
+using Gherkin;
+
 namespace Reqnroll.VisualStudio.Tests.Discovery;
 
 public abstract class ProjectBindingRegistryTestsBase
@@ -14,7 +16,7 @@ public abstract class ProjectBindingRegistryTestsBase
     }
 
     protected Step CreateStep(StepKeyword stepKeyword = StepKeyword.Given, string text = "my step",
-        StepArgument stepArgument = null) => new DeveroomGherkinStep(null, stepKeyword + " ", text, stepArgument,
+        StepArgument stepArgument = null) => new DeveroomGherkinStep(null, stepKeyword + " ", StepKeywordType.Context, text, stepArgument,
         stepKeyword, (ScenarioBlock) stepKeyword);
 
     protected ProjectStepDefinitionBinding CreateStepDefinitionBinding(string regex,
