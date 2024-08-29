@@ -21,8 +21,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Reqnroll" Version="1.0.0" />
-    <PackageReference Include="Reqnroll.xUnit" Version="1.0.0" />
+    <PackageReference Include="Reqnroll.xUnit" Version="2.0.3" />
 
 
     <!--TODO: fix Reqnroll.xUnitAdapter for sdk-style projects-->
