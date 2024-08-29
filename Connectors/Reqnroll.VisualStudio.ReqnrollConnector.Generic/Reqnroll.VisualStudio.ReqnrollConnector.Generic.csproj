@@ -12,7 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="dnlib" Version="3.3.5" />
+    <PackageReference Include="dnlib" Version="4.4.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="6.0.0" />
     <PackageReference Include="System.Collections.Immutable" Version="6.0.0" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.4.1" />

@@ -13,17 +13,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="dnlib" Version="3.3.5" />
+    <PackageReference Include="dnlib" Version="4.4.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="2.1.0" />
     <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="4.5.0" />
-    <ProjectReference
-      Include="..\SpecFlow.VisualStudio.SpecFlowConnector.Models\SpecFlow.VisualStudio.SpecFlowConnector.Models.csproj" />
+    <ProjectReference Include="..\SpecFlow.VisualStudio.SpecFlowConnector.Models\SpecFlow.VisualStudio.SpecFlowConnector.Models.csproj" />
     <PackageReference Include="SpecFlow.CustomPlugin" Version="3.9.40" />
   </ItemGroup>
 
   <Import Project="..\SpecFlow.VisualStudio.Common\SpecFlow.VisualStudio.Common.projitems" Label="Shared" />
-  <Import Project="..\SpecFlow.VisualStudio.SpecFlowConnector\SpecFlow.VisualStudio.SpecFlowConnector.projitems"
-          Label="Shared" />
+  <Import Project="..\SpecFlow.VisualStudio.SpecFlowConnector\SpecFlow.VisualStudio.SpecFlowConnector.projitems" Label="Shared" />
 
   <Target Name="CustomAfterBuild" AfterTargets="Build" Condition="$(configuration)=='Debug'">
 
@@ -31,13 +29,10 @@
       <_FilesToCopy Include="$(OutputPath)\*" />
     </ItemGroup>
 
-    <Message
-      Text="Copying: @(_FilesToCopy)->'$(_OutputCopyLocation)\%(RecursiveDir)%(Filename)%(Extension)'"
-      Importance="high" />
+    <Message Text="Copying: @(_FilesToCopy)-&gt;'$(_OutputCopyLocation)\%(RecursiveDir)%(Filename)%(Extension)'" Importance="high" />
 
     <RemoveDir Directories="$(_OutputCopyLocation)" />
 
-    <Copy SourceFiles="@(_FilesToCopy)"
-          DestinationFiles="$(_OutputCopyLocation)\%(RecursiveDir)%(Filename)%(Extension)" />
+    <Copy SourceFiles="@(_FilesToCopy)" DestinationFiles="$(_OutputCopyLocation)\%(RecursiveDir)%(Filename)%(Extension)" />
   </Target>
 </Project>
