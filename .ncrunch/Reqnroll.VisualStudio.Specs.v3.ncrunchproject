@@ -1,0 +1,13 @@
+﻿<ProjectConfiguration>
+  <Settings>
+    <AdditionalFilesToIncludeForProject>
+      <Value>Features\**.feature</Value>
+    </AdditionalFilesToIncludeForProject>
+    <BuildLogVerbosity>Quiet</BuildLogVerbosity>
+    <BuildSdk>8.0.101</BuildSdk>
+    <CopiedProjectDependencyPathsRelativeToSolutionDirectory>
+      <Value>Tests\Reqnroll.SampleProjectGenerator.Core\Reqnroll.SampleProjectGenerator.Core.csproj</Value>
+    </CopiedProjectDependencyPathsRelativeToSolutionDirectory>
+    <UseCPUArchitecture>x64</UseCPUArchitecture>
+  </Settings>
+</ProjectConfiguration>
