@@ -20,16 +20,6 @@ internal class FakeTestContext : TestContext
         throw new NotImplementedException();
     }
 
-    //public override void BeginTimer(string timerName)
-    //{
-    //    throw new NotImplementedException();
-    //}
-
-    //public override void EndTimer(string timerName)
-    //{
-    //    throw new NotImplementedException();
-    //}
-
     public override void Write(string? message)
     {
         throw new NotImplementedException();
