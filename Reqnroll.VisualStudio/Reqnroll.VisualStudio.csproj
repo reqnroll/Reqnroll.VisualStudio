@@ -22,7 +22,7 @@
     <PackageReference Include="Microsoft.VisualStudio.Language.Intellisense" Version="17.0.487" />
     <PackageReference Include="Microsoft.VisualStudio.Editor" Version="17.0.487" /> 
     <PackageReference Include="Microsoft.VisualStudio.Shell.15.0" Version="17.0.31902.203" /> 
-    <PackageReference Include="System.Threading.Channels" Version="4.7.1" />
+    <PackageReference Include="System.Threading.Channels" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
