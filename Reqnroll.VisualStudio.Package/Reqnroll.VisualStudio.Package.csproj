@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net481</TargetFramework>
+    <UseWPF>true</UseWPF>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\reqnroll.snk</AssemblyOriginatorKeyFile>
     <AutoGenerateBindingRedirects>True</AutoGenerateBindingRedirects>

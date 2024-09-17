@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net481</TargetFramework>
+    <UseWPF>true</UseWPF>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\reqnroll.snk</AssemblyOriginatorKeyFile>
     <DefineConstants>TRACE;</DefineConstants>
