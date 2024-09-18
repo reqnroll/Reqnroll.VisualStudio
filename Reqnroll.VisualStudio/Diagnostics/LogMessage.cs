@@ -5,7 +5,7 @@ public record LogMessage(
     TraceLevel Level,
     string Message,
     string CallerMethod,
-    [CanBeNull] Exception Exception = default!)
+    Exception? Exception = default!)
 {
     public DateTimeOffset TimeStamp { get; } = DateTimeOffset.Now;
     public int ManagedThreadId { get; } = Thread.CurrentThread.ManagedThreadId;
