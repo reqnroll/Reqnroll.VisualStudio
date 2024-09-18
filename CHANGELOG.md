@@ -1,10 +1,10 @@
 # [vNext]
 
-## Improvements:
-
 ## Bug fixes:
 
-*Contributors of this release (in alphabetical order):* 
+* HotFix: Revert 'Update dependencies to fix potential security vulnerabilities (#32)' because of compatibility issues with Visual Studio 17.11.4 (#37)
+
+*Contributors of this release (in alphabetical order): @gasparnagy* 
 
 # v2024.3.152 - 2024-09-17
 
@@ -14,6 +14,7 @@
 * Detect existence of SpecFlow for Visual Studio extension and show a warning (#16)
 * Extend searched config file locations to match the locations searched for the reqnroll runtime (#31)
 * Offer language updates of Gherkin v29 in the editor (updated from Gherkin v22) (#33)
+* Update dependencies to fix potential security vulnerabilities (#32)
 
 ## Bug fixes:
 
