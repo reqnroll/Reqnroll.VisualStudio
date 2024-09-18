@@ -2,6 +2,14 @@
 
 ## Bug fixes:
 
+## Improvements:
+
+*Contributors of this release (in alphabetical order): * 
+
+# v2024.4.154 - 2024-09-18
+
+## Bug fixes:
+
 * HotFix: Revert 'Update dependencies to fix potential security vulnerabilities (#32)' because of compatibility issues with Visual Studio 17.11.4 (#37)
 
 *Contributors of this release (in alphabetical order): @gasparnagy* 

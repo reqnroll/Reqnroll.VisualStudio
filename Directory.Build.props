@@ -1,7 +1,7 @@
 <Project>
 
   <PropertyGroup>
-    <ReqnrollMainVersion>2024.4</ReqnrollMainVersion>
+    <ReqnrollMainVersion>2024.5</ReqnrollMainVersion>
     <ReqnrollBuildNumber>99999</ReqnrollBuildNumber> <!-- set by CI; local build numbers are always greater than ones from CI-->
     <VersionSuffix>local</VersionSuffix> <!-- set by CI -->
     <ReqnrollPackageVersion>$(ReqnrollMainVersion).$(ReqnrollBuildNumber)</ReqnrollPackageVersion>
