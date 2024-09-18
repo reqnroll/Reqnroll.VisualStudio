@@ -30,7 +30,6 @@ global using System.Collections;
 global using System.Collections.Concurrent;
 global using System.Collections.Immutable;
 global using System.Diagnostics;
-global using System.IO;
 global using System.IO.Abstractions;
 global using System.IO.Abstractions.TestingHelpers;
 global using System.Runtime.CompilerServices;

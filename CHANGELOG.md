@@ -1,11 +1,28 @@
 # [vNext]
 
+## Bug fixes:
+
+## Improvements:
+
+*Contributors of this release (in alphabetical order): * 
+
+# v2024.4.154 - 2024-09-18
+
+## Bug fixes:
+
+* HotFix: Revert 'Update dependencies to fix potential security vulnerabilities (#32)' because of compatibility issues with Visual Studio 17.11.4 (#37)
+
+*Contributors of this release (in alphabetical order): @gasparnagy* 
+
+# v2024.3.152 - 2024-09-17
+
 ## Improvements:
 
 * Find Unused Step Definitions Command: Improved handling of Step Definitions decorated with the 'StepDefinition' attribute. If a Step Definition is used in any Given/Then/When step in a Feature file, the step will no longer show in the 'Find Unused Step Definitions' context menu. (#24)
 * Detect existence of SpecFlow for Visual Studio extension and show a warning (#16)
 * Extend searched config file locations to match the locations searched for the reqnroll runtime (#31)
 * Offer language updates of Gherkin v29 in the editor (updated from Gherkin v22) (#33)
+* Update dependencies to fix potential security vulnerabilities (#32)
 
 ## Bug fixes:
 

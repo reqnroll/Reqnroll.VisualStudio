@@ -52,7 +52,6 @@ global using System.Collections.Immutable;
 global using System.Collections.ObjectModel;
 global using System.ComponentModel;
 global using System.ComponentModel.Composition;
-global using System.IO;
 global using System.IO.Abstractions;
 global using System.Runtime.CompilerServices;
 global using System.Runtime.InteropServices;

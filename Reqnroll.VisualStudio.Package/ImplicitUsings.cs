@@ -34,7 +34,6 @@ global using System.Collections.Concurrent;
 global using System.Collections.Immutable;
 global using System.ComponentModel.Composition;
 global using System.Diagnostics;
-global using System.IO;
 global using System.IO.Abstractions;
 global using System.Reflection;
 global using System.Runtime.CompilerServices;
