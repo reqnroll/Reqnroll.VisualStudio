@@ -105,7 +105,7 @@ public class VsIdeScopeLoader : IVsIdeScope
 
     public bool IsSolutionLoaded => VsIdeScope.IsSolutionLoaded;
 
-    public IProjectScope? GetProject(ITextBuffer textBuffer) => VsIdeScope.GetProject(textBuffer);
+    public IProjectScope GetProject(ITextBuffer textBuffer) => VsIdeScope.GetProject(textBuffer);
 
     public IDeveroomLogger Logger => VsIdeScope.Logger;
     public IMonitoringService MonitoringService => VsIdeScope.MonitoringService;

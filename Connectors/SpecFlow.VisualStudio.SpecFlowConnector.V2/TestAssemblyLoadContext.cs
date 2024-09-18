@@ -1,4 +1,6 @@
 ﻿#nullable disable
+using RuntimeEnvironment = Microsoft.DotNet.PlatformAbstractions.RuntimeEnvironment;
+
 namespace SpecFlow.VisualStudio.SpecFlowConnector;
 
 public class TestAssemblyLoadContext : AssemblyLoadContext
@@ -57,8 +59,7 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
             ? _dependencyContext.RuntimeGraph
             : DependencyContext.Default.RuntimeGraph;
 
-        //var rid = RuntimeEnvironment.GetRuntimeIdentifier();
-        var rid = Environment.OSVersion.Platform.ToString();
+        var rid = RuntimeEnvironment.GetRuntimeIdentifier();
         var fallbackRid = GetFallbackRid();
         var fallbackGraph = ridGraph.FirstOrDefault(g => g.Runtime == rid)
                             ?? ridGraph.FirstOrDefault(g => g.Runtime == fallbackRid)
