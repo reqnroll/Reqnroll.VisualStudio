@@ -4,7 +4,8 @@
 
 * Bug Fix: Fix 'Reqnroll Extension v2024.3.152 does not work on Visual Studio 17.11.4 (#37)' by including missing assemblies.
 * Bug Fix: Visual Studio 2022 extension "Add New Project" adds dependency for Reqnroll.MsTest 1.0.0 #300
-*Contributors of this release (in alphabetical order): @clrudolphi, @UL-ChrisGlew* 
+
+*Contributors of this release (in alphabetical order):* @clrudolphi, @gasparnagy, @UL-ChrisGlew
 
 # v2024.4.154 - 2024-09-18
 
@@ -12,7 +13,7 @@
 
 * HotFix: Revert 'Update dependencies to fix potential security vulnerabilities (#32)' because of compatibility issues with Visual Studio 17.11.4 (#37)
 
-*Contributors of this release (in alphabetical order): @gasparnagy* 
+*Contributors of this release (in alphabetical order):* @gasparnagy
 
 # v2024.3.152 - 2024-09-17
 
