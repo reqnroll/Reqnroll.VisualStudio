@@ -2,6 +2,14 @@
 
 ## Improvements:
 
+## Bug fixes:
+
+*Contributors of this release (in alphabetical order):* 
+
+# v2024.5.169 - 2024-11-07
+
+## Improvements:
+
 * Update dependencies to fix potential security vulnerabilities (#32)
 
 ## Bug fixes:
