@@ -4,6 +4,12 @@
 
 ## Bug fixes:
 
+*Contributors of this release (in alphabetical order):*
+
+# v2024.6.176 - 2024-11-08
+
+## Bug fixes:
+
 * Fix: Reqnroll extension v2024.5.169 fails in Visual Studio 17.8.3 (#42)
 
 *Contributors of this release (in alphabetical order):* @gasparnagy
