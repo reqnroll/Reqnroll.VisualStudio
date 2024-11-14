@@ -10,5 +10,5 @@ public static class DomainDefaults
     //TODO: calculate latest versions automatically
     public static NuGetVersion LatestSpecFlowV2Version = new("2.4.1", "2.4.1");
     public static NuGetVersion LatestSpecFlowV3Version = new("3.6.23", "3.6.23");
-    public static NuGetVersion LatestReqnrollVersion = new("2.0.2", "2.0.2");
+    public static NuGetVersion LatestReqnrollVersion = new("2.2.1", "2.2.1");
 }
