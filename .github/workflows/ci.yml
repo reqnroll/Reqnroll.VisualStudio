@@ -121,7 +121,7 @@ jobs:
           dotnet add ./Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.Tests/Reqnroll.VisualStudio.ReqnrollConnector.Tests.csproj package GitHubActionsTestLogger
           dotnet add ./Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.V1.Tests/Reqnroll.VisualStudio.ReqnrollConnector.V1.Tests.csproj package GitHubActionsTestLogger
     - name: Build
-      run: msbuild -property:DeployExtension=false -property:Configuration=${{ steps.versions.outputs.product_configuration }} ${{ steps.versions.outputs.build_params }}
+      run: msbuild -restore -target:Rebuild -property:DeployExtension=false -property:Configuration=${{ steps.versions.outputs.product_configuration }} ${{ steps.versions.outputs.build_params }}
     - name: Unit Tests
       run: dotnet test ./Tests/Reqnroll.VisualStudio.Tests/Reqnroll.VisualStudio.Tests.csproj ${{ steps.versions.outputs.test_params }}
     - name: Upload vsix
