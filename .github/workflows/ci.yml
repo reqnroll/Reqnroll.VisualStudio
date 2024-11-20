@@ -251,7 +251,6 @@ jobs:
         Write-Output "Deploying v${{ needs.build.outputs.product_full_version }} (v${{ needs.build.outputs.product_main_version }}) packages to Visual Studio Marketplace"
         ls ${{ github.workspace }}/release_packages
         # ${{ github.workspace }}/.github/workflows/publish_packages.ps1 -packagesDir ${{ github.workspace }}/release_packages
-        tfx extension publish --help
 
     - name: Calculate Next Version
       # if: needs.build.outputs.is_production_release == 'true'
