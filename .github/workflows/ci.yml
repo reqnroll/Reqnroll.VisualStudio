@@ -18,7 +18,7 @@ on:
         default: false
         required: true
       is_production_release:
-        description: 'is_production_release: Whether the release is a production release and not a pre-releaae (enabling this will update change log, increases version and tags commit)'
+        description: 'is_production_release: Whether the release is a production release and not a pre-release (enabling this will update change log, increases version and tags commit)'
         type: boolean
         default: false
         required: true
@@ -246,6 +246,15 @@ jobs:
         name: vsix-v${{ needs.build.outputs.product_full_version }}
         path: release_packages
 
+    - name: Verify VSIX Deploy settings
+      shell: pwsh
+      run: |
+        Write-Output "Deploying v${{ needs.build.outputs.product_full_version }} (v${{ needs.build.outputs.product_main_version }}) package to Visual Studio Marketplace"
+        ls ${{ github.workspace }}/release_packages
+        $isProductionRelease = '${{ needs.build.outputs.is_production_release }}' -eq 'true'
+        if (-not $isProductionRelease) {
+          throw "Preview releases are currently not supported. (The 'is_production_release' must be set.)"
+        }
     # - name: Deploy VSIX packages
     #   uses: CodingWithCalvin/GHA-VSMarketplacePublisher@v2.0.0
     #   with:
