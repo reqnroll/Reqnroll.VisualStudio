@@ -270,7 +270,10 @@ jobs:
       shell: pwsh
       run: |
         [System.IO.File]::WriteAllText("Directory.Build.props", [System.IO.File]::ReadAllText("Directory.Build.props").Replace("<ReqnrollMainVersion>${{ needs.build.outputs.product_main_version }}</ReqnrollMainVersion>", "<ReqnrollMainVersion>${{ steps.next_version.outputs.product_next_main_version }}</ReqnrollMainVersion>"))
-        # TODO: update vs templates
+        $vsTemplates = Get-ChildItem -Path . -File -Recurse -Filter '*.vstemplate'
+        foreach ($vsTemplate in $vsTemplates) {
+          [System.IO.File]::WriteAllText($vsTemplate.FullName, [System.IO.File]::ReadAllText($vsTemplate.FullName).Replace("Version=${{ needs.build.outputs.product_main_version }}.0.0", "Version=${{ steps.next_version.outputs.product_next_main_version }}.0.0"))
+        }
 
     - name: Update Changelog
       if: needs.build.outputs.is_production_release == 'true'
