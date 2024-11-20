@@ -224,7 +224,7 @@ jobs:
         path: "**/*.trx"
         
   release:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     needs: [build]
     environment: production_environment
     # if: github.ref == 'refs/heads/main' && needs.build.outputs.deploy_packages == 'true'
