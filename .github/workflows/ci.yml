@@ -192,6 +192,8 @@ jobs:
       run: msbuild -restore -target:Rebuild -property:DeployExtension=false -property:Configuration=${{ steps.versions.outputs.product_configuration }} ${{ steps.build_params.outputs.main_build_params }}
     - name: Unit Tests
       run: dotnet test ./Tests/Reqnroll.VisualStudio.Tests/Reqnroll.VisualStudio.Tests.csproj ${{ steps.build_params.outputs.test_params }}
+    - name: Review modified files
+      run: git status
     - name: Upload VSIX
       uses: actions/upload-artifact@v4
       with:
