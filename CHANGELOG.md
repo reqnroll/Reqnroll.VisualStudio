@@ -2,7 +2,7 @@
 
 ## Improvements:
 
-*Added support for .NET 9 through the Visual Studio extension.
+* Added support for .NET 9 through the Visual Studio extension (#44)
 
 *Contributors of this release (in alphabetical order):* @gasparnagy, @UL-ChrisGlew
 
