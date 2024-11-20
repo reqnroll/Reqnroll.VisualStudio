@@ -114,7 +114,7 @@ jobs:
 
         # Load Version
         $buildPropsXml = [xml](Get-Content Directory.Build.props)
-        $mainVersion = $($buildPropsXml.Project.PropertyGroup.ReqnrollMainVersion)[1].Trim()
+        $mainVersion = $buildPropsXml.SelectSingleNode('//Project/PropertyGroup/ReqnrollMainVersion/text()').Value.Trim()
         Write-Output "product_main_version=$mainVersion" >> $env:GITHUB_OUTPUT
         Write-Output "Product Main Version: $mainVersion"
 
