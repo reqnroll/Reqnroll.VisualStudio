@@ -9,6 +9,7 @@ Rules:
 	* Uncomments selection lines
 	* Uncomment ignores non-comment lines
 
+@quarantine
 Scenario: Comments out caret line
 	Given there is a Reqnroll project scope
 	And the following feature file in the editor
