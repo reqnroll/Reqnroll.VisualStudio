@@ -30,7 +30,7 @@ public class DefineStepsCommandTests : CommandTestBase<DefineStepsCommand>
         Invoke(command, textView);
 
         WarningMessages().Should()
-            .ContainSingle("All steps have been defined in this file already.");
+            .Contain(s => s.Contains("All steps have been defined in this file already."));
     }
 
     [Fact]

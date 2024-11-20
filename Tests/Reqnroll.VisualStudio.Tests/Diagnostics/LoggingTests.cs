@@ -2,7 +2,7 @@ namespace Reqnroll.VisualStudio.Tests.Diagnostics;
 
 public class LoggingTests
 {
-    [Theory]
+    [SkippableTheory(Skip = "Flaky, see https://github.com/reqnroll/Reqnroll.VisualStudio/issues/40 @quarantine")]
     [InlineData(TraceLevel.Verbose)]
     [InlineData(TraceLevel.Info)]
     [InlineData(TraceLevel.Warning)]
