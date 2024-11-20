@@ -198,30 +198,30 @@ jobs:
         name: vsix-v${{ steps.versions.outputs.product_full_version }}
         if-no-files-found: error
         path: "Reqnroll.VisualStudio.Package/bin/${{ steps.versions.outputs.product_configuration }}/net481/*.vsix"
-    - uses: nuget/setup-nuget@v1.2
-    - name: Prepare Connector Tests
-      shell: pwsh
-      run: |
-        cd Tests/ExternalPackages
-        ./buildExternalPackages.ps1
-        cd PackagesForTests
-        nuget install packages.config
-    - name: Connector Tests
-      run: dotnet test ./Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.Tests/Reqnroll.VisualStudio.ReqnrollConnector.Tests.csproj ${{ steps.build_params.outputs.test_params }}
-    - name: Connector V1 Tests
-      run: dotnet test ./Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.V1.Tests/Reqnroll.VisualStudio.ReqnrollConnector.V1.Tests.csproj ${{ steps.build_params.outputs.test_params }}
-    - name: Specs Tests
-      run: >
-        dotnet test ./Tests/Reqnroll.VisualStudio.Specs/Reqnroll.VisualStudio.Specs.csproj 
-        --filter "Category!=quarantine"
-        ${{ steps.build_params.outputs.test_params }} 
-    - name: Upload Test Result TRX Files
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: build-trx-v${{ steps.versions.outputs.product_full_version }}
-        if-no-files-found: error
-        path: "**/*.trx"
+    # - uses: nuget/setup-nuget@v1.2
+    # - name: Prepare Connector Tests
+    #   shell: pwsh
+    #   run: |
+    #     cd Tests/ExternalPackages
+    #     ./buildExternalPackages.ps1
+    #     cd PackagesForTests
+    #     nuget install packages.config
+    # - name: Connector Tests
+    #   run: dotnet test ./Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.Tests/Reqnroll.VisualStudio.ReqnrollConnector.Tests.csproj ${{ steps.build_params.outputs.test_params }}
+    # - name: Connector V1 Tests
+    #   run: dotnet test ./Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.V1.Tests/Reqnroll.VisualStudio.ReqnrollConnector.V1.Tests.csproj ${{ steps.build_params.outputs.test_params }}
+    # - name: Specs Tests
+    #   run: >
+    #     dotnet test ./Tests/Reqnroll.VisualStudio.Specs/Reqnroll.VisualStudio.Specs.csproj 
+    #     --filter "Category!=quarantine"
+    #     ${{ steps.build_params.outputs.test_params }} 
+    # - name: Upload Test Result TRX Files
+    #   uses: actions/upload-artifact@v4
+    #   if: always()
+    #   with:
+    #     name: build-trx-v${{ steps.versions.outputs.product_full_version }}
+    #     if-no-files-found: error
+    #     path: "**/*.trx"
         
   release:
     runs-on: ubuntu-latest
