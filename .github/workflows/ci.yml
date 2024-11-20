@@ -12,23 +12,28 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
     inputs:
-      configuration:
-        description: 'Build Configuration'
-        required: true
-        default: 'Release'
-        type: choice
-        options:
-        - Debug
-        - Release
-      production_release:
-        description: 'If the build produces a production package (resets version prefix)'
+      deploy_packages:
+        description: 'deploy_packages: If the created package should be deployed (additional manual approval required by a release admin)'
         type: boolean
         default: false
         required: true
-      version_suffix:
-        description: 'Suffix for the NuGet packages (without leading -). Build ID will be appended.'
-        default: manual
+      is_production_release:
+        description: 'is_production_release: Whether the release is a production release and not a pre-releaae (enabling this will update change log, increases version and tags commit)'
+        type: boolean
+        default: false
+        required: true
+      custom_version_suffix:
+          description: 'custom_version_suffix: Custom suffix for the NuGet packages (without leading -) for non-production releases. Default: empty for production release, "ci<DATE>" for other runs. The build ID is always appended.'
+          required: false
+      custom_configuration:
+        description: 'custom_configuration: Custom build configuration. Default: "Debug" for CI builds, "Release" for deployments.'
         required: false
+        default: 'Default'
+        type: choice
+        options:
+        - Default
+        - Debug
+        - Release
 
 permissions:
   checks: write
@@ -40,16 +45,20 @@ jobs:
     runs-on: windows-latest
 
     outputs:
+      product_version_prefix: ${{ steps.versions.outputs.product_version_prefix }}
       product_version_suffix: ${{ steps.versions.outputs.product_version_suffix }}
-      product_build_number: ${{ steps.versions.outputs.product_build_number }}
+      product_main_version: ${{ steps.versions.outputs.product_main_version }}
+      product_patch_version: ${{ steps.versions.outputs.product_patch_version }}
+      product_full_version: ${{ steps.versions.outputs.product_full_version }}
       product_configuration: ${{ steps.versions.outputs.product_configuration }}
-      build_params: ${{ steps.versions.outputs.build_params }}
-      test_params: ${{ steps.versions.outputs.test_params }}
+      deploy_packages: ${{ steps.versions.outputs.deploy_packages }}
+      is_production_release: ${{ steps.versions.outputs.is_production_release }}
+
+      build_params: ${{ steps.build_params.outputs.build_params }}
+      test_params: ${{ steps.build_params.outputs.test_params }}
 
     steps:
     - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
@@ -57,78 +66,138 @@ jobs:
     - id: versions
       name: Calculate versions
       shell: pwsh
-      env:
-        APPINSIGHTS_KEY: ${{ secrets.APPINSIGHTS_KEY }}      
       run: |
-        $productionReleaseSetting = "${{ inputs.production_release }}"
-        $productionRelease = $false
-        if ($productionReleaseSetting -eq 'true') {
-            $productionRelease = $true
+        $deployPackages = $false
+        if ("${{ inputs.deploy_packages }}" -eq 'true') {
+          $deployPackages = $true
         }
-        Write-Output "Production release: $productionRelease"
+        Write-Output "deploy_packages=$($deployPackages.ToString().ToLowerInvariant())" >> $env:GITHUB_OUTPUT        
+        Write-Output "Deploy packages: $deployPackages"
 
-        $versionSuffix = "${{ inputs.version_suffix }}"
-        if ($productionRelease) {
-            $versionSuffix = ''
+        $isProductionRelease = $false
+        if ("${{ inputs.is_production_release }}" -eq 'true') {
+          $isProductionRelease = $true
         }
-        elseif ($versionSuffix -eq "") {
+        Write-Output "is_production_release=$($isProductionRelease.ToString().ToLowerInvariant())" >> $env:GITHUB_OUTPUT       
+        Write-Output "Is production release: $isProductionRelease" 
+
+        $versionSuffix = "${{ inputs.custom_version_suffix }}"
+        if ($isProductionRelease){
+          if ($versionSuffix -ne "") {
+            throw "The 'custom_version_suffix' setting cannot be used for production releases."
+          }
+        }
+        else {
+          if ($versionSuffix -eq "") {
             $date = [datetime]::Today
             $dateString = $date.ToString('yyyyMMdd')
             $versionSuffix = "ci$dateString-${env:GITHUB_RUN_NUMBER}"
-        }
-        else {
+          }
+          else {
             $versionSuffix = "$versionSuffix-${env:GITHUB_RUN_NUMBER}"
+          }
         }
         Write-Output "product_version_suffix=$versionSuffix" >> $env:GITHUB_OUTPUT
-        Write-Output "Product Suffix: $versionSuffix"
+        Write-Output "Product Version Suffix: $versionSuffix"
         
-        $buildNumber = ${env:GITHUB_RUN_NUMBER}
-        Write-Output "product_build_number=$buildNumber" >> $env:GITHUB_OUTPUT
-        Write-Output "Build Number: $buildNumber"
-        
-        $productConfig = "${{ inputs.configuration }}"
-        if ($productConfig -eq "") {
+        $productConfig = "${{ inputs.custom_configuration }}"
+        if (($productConfig -eq "Default") -or ($productConfig -eq "")) {
+          if ($deployPackages){
             $productConfig = "Release"
+          }
+          else {
+            $productConfig = "Debug"
+          }
         }
         Write-Output "product_configuration=$productConfig" >> $env:GITHUB_OUTPUT
         Write-Output "Product Configuration: $productConfig"
 
-        $buildParams = "-p:VersionSuffix=$versionSuffix -property:ReqnrollBuildNumber=$buildNumber"
-        Write-Output "Build Params: $buildParams"
-        if ($productionRelease) {
-          $buildParams = "$buildParams -property:AppInsightsInstrumentationKey=$env:APPINSIGHTS_KEY"
-          Write-Output "Main Build Params Updated for Production"
-        }
-        Write-Output "build_params=$buildParams" >> $env:GITHUB_OUTPUT
+        # Load Version
+        $buildPropsXml = [xml](Get-Content Directory.Build.props)
+        $mainVersion = $($buildPropsXml.Project.PropertyGroup.ReqnrollMainVersion)[1].Trim()
+        Write-Output "product_main_version=$mainVersion" >> $env:GITHUB_OUTPUT
+        Write-Output "Product Main Version: $mainVersion"
 
+        # we use the GH build number as patch number
+        $patchVersion = ${env:GITHUB_RUN_NUMBER}
+        Write-Output "product_patch_version=$patchVersion" >> $env:GITHUB_OUTPUT
+        Write-Output "Product Patch Version: $patchVersion"
+
+        $versionPrefix = "$mainVersion.$patchVersion"
+        Write-Output "product_version_prefix=$versionPrefix" >> $env:GITHUB_OUTPUT
+        Write-Output "Product Version Prefix: $versionPrefix"
+
+        $fullVersion = $versionPrefix
+        if ($versionSuffix -ne "") {
+            $fullVersion = "$fullVersion-$versionSuffix"
+        }
+        Write-Output "product_full_version=$fullVersion" >> $env:GITHUB_OUTPUT
+        Write-Output "Product Full Version: $fullVersion"
+
+    - id: build_params
+      name: Calculate build parameters
+      shell: pwsh
+      env:
+        APPINSIGHTS_KEY: ${{ secrets.APPINSIGHTS_KEY }}      
+      run: |
+        # Load version fields to variables
+        $versionSuffix = '${{ steps.versions.outputs.product_version_suffix }}'
+        $productConfig = '${{ steps.versions.outputs.product_configuration }}'
+        $patchVersion = '${{ steps.versions.outputs.product_patch_version }}'
+        $deployPackages = '${{ steps.versions.outputs.deploy_packages }}' -eq 'true'
+
+        # Calculate 'build_params'
+        # configuration is handled in a special way during build, hence not included here
+        $buildParams = "-p:VersionSuffix=$versionSuffix -property:ReqnrollBuildNumber=$patchVersion"
+        Write-Output "build_params=$buildParams" >> $env:GITHUB_OUTPUT
+        Write-Output "Build Params: $buildParams"
+
+        # Calculate 'main_build_params'
+        $mainBuildParams = $buildParams
+        if ($deployPackages) {
+          $mainBuildParams = "$mainBuildParams -p:AppInsightsInstrumentationKey=$env:APPINSIGHTS_KEY"
+          Write-Output "Main Build Params Updated for Deployment"
+        }
+        Write-Output "main_build_params=$mainBuildParams" >> $env:GITHUB_OUTPUT
+
+        # Calculate 'test_params'
         $gitHubActionsLoggerSettings = '"GitHubActions;summary.includePassedTests=true;summary.includeSkippedTests=true;annotations.titleFormat=[@traits.Category] @test;annotations.messageFormat=@error\n@trace"'
-        $testParams = "--no-build --verbosity normal -c $productConfig --logger trx --logger $gitHubActionsLoggerSettings -- RunConfiguration.CollectSourceInformation=true"
+        $testParams = "--no-build --verbosity normal -c $productConfig --logger trx --logger $gitHubActionsLoggerSettings -- RunConfiguration.CollectSourceInformation=true RunConfiguration.TreatNoTestsAsError=true"
         Write-Output "test_params=$testParams" >> $env:GITHUB_OUTPUT
         Write-Output "Test Params: $testParams"
+    - name: Update Changelog
+      shell: pwsh
+      run: |
+        $releaseDate = [System.DateTime]::Today.ToString("yyyy-MM-dd")
+        $newHeading = "# v${{ steps.versions.outputs.product_full_version }} - $releaseDate"
+        $content = [System.IO.File]::ReadAllText("CHANGELOG.md").Replace("# [vNext]",$newHeading)
+        [System.IO.File]::WriteAllText("CHANGELOG.md", $content)
+
     - name: Restore dependencies
       run: dotnet restore
     - name: Build Connectors
       shell: pwsh
       run: |
         cd Connectors
-        .\build.ps1 -configuration ${{ steps.versions.outputs.product_configuration }} -additionalArgs "${{ steps.versions.outputs.build_params }}"
-    - name: Add msbuild to PATH
-      uses: microsoft/setup-msbuild@v1.3
+        .\build.ps1 -configuration ${{ steps.versions.outputs.product_configuration }} -additionalArgs "${{ steps.build_params.outputs.main_build_params }}"
     - name: Install Test Report Dependencies
       run: | 
           dotnet add ./Tests/Reqnroll.VisualStudio.Specs/Reqnroll.VisualStudio.Specs.csproj package GitHubActionsTestLogger
           dotnet add ./Tests/Reqnroll.VisualStudio.Tests/Reqnroll.VisualStudio.Tests.csproj package GitHubActionsTestLogger
           dotnet add ./Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.Tests/Reqnroll.VisualStudio.ReqnrollConnector.Tests.csproj package GitHubActionsTestLogger
           dotnet add ./Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.V1.Tests/Reqnroll.VisualStudio.ReqnrollConnector.V1.Tests.csproj package GitHubActionsTestLogger
+    - name: Add MsBuild to PATH
+      uses: microsoft/setup-msbuild@v1.3
     - name: Build
-      run: msbuild -restore -target:Rebuild -property:DeployExtension=false -property:Configuration=${{ steps.versions.outputs.product_configuration }} ${{ steps.versions.outputs.build_params }}
+      run: msbuild -restore -target:Rebuild -property:DeployExtension=false -property:Configuration=${{ steps.versions.outputs.product_configuration }} ${{ steps.build_params.outputs.main_build_params }}
     - name: Unit Tests
-      run: dotnet test ./Tests/Reqnroll.VisualStudio.Tests/Reqnroll.VisualStudio.Tests.csproj ${{ steps.versions.outputs.test_params }}
-    - name: Upload vsix
+      run: dotnet test ./Tests/Reqnroll.VisualStudio.Tests/Reqnroll.VisualStudio.Tests.csproj ${{ steps.build_params.outputs.test_params }}
+    - name: Upload VSIX
       uses: actions/upload-artifact@v4
       with:
-        name: vsix
-        path: "Reqnroll.VisualStudio.Package/**/*.vsix"
+        name: vsix-v${{ steps.versions.outputs.product_full_version }}
+        if-no-files-found: error
+        path: "Reqnroll.VisualStudio.Package/bin/${{ steps.versions.outputs.product_configuration }}/net481/*.vsix"
     - uses: nuget/setup-nuget@v1.2
     - name: Prepare Connector Tests
       shell: pwsh
@@ -138,18 +207,19 @@ jobs:
         cd PackagesForTests
         nuget install packages.config
     - name: Connector Tests
-      run: dotnet test ./Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.Tests/Reqnroll.VisualStudio.ReqnrollConnector.Tests.csproj ${{ steps.versions.outputs.test_params }}
+      run: dotnet test ./Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.Tests/Reqnroll.VisualStudio.ReqnrollConnector.Tests.csproj ${{ steps.build_params.outputs.test_params }}
     - name: Connector V1 Tests
-      run: dotnet test ./Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.V1.Tests/Reqnroll.VisualStudio.ReqnrollConnector.V1.Tests.csproj ${{ steps.versions.outputs.test_params }}
+      run: dotnet test ./Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.V1.Tests/Reqnroll.VisualStudio.ReqnrollConnector.V1.Tests.csproj ${{ steps.build_params.outputs.test_params }}
     - name: Specs Tests
       run: >
         dotnet test ./Tests/Reqnroll.VisualStudio.Specs/Reqnroll.VisualStudio.Specs.csproj 
-        --filter "Category!=quarantaine"
-        ${{ steps.versions.outputs.test_params }} 
+        --filter "Category!=quarantine"
+        ${{ steps.build_params.outputs.test_params }} 
     - name: Upload Test Result TRX Files
       uses: actions/upload-artifact@v4
-      if: success() || failure()      
+      if: always()
       with:
-        name: trx-test-results
+        name: build-trx-v${{ steps.versions.outputs.product_full_version }}
+        if-no-files-found: error
         path: "**/*.trx"
     
