@@ -369,7 +369,7 @@ Scenario: Highlights Scenario Outline placeholders
 Rule: Language configuration changes are applied to open feature file editors
 
 # this scenario is flaky on CI
-@quarantaine
+@quarantine
 Scenario: Default feature file language was changed
 	Given there is a non-Reqnroll project scope
 	And the reqnroll.json configuration file contains
