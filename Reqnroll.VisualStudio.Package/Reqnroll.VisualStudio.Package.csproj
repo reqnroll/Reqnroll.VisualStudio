@@ -99,19 +99,6 @@
 
   <Import Project="..\Connectors\DeploymentAssets.props" />
 
-  <Target Name="ReplaceVersions" AfterTargets="GetBuildVersion" BeforeTargets="BeforeCompile">
-    <ItemGroup>
-      <TemplateFiles Include="$(MSBuildThisFileDirectory)..\Reqnroll.VisualStudio.ItemTemplates\**\*.vstemplate" />
-      <TemplateFiles Include="$(MSBuildThisFileDirectory)..\Reqnroll.VisualStudio.ProjectTemplate\**\*.vstemplate" />
-      <VsChangeLog Include="$(MSBuildThisFileDirectory)..\CHANGELOG.md" />
-    </ItemGroup>
-
-    <WriteLinesToFile File="%(TemplateFiles.FullPath)" Lines="$([System.Text.RegularExpressions.Regex]::Replace($([System.IO.File]::ReadAllText(%(TemplateFiles.FullPath))), 'Version=(\d+).(\d+).(\d+).(\d+),', 'Version=$(AssemblyVersion),'))" Overwrite="true" Encoding="UTF-8" />
-
-    <WriteLinesToFile Condition=" '$(Configuration)' == 'Release' " File="%(VsChangeLog.FullPath)" Lines="$([System.IO.File]::ReadAllText(%(VsChangeLog.FullPath)).Replace('[vNext]','v$(Version) - $([System.DateTime]::Now.ToString('yyyy-MM-dd'))'))" Overwrite="true" Encoding="UTF-8" />
-
-  </Target>
-
   <!-- needed to include version in source.extension.vsixmanifest -->
   <Target Name="GetVsixVersion" Returns="$(ReqnrollPackageVersion)" BeforeTargets="BeforeCompile" AfterTargets="GetBuildVersion">
     <Message Text="VSIX Version is set to: $(ReqnrollPackageVersion)" />
