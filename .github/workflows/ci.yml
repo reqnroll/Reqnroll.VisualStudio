@@ -244,12 +244,12 @@ jobs:
         name: vsix-v${{ needs.build.outputs.product_full_version }}
         path: release_packages
 
-    - name: Deploy VSIX packages
-      uses: CodingWithCalvin/GHA-VSMarketplacePublisher@v2.0.0
-      with:
-        marketplace-pat: ${{ secrets.MARKETPLACE_PUBLISH_PAT }}
-        publish-manifest-path: ${{ github.workspace }}/.marketplace/publishManifest.json
-        vsix-path: ${{ github.workspace }}/release_packages/Reqnroll.VisualStudio.Package.v${{ needs.build.outputs.product_version_prefix }}.vsix
+    # - name: Deploy VSIX packages
+    #   uses: CodingWithCalvin/GHA-VSMarketplacePublisher@v2.0.0
+    #   with:
+    #     marketplace-pat: ${{ secrets.MARKETPLACE_PUBLISH_PAT }}
+    #     publish-manifest-path: ${{ github.workspace }}/.marketplace/publishManifest.json
+    #     vsix-path: ${{ github.workspace }}/release_packages/Reqnroll.VisualStudio.Package.v${{ needs.build.outputs.product_version_prefix }}.vsix
 
     - name: Calculate Next Version
       # if: needs.build.outputs.is_production_release == 'true'
