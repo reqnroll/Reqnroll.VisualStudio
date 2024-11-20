@@ -200,36 +200,36 @@ jobs:
         name: vsix-v${{ steps.versions.outputs.product_full_version }}
         if-no-files-found: error
         path: "Reqnroll.VisualStudio.Package/bin/${{ steps.versions.outputs.product_configuration }}/net481/*.vsix"
-    # - uses: nuget/setup-nuget@v1.2
-    # - name: Prepare Connector Tests
-    #   shell: pwsh
-    #   run: |
-    #     cd Tests/ExternalPackages
-    #     ./buildExternalPackages.ps1
-    #     cd PackagesForTests
-    #     nuget install packages.config
-    # - name: Connector Tests
-    #   run: dotnet test ./Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.Tests/Reqnroll.VisualStudio.ReqnrollConnector.Tests.csproj ${{ steps.build_params.outputs.test_params }}
-    # - name: Connector V1 Tests
-    #   run: dotnet test ./Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.V1.Tests/Reqnroll.VisualStudio.ReqnrollConnector.V1.Tests.csproj ${{ steps.build_params.outputs.test_params }}
-    # - name: Specs Tests
-    #   run: >
-    #     dotnet test ./Tests/Reqnroll.VisualStudio.Specs/Reqnroll.VisualStudio.Specs.csproj 
-    #     --filter "Category!=quarantine"
-    #     ${{ steps.build_params.outputs.test_params }} 
-    # - name: Upload Test Result TRX Files
-    #   uses: actions/upload-artifact@v4
-    #   if: always()
-    #   with:
-    #     name: build-trx-v${{ steps.versions.outputs.product_full_version }}
-    #     if-no-files-found: error
-    #     path: "**/*.trx"
+    - uses: nuget/setup-nuget@v1.2
+    - name: Prepare Connector Tests
+      shell: pwsh
+      run: |
+        cd Tests/ExternalPackages
+        ./buildExternalPackages.ps1
+        cd PackagesForTests
+        nuget install packages.config
+    - name: Connector Tests
+      run: dotnet test ./Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.Tests/Reqnroll.VisualStudio.ReqnrollConnector.Tests.csproj ${{ steps.build_params.outputs.test_params }}
+    - name: Connector V1 Tests
+      run: dotnet test ./Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.V1.Tests/Reqnroll.VisualStudio.ReqnrollConnector.V1.Tests.csproj ${{ steps.build_params.outputs.test_params }}
+    - name: Specs Tests
+      run: >
+        dotnet test ./Tests/Reqnroll.VisualStudio.Specs/Reqnroll.VisualStudio.Specs.csproj 
+        --filter "Category!=quarantine"
+        ${{ steps.build_params.outputs.test_params }} 
+    - name: Upload Test Result TRX Files
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: build-trx-v${{ steps.versions.outputs.product_full_version }}
+        if-no-files-found: error
+        path: "**/*.trx"
         
   release:
     runs-on: windows-latest
     needs: [build]
     environment: production_environment
-    # if: github.ref == 'refs/heads/main' && needs.build.outputs.deploy_packages == 'true'
+    if: github.ref == 'refs/heads/main' && needs.build.outputs.deploy_packages == 'true'
     permissions:
       # Give the default GITHUB_TOKEN write permission to commit and push the
       # added or changed files to the repository.
@@ -255,15 +255,16 @@ jobs:
         if (-not $isProductionRelease) {
           throw "Preview releases are currently not supported. (The 'is_production_release' must be set.)"
         }
-    # - name: Deploy VSIX packages
-    #   uses: CodingWithCalvin/GHA-VSMarketplacePublisher@v2.0.0
-    #   with:
-    #     marketplace-pat: ${{ secrets.MARKETPLACE_PUBLISH_PAT }}
-    #     publish-manifest-path: ${{ github.workspace }}/.marketplace/publishManifest.json
-    #     vsix-path: ${{ github.workspace }}/release_packages/Reqnroll.VisualStudio.Package.v${{ needs.build.outputs.product_version_prefix }}.vsix
+
+    - name: Deploy VSIX packages
+      uses: CodingWithCalvin/GHA-VSMarketplacePublisher@v2.0.0
+      with:
+        marketplace-pat: ${{ secrets.MARKETPLACE_PUBLISH_PAT }}
+        publish-manifest-path: ${{ github.workspace }}/.marketplace/publishManifest.json
+        vsix-path: ${{ github.workspace }}/release_packages/Reqnroll.VisualStudio.Package.v${{ needs.build.outputs.product_version_prefix }}.vsix
 
     - name: Calculate Next Version
-      # if: needs.build.outputs.is_production_release == 'true'
+      if: needs.build.outputs.is_production_release == 'true'
       id: next_version
       shell: pwsh
       run: |
@@ -276,7 +277,7 @@ jobs:
         Write-Output "Product Next Main Version: $nextMainVersion"
 
     - name: Bump Version
-      # if: needs.build.outputs.is_production_release == 'true'
+      if: needs.build.outputs.is_production_release == 'true'
       shell: pwsh
       run: |
         [System.IO.File]::WriteAllText("Directory.Build.props", [System.IO.File]::ReadAllText("Directory.Build.props").Replace("<ReqnrollMainVersion>${{ needs.build.outputs.product_main_version }}</ReqnrollMainVersion>", "<ReqnrollMainVersion>${{ steps.next_version.outputs.product_next_main_version }}</ReqnrollMainVersion>"))
@@ -286,7 +287,7 @@ jobs:
         }
 
     - name: Update Changelog
-      # if: needs.build.outputs.is_production_release == 'true'
+      if: needs.build.outputs.is_production_release == 'true'
       id: changelog
       shell: pwsh
       run: |
@@ -307,7 +308,7 @@ jobs:
         Write-Output "release_notes_file=release_notes.txt" >> $env:GITHUB_OUTPUT
 
     - name: Update changes in GitHub repository
-      # if: needs.build.outputs.is_production_release == 'true'
+      if: needs.build.outputs.is_production_release == 'true'
       run: |
         git status
         git config --global user.name 'Reqnroll CI' 
