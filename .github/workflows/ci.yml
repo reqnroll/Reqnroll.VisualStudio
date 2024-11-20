@@ -243,14 +243,22 @@ jobs:
       with:
         name: vsix-v${{ needs.build.outputs.product_full_version }}
         path: release_packages
+    # - name: Deploy VSIX packages
+    #   env:
+    #     MARKETPLACE_PUBLISH_KEY: ${{ secrets.MARKETPLACE_PUBLISH_KEY }}      
+    #   shell: pwsh
+    #   run: |
+    #     Write-Output "Deploying v${{ needs.build.outputs.product_full_version }} (v${{ needs.build.outputs.product_main_version }}) packages to Visual Studio Marketplace"
+    #     ls ${{ github.workspace }}/release_packages
+    #     # ${{ github.workspace }}/.github/workflows/publish_packages.ps1 -packagesDir ${{ github.workspace }}/release_packages
+
     - name: Deploy VSIX packages
-      env:
-        MARKETPLACE_PUBLISH_KEY: ${{ secrets.MARKETPLACE_PUBLISH_KEY }}      
-      shell: pwsh
-      run: |
-        Write-Output "Deploying v${{ needs.build.outputs.product_full_version }} (v${{ needs.build.outputs.product_main_version }}) packages to Visual Studio Marketplace"
-        ls ${{ github.workspace }}/release_packages
-        # ${{ github.workspace }}/.github/workflows/publish_packages.ps1 -packagesDir ${{ github.workspace }}/release_packages
+      uses: CodingWithCalvin/GHA-VSMarketplacePublisher@v2.0.0
+      with:
+        marketplace-pat: ${{ secrets.MARKETPLACE_PUBLISH_PAT_TMP }}
+        publish-manifest-path: ${{ github.workspace }}/.marketplace/publishManifest.json
+        vsix-path: ${{ github.workspace }}/release_packages/Reqnroll.VisualStudio.Package.v${{ needs.build.outputs.product_version_prefix }}.vsix
+        # vs-version: [17.0,18.0)
 
     - name: Calculate Next Version
       # if: needs.build.outputs.is_production_release == 'true'
