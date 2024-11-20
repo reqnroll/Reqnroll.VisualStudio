@@ -314,10 +314,10 @@ jobs:
         git config --global user.name 'Reqnroll CI' 
         git config --global user.email 'ci@reqnroll.net'
         git tag v${{ needs.build.outputs.product_full_version }}
-        # git push origin tag v${{ needs.build.outputs.product_full_version }}
+        git push origin tag v${{ needs.build.outputs.product_full_version }}
         git add -u
         git commit -m '[automated commit] bump version after release of ${{ needs.build.outputs.product_full_version }}'
-        # git push
+        git push
 
     - name: Create GitHub Release
       if: needs.build.outputs.is_production_release == 'true'
