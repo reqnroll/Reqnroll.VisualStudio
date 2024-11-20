@@ -4,7 +4,7 @@
 
 *Added support for .NET 9 through the Visual Studio extension.
 
-*Contributors of this release (in alphabetical order):* @UL-ChrisGlew
+*Contributors of this release (in alphabetical order):* @gasparnagy, @UL-ChrisGlew
 
 # v2024.6.176 - 2024-11-08
 
