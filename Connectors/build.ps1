@@ -54,6 +54,10 @@ dotnet publish -f net8.0 $buildArgs
 
 Copy-Item bin\$configuration\net8.0\publish\ $outputFolder\Reqnroll-Generic-net8.0\ -Recurse
 
+dotnet publish -f net9.0 $buildArgs
+
+Copy-Item bin\$configuration\net9.0\publish\ $outputFolder\Reqnroll-Generic-net9.0\ -Recurse
+
 popd
 
 # build SpecFlow V1 any cpu
@@ -104,6 +108,10 @@ dotnet publish -f net8.0 $buildArgs
 
 Copy-Item bin\$configuration\net8.0\publish\ $outputFolder\SpecFlow-V3-net8.0\ -Recurse
 
+dotnet publish -f net9.0 $buildArgs
+
+Copy-Item bin\$configuration\net9.0\publish\ $outputFolder\SpecFlow-V3-net9.0\ -Recurse
+
 cd ..
 
 # build SpecFlow generic any cpu
@@ -121,5 +129,9 @@ Copy-Item bin\$configuration\net7.0\publish\ $outputFolder\SpecFlow-Generic-net7
 dotnet publish -f net8.0 $buildArgs
 
 Copy-Item bin\$configuration\net8.0\publish\ $outputFolder\SpecFlow-Generic-net8.0\ -Recurse
+
+dotnet publish -f net9.0 $buildArgs
+
+Copy-Item bin\$configuration\net9.0\publish\ $outputFolder\SpecFlow-Generic-net9.0\ -Recurse
 
 popd

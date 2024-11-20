@@ -28,3 +28,4 @@ Examples:
 	| net6.0    |
 	| net7.0    |
 	| net8.0    |
+	| net9.0    |
