@@ -40,8 +40,7 @@ public class DiscoveryService : IDiscoveryService
     {
         _logger.LogVerbose($"Discovery triggered from {callerMemberName}");
 
-        _projectScope.IdeScope.FireAndForgetOnBackgroundThread(
-            _ => BindingRegistryCache.Update(_ => DiscoveryInvoker.InvokeDiscoveryWithTimer()));
+        BindingRegistryCache.Update(_ => DiscoveryInvoker.InvokeDiscoveryWithTimer());
     }
 
     private void ProjectSystemOnProjectsBuilt(object sender, EventArgs eventArgs)
