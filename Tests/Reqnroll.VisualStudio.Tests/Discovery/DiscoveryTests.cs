@@ -114,7 +114,7 @@ public class DiscoveryTests
     {
         //arrange
         using var sut = ArrangeSut();
-        sut.ProjectScope.StubProjectSettingsProvider.Kind = DeveroomProjectKind.ReqnrollLibProject;
+        sut.ProjectScope.StubProjectSettingsProvider.Kind = DeveroomProjectKind.OtherProject;
 
         DiscoveryInvoker discoveryInvoker = sut.BuildDiscoveryInvoker();
 
