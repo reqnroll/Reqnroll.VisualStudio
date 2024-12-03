@@ -92,7 +92,7 @@ public abstract class VsSimulatedItemAddProjectScopeWizard<TWizard> : VsProjectS
             if (projectItem != null)
             {
                 //projectItem.Open();
-                project.DTE.ExecuteCommand("File.OpenFile", targetFile);
+                project.DTE.ExecuteCommand("File.OpenFile", $"\"{targetFile}\"");
                 logger.LogVerbose($"File opened: {targetFile}");
             }
         }

@@ -4,7 +4,9 @@
 
 ## Bug fixes:
 
-*Contributors of this release (in alphabetical order):* 
+* Fix: Error message box when creating feature file with space in its name (#50)
+
+*Contributors of this release (in alphabetical order):* @gasparnagy
 
 # v2024.7.204 - 2024-11-20
 
