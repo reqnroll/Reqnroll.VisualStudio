@@ -53,37 +53,43 @@ public class FindStepDefinitionUsagesCommand : DeveroomEditorCommandBase, IDever
         var project = IdeScope.GetProject(textBuffer);
         bool bindingsNotYetLoaded = false;
         bool projectNotYetLoaded = project == null;
-        if (!projectNotYetLoaded)
-        {
-            Logger.LogVerbose("Find Step Definition Usages:PreExec: project loaded");
-            var bindingRegistry = project.GetDiscoveryService().BindingRegistryCache;
-            bindingsNotYetLoaded = (bindingRegistry == null || bindingRegistry.Value == ProjectBindingRegistry.Invalid);
-            if (bindingsNotYetLoaded)
-                Logger.LogVerbose($"Find Step Definition Usages: PreExec: binding registry not available: {(bindingRegistry == null ? "null" : "invalid")}");
-        }
-
-        if (project == null || !project.GetProjectSettings().IsReqnrollProject || bindingsNotYetLoaded )
-        {
-            IdeScope.Actions.ShowProblem(
-                "Unable to find step definition usages: the project is not detected to be a Reqnroll project or it is not initialized yet.");
-            return true;
-        }
-
-        var reqnrollTestProjects = IdeScope.GetProjectsWithFeatureFiles()
-            .Where(p => p.GetProjectSettings().IsReqnrollTestProject)
-            .ToArray();
-
-        if (reqnrollTestProjects.Length == 0)
-        {
-            IdeScope.Actions.ShowProblem(
-                "Unable to find step definition usages: could not find any Reqnroll project with feature files.");
-            return true;
-        }
-
         var asyncContextMenu = IdeScope.Actions.ShowAsyncContextMenu(PopupHeader);
-        Task.Run(
-            () => FindUsagesInProjectsAsync(reqnrollTestProjects, fileName, triggerPoint, asyncContextMenu,
-                asyncContextMenu.CancellationToken), asyncContextMenu.CancellationToken);
+        Task.Run(async () =>
+        {
+            if (!projectNotYetLoaded)
+            {
+                Logger.LogVerbose("Find Step Definition Usages:PreExec: project loaded");
+                var bindingRegistry = project.GetDiscoveryService().BindingRegistryCache;
+                bindingsNotYetLoaded = (bindingRegistry == null || bindingRegistry.Value == ProjectBindingRegistry.Invalid);
+                if (bindingsNotYetLoaded)
+                {
+                    Logger.LogVerbose($"Find Step Definition Usages: PreExec: binding registry not available: {(bindingRegistry == null ? "null" : "invalid")}");
+                    IdeScope.Actions.ShowProblem("Unable to find step definition usages: the project is not initialized yet.");
+                    return true;
+                }
+            }
+
+            if (project == null || !project.GetProjectSettings().IsReqnrollProject || bindingsNotYetLoaded)
+            {
+                IdeScope.Actions.ShowProblem(
+                    "Unable to find step definition usages: the project is not detected to be a Reqnroll project.");
+                return true;
+            }
+
+            var reqnrollTestProjects = IdeScope.GetProjectsWithFeatureFiles()
+                .Where(p => p.GetProjectSettings().IsReqnrollTestProject)
+                .ToArray();
+
+            if (reqnrollTestProjects.Length == 0)
+            {
+                IdeScope.Actions.ShowProblem(
+                    "Unable to find step definition usages: could not find any Reqnroll project with feature files.");
+                return true;
+            }
+
+            await FindUsagesInProjectsAsync(reqnrollTestProjects, fileName, triggerPoint, asyncContextMenu, asyncContextMenu.CancellationToken);
+            return true;
+        }, asyncContextMenu.CancellationToken);
         return true;
     }
 
