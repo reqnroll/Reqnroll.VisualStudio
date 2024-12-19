@@ -1,6 +1,4 @@
 #nullable disable
-using System;
-using System.Linq;
 using Reqnroll.VisualStudio.Editor.Completions;
 
 namespace Reqnroll.VisualStudio.Tests.Editor.Completions;
@@ -9,7 +7,7 @@ public class StepDefinitionSamplerTests
 {
     private ProjectStepDefinitionBinding CreateStepDefinitionBinding(string regex, params string[] parameterTypes)
     {
-        parameterTypes = parameterTypes ?? new string[0];
+        parameterTypes ??= Array.Empty<string>();
         return new ProjectStepDefinitionBinding(ScenarioBlock.Given, new Regex("^" + regex + "$"), null,
             new ProjectBindingImplementation("M1", parameterTypes, null));
     }
@@ -89,5 +87,21 @@ public class StepDefinitionSamplerTests
         var result = sut.GetStepDefinitionSample(CreateStepDefinitionBinding(regex, "System.Int32"));
 
         result.Should().Be(regex);
+    }
+
+    [Theory]
+    [InlineData("(.*) is entered into the (very basic|standard|scientific) calculator", 
+      "[int] is entered into the (very basic|standard|scientific) calculator", 
+      "System.Int32", "System.String")]
+    [InlineData("(.*) is entered into the ( 1st| 2nd | 3 rd |4th) calculator and saved with name ([^']*)",
+      "[int] is entered into the ( 1st| 2nd | 3 rd |4th) calculator and saved with name [string]", 
+      "System.Int32", "System.String", "System.String")]
+    public void Does_not_replace_choice_parameters(string regex, string expectedResult, params string[] paramType)
+    {
+      var sut = new StepDefinitionSampler();
+
+      var result = sut.GetStepDefinitionSample(CreateStepDefinitionBinding(regex, paramType));
+
+      result.Should().Be(expectedResult);
     }
 }

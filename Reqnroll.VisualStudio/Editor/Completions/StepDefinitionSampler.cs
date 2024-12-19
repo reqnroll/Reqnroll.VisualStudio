@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-
 namespace Reqnroll.VisualStudio.Editor.Completions;
 
 public class StepDefinitionSampler
@@ -23,16 +20,29 @@ public class StepDefinitionSampler
             completionTextBuilder.Append(GetUnescapedText(analyzedStepDefinitionExpression.Parts[i]));
             if (i < analyzedStepDefinitionExpression.Parts.Length - 1)
             {
-                completionTextBuilder.Append("[");
-                completionTextBuilder.Append(GetPlaceHolderText(stepDefinitionBinding, i / 2));
-                completionTextBuilder.Append("]");
+                if (ParameterIsListOfOptions(GetUnescapedText(analyzedStepDefinitionExpression.Parts[i + 1])))
+                    completionTextBuilder.Append(GetUnescapedText(analyzedStepDefinitionExpression.Parts[i + 1]));
+                else
+                {
+                    completionTextBuilder.Append("[");
+                    completionTextBuilder.Append(GetPlaceHolderText(stepDefinitionBinding, i / 2));
+                    completionTextBuilder.Append("]");
+                }
             }
         }
 
         return completionTextBuilder.ToString();
     }
 
-    private string GetUnescapedText(AnalyzedStepDefinitionExpressionPart part)
+
+  private bool ParameterIsListOfOptions(string parameter)
+  {
+    var regex = new Regex(@"^\(\s*[a-zA-Z0-9 ]+(?:\s*\|\s*[a-zA-Z0-9 ]+)*\s*\)$");
+    return regex.IsMatch(parameter);
+  }
+
+
+  private string GetUnescapedText(AnalyzedStepDefinitionExpressionPart part)
     {
         if (part is AnalyzedStepDefinitionExpressionSimpleTextPart simpleTextPart)
             return simpleTextPart.UnescapedText;
