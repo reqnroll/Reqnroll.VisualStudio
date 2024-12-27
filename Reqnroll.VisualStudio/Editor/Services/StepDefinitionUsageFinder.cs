@@ -1,4 +1,6 @@
 #nullable disable
+using Reqnroll.VisualStudio.Editor.Completions;
+
 namespace Reqnroll.VisualStudio.Editor.Services;
 
 public class StepDefinitionUsage
@@ -30,11 +32,34 @@ public class StepDefinitionUsageFinder
         return featureFiles.SelectMany(ff => FindUsages(stepDefinitions, ff, configuration));
     }
 
+    public Dictionary<string, int> FindUsageCounts(
+        ProjectStepDefinitionBinding[] stepDefinitions,
+        string[] featureFiles,
+        DeveroomConfiguration configuration)
+    {
+        return featureFiles
+            .Select(ff => FindUsageCounts(stepDefinitions, ff, configuration))
+            .SelectMany(dict => dict)
+            .GroupBy(kvp => kvp.Key)
+            .ToDictionary(
+                group => group.Key,
+                group => group.Sum(kvp => kvp.Value)
+            );
+    }
+
     private IEnumerable<StepDefinitionUsage> FindUsages(ProjectStepDefinitionBinding[] stepDefinitions,
         string featureFilePath, DeveroomConfiguration configuration) =>
         LoadContent(featureFilePath, out string featureFileContent)
             ? FindUsagesFromContent(stepDefinitions, featureFileContent, featureFilePath, configuration)
             : Enumerable.Empty<StepDefinitionUsage>();
+
+    private Dictionary<string, int> FindUsageCounts(
+        ProjectStepDefinitionBinding[] stepDefinitions,
+        string featureFilePath,
+        DeveroomConfiguration configuration) =>
+        LoadContent(featureFilePath, out string featureFileContent)
+            ? FindUsageCountsFromContent(stepDefinitions, featureFileContent, featureFilePath, configuration)
+            : new Dictionary<string, int>();
 
     private bool LoadContent(string featureFilePath, out string content)
     {
@@ -109,6 +134,46 @@ public class StepDefinitionUsageFinder
                         GetSourceLocation(step, featureFilePath), step);
             }
         }
+    }
+
+    public Dictionary<string, int> FindUsageCountsFromContent(ProjectStepDefinitionBinding[] stepDefinitions,
+        string featureFileContent, string featureFilePath, DeveroomConfiguration configuration)
+    {
+        var dialectProvider = ReqnrollGherkinDialectProvider.Get(configuration.DefaultFeatureLanguage);
+        var parser = new DeveroomGherkinParser(dialectProvider, _ideScope.MonitoringService);
+
+        parser.ParseAndCollectErrors(featureFileContent, _ideScope.Logger, out var gherkinDocument, out _);
+
+        var featureNode = gherkinDocument?.Feature;
+        if (featureNode == null)
+            return new Dictionary<string, int>();
+
+        var dummyRegistry = ProjectBindingRegistry.FromBindings(stepDefinitions);
+
+        var featureContext = new UsageFinderContext(featureNode);
+
+        var stepUsageCounts = new Dictionary<string, int>();
+
+        foreach (var scenarioDefinition in featureNode.FlattenStepsContainers())
+        {
+            var context = new UsageFinderContext(scenarioDefinition, featureContext);
+
+            foreach (var step in scenarioDefinition.Steps)
+            {
+                var matchResult = dummyRegistry.MatchStep(step, context);
+                if (matchResult.HasDefined)
+                {
+                    var stepText = new StepDefinitionSampler().GetStepDefinitionSample(matchResult.Items[0].MatchedStepDefinition);
+
+                    if (stepUsageCounts.ContainsKey(stepText))
+                        stepUsageCounts[stepText]++;
+                    else
+                        stepUsageCounts[stepText] = 1;
+                }
+            }
+        }
+
+        return stepUsageCounts;
     }
 
     private SourceLocation GetSourceLocation(Step step, string featureFilePath) =>
