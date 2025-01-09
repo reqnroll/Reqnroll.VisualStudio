@@ -116,7 +116,9 @@ public class ProjectScopeDeveroomConfigurationProvider : IDeveroomConfigurationP
         {
             var projectFolder = _projectScope.ProjectFolder;
             var fileSystem = _projectScope.IdeScope.FileSystem;
-            var configFilePath = fileSystem.GetFilePathIfExists(Path.Combine(projectFolder, fileName));
+            var assemblyPath = Path.GetDirectoryName(_projectScope.OutputAssemblyPath);
+      
+            var configFilePath = fileSystem.GetFilePathIfExists(Path.Combine(assemblyPath ?? projectFolder, fileName));
 
             if (fileName.Equals(SpecFlowAppConfigFileName)) configFilePath ??= GetAppConfigPathFromProject();
             if (configFilePath == null)

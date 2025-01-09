@@ -23,6 +23,7 @@ public class GherkinFormatSettings
 
     public string TableCellPadding => new(' ', Configuration.TableCellPaddingSize);
 
+    public string Language { get; set; } = "en-US";
 
     public static GherkinFormatSettings Load(IEditorConfigOptionsProvider editorConfigOptionsProvider,
         IWpfTextView textView, DeveroomConfiguration configuration)
@@ -39,7 +40,8 @@ public class GherkinFormatSettings
         var formatSettings = new GherkinFormatSettings
         {
             Indent = convertTabsToSpaces ? new string(' ', indentSize) : new string('\t', 1),
-            Configuration = gherkinFormatConfiguration
+            Configuration = gherkinFormatConfiguration,
+            Language = configuration?.DefaultFeatureLanguage ?? "en-US"
         };
 
         return formatSettings;
