@@ -1,26 +1,20 @@
 #nullable disable
 namespace Reqnroll.VisualStudio.Connectors;
 
-public class OutProcReqnrollConnector
+public abstract class OutProcReqnrollConnector
 {
-    private const string ConnectorV1AnyCpu = @"Reqnroll-V1\reqnroll-vs.exe";
-    private const string ConnectorV1X86 = @"Reqnroll-V1\reqnroll-vs-x86.exe";
-    private const string SpecFlowConnectorV1AnyCpu = @"SpecFlow-V1\specflow-vs.exe";
-    private const string SpecFlowConnectorV1X86 = @"SpecFlow-V1\specflow-vs-x86.exe";
-    private const string SpecFlowConnectorV2Net60 = @"SpecFlow-V2-net6.0\specflow-vs.dll";
-    private const string SpecFlowConnectorV3Net60 = @"SpecFlow-V3-net6.0\specflow-vs.dll";
     private const string BindingDiscoveryCommandName = "binding discovery";
 
-    private readonly DeveroomConfiguration _configuration;
-    private readonly string _extensionFolder;
-    private readonly IDeveroomLogger _logger;
-    private readonly IMonitoringService _monitoringService;
-    private readonly ProcessorArchitectureSetting _processorArchitecture;
+    protected readonly DeveroomConfiguration _configuration;
+    protected readonly string _extensionFolder;
+    protected readonly IDeveroomLogger _logger;
+    protected readonly IMonitoringService _monitoringService;
+    protected readonly ProcessorArchitectureSetting _processorArchitecture;
     protected readonly ProjectSettings _projectSettings;
     protected readonly TargetFrameworkMoniker _targetFrameworkMoniker;
     protected NuGetVersion ReqnrollVersion => _projectSettings.ReqnrollVersion;
 
-    public OutProcReqnrollConnector(DeveroomConfiguration configuration, IDeveroomLogger logger,
+    protected OutProcReqnrollConnector(DeveroomConfiguration configuration, IDeveroomLogger logger,
         TargetFrameworkMoniker targetFrameworkMoniker, string extensionFolder,
         ProcessorArchitectureSetting processorArchitecture, ProjectSettings projectSettings,
         IMonitoringService monitoringService)
@@ -127,30 +121,7 @@ public class OutProcReqnrollConnector
             $"Error during {command}. {Environment.NewLine}Command executed:{Environment.NewLine}  {result.CommandLine}{Environment.NewLine}Exit code: {exitCode}{Environment.NewLine}Message: {Environment.NewLine}{errorMessage}";
     }
 
-    protected virtual string GetConnectorPath(List<string> arguments)
-    {
-        var connectorsFolder = GetConnectorsFolder();
-
-        if (_targetFrameworkMoniker.IsNetCore && _projectSettings.IsSpecFlowProject)
-        {
-            if (ReqnrollVersion != null && ReqnrollVersion.Version >= new Version(3, 9, 22))
-                return GetDotNetExecCommand(arguments, connectorsFolder, SpecFlowConnectorV3Net60);
-            return GetDotNetExecCommand(arguments, connectorsFolder, SpecFlowConnectorV2Net60);
-        }
-
-        //V1
-        string connectorName = _projectSettings.IsSpecFlowProject ?
-            SpecFlowConnectorV1AnyCpu : ConnectorV1AnyCpu;
-        if (_processorArchitecture == ProcessorArchitectureSetting.X86)
-            connectorName = _projectSettings.IsSpecFlowProject ? 
-                SpecFlowConnectorV1X86 : ConnectorV1X86;
-
-#if DEBUG
-        _logger.LogInfo($"Invoking '{connectorName}'...");
-#endif
-
-        return Path.Combine(connectorsFolder, connectorName);
-    }
+    protected abstract string GetConnectorPath(List<string> arguments);
 
     private string GetDotNetInstallLocation()
     {

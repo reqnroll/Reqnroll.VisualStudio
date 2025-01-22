@@ -18,13 +18,13 @@ public static class OutProcReqnrollConnectorFactory
             ideScope.MonitoringService);
     }
 
-    public static OutProcReqnrollConnector Create(IProjectScope projectScope)
+    public static OutProcReqnrollConnector CreateLegacy(IProjectScope projectScope)
     {
         var ideScope = projectScope.IdeScope;
         var projectSettings = projectScope.GetProjectSettings();
         var deveroomConfiguration = projectScope.GetDeveroomConfiguration();
         var processorArchitecture = GetProcessorArchitecture(deveroomConfiguration, projectSettings);
-        return new OutProcReqnrollConnector(
+        return new LegacyOutProcReqnrollConnector(
             deveroomConfiguration,
             ideScope.Logger,
             projectSettings.TargetFrameworkMoniker,

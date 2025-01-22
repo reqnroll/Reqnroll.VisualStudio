@@ -20,7 +20,7 @@ public class DiscoveryResultProvider : IDiscoveryResultProvider
     {
         if (projectSettings.IsSpecFlowProject && projectSettings.ReqnrollVersion.Version <= new Version(3, 0, 225))
         {
-            return RunDiscovery(testAssemblyPath, configFilePath, projectSettings, GetConnector(projectSettings));
+            return RunDiscovery(testAssemblyPath, configFilePath, projectSettings, GetLegacyConnector(projectSettings));
         }
 
         DiscoveryResult genericConnectorResult = RunDiscovery(testAssemblyPath, configFilePath, projectSettings,
@@ -30,7 +30,7 @@ public class DiscoveryResultProvider : IDiscoveryResultProvider
             return genericConnectorResult;
 
         var retryResult =
-            RunDiscovery(testAssemblyPath, configFilePath, projectSettings, GetConnector(projectSettings));
+            RunDiscovery(testAssemblyPath, configFilePath, projectSettings, GetLegacyConnector(projectSettings));
 
         if (retryResult.IsFailed)
         {
@@ -47,6 +47,6 @@ public class DiscoveryResultProvider : IDiscoveryResultProvider
         OutProcReqnrollConnector connector) => connector.RunDiscovery(projectSettings.OutputAssemblyPath,
         projectSettings.ReqnrollConfigFilePath);
 
-    private OutProcReqnrollConnector GetConnector(ProjectSettings projectSettings) =>
-        OutProcReqnrollConnectorFactory.Create(_projectScope);
+    private OutProcReqnrollConnector GetLegacyConnector(ProjectSettings projectSettings) =>
+        OutProcReqnrollConnectorFactory.CreateLegacy(_projectScope);
 }
