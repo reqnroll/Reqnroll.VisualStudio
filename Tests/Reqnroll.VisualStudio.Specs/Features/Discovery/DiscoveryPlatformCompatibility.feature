@@ -10,6 +10,5 @@ Scenario Outline: Discover bindings from a Reqnroll project in different .NET Co
 Examples: 
 	| framework |
 	| net6.0    |
-	| net7.0    |
 	| net8.0    |
 	| net9.0    |
