@@ -2,6 +2,7 @@
   <Settings>
     <AdditionalFilesToIncludeForProject>
       <Value>Features\**.feature</Value>
+      <Value>..\ExternalPackages\**.*</Value>
     </AdditionalFilesToIncludeForProject>
     <BuildLogVerbosity>Quiet</BuildLogVerbosity>
     <BuildSdk>8.0.101</BuildSdk>
