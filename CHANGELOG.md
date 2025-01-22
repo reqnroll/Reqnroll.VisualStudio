@@ -2,11 +2,13 @@
 
 ## Improvements:
 
+* Step previews: do not convert options list parameter, e.g. '(option1|option2|option3)', to [string]
+
 ## Bug fixes:
 
 * Fix: Error message box when creating feature file with space in its name (#50)
 
-*Contributors of this release (in alphabetical order):* @gasparnagy
+*Contributors of this release (in alphabetical order):* @gasparnagy, @RikvanSpreuwel
 
 # v2024.7.204 - 2024-11-20
 
