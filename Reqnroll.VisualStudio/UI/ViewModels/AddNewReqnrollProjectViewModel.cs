@@ -11,7 +11,7 @@ public class AddNewReqnrollProjectViewModel : INotifyPropertyChanged
     {
         DotNetFramework = Net8,
         UnitTestFramework = MsTest,
-        FluentAssertionsIncluded = true
+        FluentAssertionsIncluded = false
     };
 #endif
     private string _dotNetFramework = Net8;
@@ -27,7 +27,10 @@ public class AddNewReqnrollProjectViewModel : INotifyPropertyChanged
     }
 
     public string UnitTestFramework { get; set; } = MsTest;
-    public bool FluentAssertionsIncluded { get; set; } = true;
+    // FluentAssertions suggestion is temporarily hidden from the UI as it is not free for commercial use anymore. 
+    // See https://xceed.com/fluent-assertions-faq/
+    // Maybe we could consider suggesting https://github.com/shouldly/shouldly instead.
+    public bool FluentAssertionsIncluded { get; set; } = false;
     public ObservableCollection<string> TestFrameworks { get; } = new(new List<string> { "MSTest", "NUnit", "xUnit" });
 
     public event PropertyChangedEventHandler PropertyChanged;
