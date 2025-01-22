@@ -8,7 +8,7 @@ public class DeveroomCompletionSource : DeveroomCompletionSourceBase
     private readonly ITagAggregator<DeveroomTag> _tagAggregator;
 
     public DeveroomCompletionSource(ITextBuffer buffer, ITagAggregator<DeveroomTag> tagAggregator, IIdeScope ideScope)
-        : base("Reqnroll", buffer)
+        : base("Reqnroll", buffer, ideScope)
     {
         _tagAggregator = tagAggregator;
         _ideScope = ideScope;

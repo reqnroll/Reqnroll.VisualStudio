@@ -1,16 +1,20 @@
 #nullable disable
 
+using Reqnroll.VisualStudio.ProjectSystem;
+
 namespace Reqnroll.VisualStudio.Editor.Completions.Infrastructure;
 
 public abstract class DeveroomCompletionSourceBase : ICompletionSource
 {
     protected readonly ITextBuffer _buffer;
+    private readonly IIdeScope _ideScope;
     private readonly string _name;
 
-    protected DeveroomCompletionSourceBase(string name, ITextBuffer buffer)
+    protected DeveroomCompletionSourceBase(string name, ITextBuffer buffer, IIdeScope ideScope)
     {
         _name = name;
         _buffer = buffer;
+        _ideScope = ideScope;
     }
 
     public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets)
@@ -19,6 +23,7 @@ public abstract class DeveroomCompletionSourceBase : ICompletionSource
         if (snapshotTriggerPoint == null)
             return;
 
+        var sw = Stopwatch.StartNew();
         var completionResult = CollectCompletions(snapshotTriggerPoint.Value);
         if (completionResult.Value.Count == 0)
             return;
@@ -26,6 +31,8 @@ public abstract class DeveroomCompletionSourceBase : ICompletionSource
         var applicableTo = GetApplicableTo(completionResult);
         if (applicableTo == null)
             return;
+
+        _ideScope.Logger.Trace(sw, $"Completions collected in {sw.ElapsedMilliseconds} ms: {completionResult.Value.Count}");
 
         completionSets.Add(new WordContainsFilteredCompletionSet(
             _name,

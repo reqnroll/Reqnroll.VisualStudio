@@ -3,12 +3,13 @@
 ## Improvements:
 
 * Suggestion for adding [FluentAssertions](https://github.com/fluentassertions/fluentassertions) on the new project wizard screen has been removed to avoid confusions, because FluentAssertion does not offer free use for commercial projects anymore. (#60)
+* Step previews: do not convert options list parameter, e.g. '(option1|option2|option3)', to [string]
 
 ## Bug fixes:
 
 * Fix: Error message box when creating feature file with space in its name (#50)
 
-*Contributors of this release (in alphabetical order):* @gasparnagy
+*Contributors of this release (in alphabetical order):* @gasparnagy, @RikvanSpreuwel
 
 # v2024.7.204 - 2024-11-20
 
