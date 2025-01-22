@@ -2,6 +2,14 @@
 
 ## Improvements:
 
+## Bug fixes:
+
+*Contributors of this release (in alphabetical order):* 
+
+# v2024.8.234 - 2025-01-22
+
+## Improvements:
+
 * Suggestion for adding [FluentAssertions](https://github.com/fluentassertions/fluentassertions) on the new project wizard screen has been removed to avoid confusions, because FluentAssertion does not offer free use for commercial projects anymore. (#60)
 * Show regex options list e.g. '(option1|option2|option3)' parameter in step completion instead of a generic parameter placeholder (#55)
 * Added option to use custom binding discovery connectors using the configuration option `ide/bindingDiscovery/connectorPath` setting in `reqnroll.json` config file where a custom connector path can be specified. (#63)
