@@ -161,6 +161,17 @@ public class DeveroomSteps : Steps
         });
     }
 
+    [Given("the project is configured to use custom connector {string}")]
+    public void GivenTheProjectIsConfiguredToUseCustomConnector(string connectorPath)
+    {
+        _stubIdeScope.UsePhysicalFileSystem();
+
+        _projectScopeConfigurationSteps.Add(scope =>
+        {
+            scope.GetDeveroomConfiguration().BindingDiscovery.ConnectorPath = connectorPath;
+        });
+    }
+
     [Given(@"the project is built")]
     public void GivenTheProjectIsBuilt()
     {

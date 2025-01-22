@@ -191,8 +191,7 @@ public class NullVsIdeScope : IVsIdeScope
         {
         }
 
-        public void MonitorReqnrollDiscovery(bool isFailed, string errorMessage, int stepDefinitionCount,
-            ProjectSettings projectSettings)
+        public void MonitorReqnrollDiscovery(bool isFailed, string errorMessage, int stepDefinitionCount, ProjectSettings projectSettings, string connectorType)
         {
         }
 
