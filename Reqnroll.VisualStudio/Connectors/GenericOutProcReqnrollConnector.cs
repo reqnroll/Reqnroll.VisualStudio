@@ -33,16 +33,24 @@ public class GenericOutProcReqnrollConnector : OutProcReqnrollConnector
     protected override string GetConnectorPath(List<string> arguments)
     {
         var connector = _projectSettings.IsSpecFlowProject ? 
-            SpecFlowConnectorNet60 : ConnectorNet60;
+            SpecFlowConnectorNet80 : ConnectorNet80;
+
         if (_targetFrameworkMoniker.IsNetCore && _targetFrameworkMoniker.HasVersion &&
-            _targetFrameworkMoniker.Version.Major >= 7)
+            _targetFrameworkMoniker.Version.Major == 6)
+        {
+            connector = _projectSettings.IsSpecFlowProject ?
+                SpecFlowConnectorNet60 : ConnectorNet60;
+        }
+
+        if (_targetFrameworkMoniker.IsNetCore && _targetFrameworkMoniker.HasVersion &&
+            _targetFrameworkMoniker.Version.Major == 7)
         {
             connector = _projectSettings.IsSpecFlowProject ?
                 SpecFlowConnectorNet70 : ConnectorNet70;
         }
 
         if (_targetFrameworkMoniker.IsNetCore && _targetFrameworkMoniker.HasVersion &&
-            _targetFrameworkMoniker.Version.Major >= 8)
+            _targetFrameworkMoniker.Version.Major == 8)
         {
             connector = _projectSettings.IsSpecFlowProject ?
                 SpecFlowConnectorNet80 : ConnectorNet80;

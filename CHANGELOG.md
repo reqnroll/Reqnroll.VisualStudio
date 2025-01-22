@@ -8,6 +8,7 @@
 ## Bug fixes:
 
 * Fix: Error message box when creating feature file with space in its name (#50)
+* Fix: Error during discovery of .NET 4 projects when .NET 6.0 is not installed (#53)
 
 *Contributors of this release (in alphabetical order):* @gasparnagy, @RikvanSpreuwel
 
