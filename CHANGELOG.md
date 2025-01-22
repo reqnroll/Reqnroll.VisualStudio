@@ -2,6 +2,7 @@
 
 ## Improvements:
 
+* Suggestion for adding [FluentAssertions](https://github.com/fluentassertions/fluentassertions) on the new project wizard screen has been removed to avoid confusions, because FluentAssertion does not offer free use for commercial projects anymore. (#60)
 * Step previews: do not convert options list parameter, e.g. '(option1|option2|option3)', to [string]
 
 ## Bug fixes:

@@ -251,7 +251,7 @@
 							          SelectionChanged="TestFramework_SelectionChanged" />
 						</StackPanel>
 
-						<StackPanel Grid.Row="2" Grid.Column="0">
+						<StackPanel Grid.Row="2" Grid.Column="0" Visibility="Collapsed">
 							<CheckBox x:Name="FluentAssertionsCheckBox" Content="Add FluentAssertions library"
 							          IsChecked="{Binding FluentAssertionsIncluded}" />
 						</StackPanel>
