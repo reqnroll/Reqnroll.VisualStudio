@@ -167,8 +167,7 @@ public class MonitoringService : IMonitoringService
 
     //REQNROLL
 
-    public void MonitorReqnrollDiscovery(bool isFailed, string errorMessage, int stepDefinitionCount,
-        ProjectSettings projectSettings)
+    public void MonitorReqnrollDiscovery(bool isFailed, string errorMessage, int stepDefinitionCount, ProjectSettings projectSettings, string connectorType)
     {
         if (isFailed && !string.IsNullOrWhiteSpace(errorMessage))
         {
@@ -181,9 +180,10 @@ public class MonitoringService : IMonitoringService
             {"IsFailed", isFailed},
             {"StepDefinitionCount", stepDefinitionCount}
         };
+        if (!string.IsNullOrEmpty(connectorType))
+            additionalProps.Add("ConnectorType", connectorType);
         _analyticsTransmitter.TransmitEvent(new GenericEvent("Reqnroll Discovery executed",
-            GetProjectSettingsProps(projectSettings,
-                additionalProps)));
+            GetProjectSettingsProps(projectSettings, additionalProps)));
     }
 
     public void MonitorReqnrollGeneration(bool isFailed, ProjectSettings projectSettings)
@@ -288,7 +288,8 @@ public class MonitoringService : IMonitoringService
         props.Add("ProjectTargetFramework", settings.TargetFrameworkMonikers);
         props.Add("SingleFileGeneratorUsed", settings.DesignTimeFeatureFileGenerationEnabled);
         props.Add("ProgrammingLanguage", settings.ProgrammingLanguage);
-
+        if (settings.IsSpecFlowProject)
+            props.Add("LegacySpecFlow", true);
         return props;
     }
 

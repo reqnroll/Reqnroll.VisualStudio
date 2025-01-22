@@ -149,8 +149,8 @@ internal class DiscoveryInvoker
 
         public ProjectBindingRegistry AndCreateBindingRegistry(IMonitoringService monitoringService)
         {
-            monitoringService.MonitorReqnrollDiscovery(_stepDefinitions.IsEmpty, _discoveryResult.ErrorMessage,
-                _stepDefinitions.Length, _projectSettings);
+            monitoringService.MonitorReqnrollDiscovery(_discoveryResult.IsFailed, _discoveryResult.ErrorMessage,
+                _stepDefinitions.Length, _projectSettings, _discoveryResult.ConnectorType);
 
             var projectHash = _invoker.CreateProjectHash(_projectSettings, _testAssemblySource);
 

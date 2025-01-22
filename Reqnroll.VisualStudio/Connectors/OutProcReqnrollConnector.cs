@@ -31,6 +31,11 @@ public abstract class OutProcReqnrollConnector
     private bool DebugConnector => _configuration.DebugConnector ||
                                    Environment.GetEnvironmentVariable("DEVEROOM_DEBUGCONNECTOR") == "1";
 
+    protected virtual string GetConnectorType()
+    {
+        return GetType().Name.Replace(nameof(OutProcReqnrollConnector), "");
+    }
+
     public DiscoveryResult RunDiscovery(string testAssemblyPath, string configFilePath)
     {
         var workingDirectory = Path.GetDirectoryName(testAssemblyPath);
@@ -42,11 +47,12 @@ public abstract class OutProcReqnrollConnector
         if (DebugConnector)
             arguments.Add("--debug");
 
-        if (!File.Exists(connectorPath))
+        if (connectorPath == null || !File.Exists(connectorPath))
             return new DiscoveryResult
             {
                 ErrorMessage = $"Error during binding discovery. Unable to find connector: {connectorPath}",
-                AnalyticsProperties = new Dictionary<string, object>()
+                AnalyticsProperties = new Dictionary<string, object>(),
+                ConnectorType = GetConnectorType()
             };
 
         var result = ProcessHelper.RunProcess(workingDirectory, connectorPath, arguments, encoding: Encoding.UTF8);
@@ -60,19 +66,23 @@ public abstract class OutProcReqnrollConnector
         _logger.LogVerbose(result.StandardOut);
 #endif
 
+        DiscoveryResult discoveryResult;
         if (result.ExitCode != 0)
         {
             var errorMessage = result.HasErrors ? result.StandardError : "Unknown error.";
 
-            return Deserialize(result,
+            discoveryResult = Deserialize(
+                result,
                 dr => GetDetailedErrorMessage(result, errorMessage + dr.ErrorMessage, BindingDiscoveryCommandName));
         }
+        else
+        {
+            discoveryResult = Deserialize(
+                result,
+                dr => dr.IsFailed ? GetDetailedErrorMessage(result, dr.ErrorMessage, BindingDiscoveryCommandName) : dr.ErrorMessage);
+        }
 
-        var discoveryResult = Deserialize(result, dr => dr.IsFailed
-            ? GetDetailedErrorMessage(result, dr.ErrorMessage, BindingDiscoveryCommandName)
-            : dr.ErrorMessage
-        );
-
+        discoveryResult.ConnectorType = GetConnectorType();
         return discoveryResult;
     }
 
@@ -85,14 +95,16 @@ public abstract class OutProcReqnrollConnector
             discoveryResult = JsonSerialization.DeserializeObjectWithMarker<DiscoveryResult>(result.StandardOut)
                               ?? new DiscoveryResult
                               {
-                                  ErrorMessage = $"Cannot deserialize: {result.StandardOut}"
+                                  ErrorMessage = $"Cannot deserialize: {result.StandardOut}",
+                                  ConnectorType = GetConnectorType()
                               };
         }
         catch (Exception e)
         {
             discoveryResult = new DiscoveryResult
             {
-                ErrorMessage = e.ToString()
+                ErrorMessage = e.ToString(),
+                ConnectorType = GetConnectorType()
             };
         }
 

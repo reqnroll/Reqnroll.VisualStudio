@@ -2,6 +2,28 @@ namespace Reqnroll.VisualStudio.Connectors;
 
 public static class OutProcReqnrollConnectorFactory
 {
+    public static bool UseCustomConnector(IProjectScope projectScope)
+    {
+        var deveroomConfiguration = projectScope.GetDeveroomConfiguration();
+        return deveroomConfiguration.BindingDiscovery.ConnectorPath != null;
+    }
+
+    public static OutProcReqnrollConnector CreateCustom(IProjectScope projectScope)
+    {
+        var ideScope = projectScope.IdeScope;
+        var projectSettings = projectScope.GetProjectSettings();
+        var deveroomConfiguration = projectScope.GetDeveroomConfiguration();
+        var processorArchitecture = GetProcessorArchitecture(deveroomConfiguration, projectSettings);
+        return new CustomOutProcReqnrollConnector(
+            deveroomConfiguration,
+            ideScope.Logger,
+            projectSettings.TargetFrameworkMoniker,
+            projectScope.IdeScope.GetExtensionFolder(),
+            processorArchitecture,
+            projectSettings,
+            ideScope.MonitoringService);
+    }
+
     public static OutProcReqnrollConnector CreateGeneric(IProjectScope projectScope)
     {
         var ideScope = projectScope.IdeScope;
