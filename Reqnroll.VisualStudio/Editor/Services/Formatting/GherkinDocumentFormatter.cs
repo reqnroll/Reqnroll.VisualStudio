@@ -12,21 +12,19 @@ public class GherkinDocumentFormatter
         return;
 
       SetTagsAndLine(lines, gherkinDocument.Feature, string.Empty);
-      SetLinesForChildren(lines, gherkinDocument.Feature.Children, formatSettings, formatSettings.FeatureChildrenIndentLevel);
+      SetLinesForChildren(lines, gherkinDocument.Feature.Children, formatSettings, formatSettings.FeatureChildrenIndentLevel, gherkinDocument.GherkinDialect);
     }
 
     private void SetLinesForChildren(DocumentLinesEditBuffer lines, IEnumerable<IHasLocation> hasLocation,
-        GherkinFormatSettings formatSettings, int indentLevel)
+        GherkinFormatSettings formatSettings, int indentLevel, GherkinDialect gherkinDialect)
     {
-        var dialectProvider = ReqnrollGherkinDialectProvider.Get(formatSettings.Language);
-
         foreach (var featureChild in hasLocation)
         {
             SetTagsAndLine(lines, featureChild, GetIndent(formatSettings, indentLevel));
 
             if (featureChild is Rule rule)
                 SetLinesForChildren(lines, rule.Children, formatSettings,
-                    indentLevel + formatSettings.RuleChildrenIndentLevelWithinRule);
+                    indentLevel + formatSettings.RuleChildrenIndentLevelWithinRule, gherkinDialect);
 
             if (featureChild is ScenarioOutline scenarioOutline)
                 foreach (var example in scenarioOutline.Examples)
@@ -39,12 +37,12 @@ public class GherkinDocumentFormatter
                 }
 
             if (featureChild is IHasSteps hasSteps) 
-              FormatSteps(lines, formatSettings, indentLevel, hasSteps, dialectProvider);
+              FormatSteps(lines, formatSettings, indentLevel, hasSteps, gherkinDialect);
         }
     }
 
     private void FormatSteps(DocumentLinesEditBuffer lines, GherkinFormatSettings formatSettings, int indentLevel,
-      IHasSteps hasSteps, GherkinDialectProvider dialectProvider)
+      IHasSteps hasSteps, GherkinDialect gherkinDialect)
     {
       var previousKeyword = "";
 
@@ -62,7 +60,7 @@ public class GherkinDocumentFormatter
         {
           if (step.Keyword == previousKeyword)
           {
-            var andKeyword = GetAndKeyword(dialectProvider);
+            var andKeyword = GetAndKeyword(gherkinDialect);
             newKeyword = $"{andKeyword}";
           }
           else
@@ -84,9 +82,9 @@ public class GherkinDocumentFormatter
       }
     }
 
-    private static string GetAndKeyword(GherkinDialectProvider dialectProvider)
+    private static string GetAndKeyword(GherkinDialect gherkinDialect)
     {
-      return dialectProvider.DefaultDialect.AndStepKeywords.First(keyword => keyword != GherkinDialect.AsteriskKeyword);
+      return gherkinDialect.AndStepKeywords.First(keyword => keyword != GherkinDialect.AsteriskKeyword);
     }
 
     private void SetTagsAndLine(DocumentLinesEditBuffer lines, IHasLocation hasLocation, string indent)
