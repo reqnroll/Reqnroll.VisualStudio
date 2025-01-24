@@ -8,16 +8,15 @@ public class GherkinDocumentFormatter
     public void FormatGherkinDocument(DeveroomGherkinDocument gherkinDocument, DocumentLinesEditBuffer lines,
         GherkinFormatSettings formatSettings)
     {
-        if (gherkinDocument.Feature != null)
-        {
-            SetTagsAndLine(lines, gherkinDocument.Feature, string.Empty);
-            SetLinesForChildren(lines, gherkinDocument.Feature.Children, formatSettings,
-                formatSettings.FeatureChildrenIndentLevel);
-        }
+      if (gherkinDocument.Feature == null) 
+        return;
+
+      SetTagsAndLine(lines, gherkinDocument.Feature, string.Empty);
+      SetLinesForChildren(lines, gherkinDocument.Feature.Children, formatSettings, formatSettings.FeatureChildrenIndentLevel, gherkinDocument.GherkinDialect);
     }
 
     private void SetLinesForChildren(DocumentLinesEditBuffer lines, IEnumerable<IHasLocation> hasLocation,
-        GherkinFormatSettings formatSettings, int indentLevel)
+        GherkinFormatSettings formatSettings, int indentLevel, GherkinDialect gherkinDialect)
     {
         foreach (var featureChild in hasLocation)
         {
@@ -25,7 +24,7 @@ public class GherkinDocumentFormatter
 
             if (featureChild is Rule rule)
                 SetLinesForChildren(lines, rule.Children, formatSettings,
-                    indentLevel + formatSettings.RuleChildrenIndentLevelWithinRule);
+                    indentLevel + formatSettings.RuleChildrenIndentLevelWithinRule, gherkinDialect);
 
             if (featureChild is ScenarioOutline scenarioOutline)
                 foreach (var example in scenarioOutline.Examples)
@@ -37,24 +36,55 @@ public class GherkinDocumentFormatter
                         examplesBlockIndentLevel + formatSettings.ExamplesTableIndentLevelWithinExamplesBlock);
                 }
 
-            if (featureChild is IHasSteps hasSteps)
-                foreach (var step in hasSteps.Steps)
-                {
-                    var stepIndentLevel = indentLevel + formatSettings.StepIndentLevelWithinStepContainer;
-                    if (step is DeveroomGherkinStep deveroomGherkinStep &&
-                        (deveroomGherkinStep.StepKeyword == StepKeyword.And ||
-                         deveroomGherkinStep.StepKeyword == StepKeyword.But))
-                        stepIndentLevel += formatSettings.AndStepIndentLevelWithinSteps;
-                    SetLine(lines, step, $"{GetIndent(formatSettings, stepIndentLevel)}{step.Keyword}{step.Text}");
-                    if (step.Argument is DataTable dataTable)
-                        FormatTable(lines, dataTable, formatSettings,
-                            stepIndentLevel + formatSettings.DataTableIndentLevelWithinStep);
-
-                    if (step.Argument is DocString docString)
-                        FormatDocString(lines, docString, formatSettings,
-                            stepIndentLevel + formatSettings.DocStringIndentLevelWithinStep);
-                }
+            if (featureChild is IHasSteps hasSteps) 
+              FormatSteps(lines, formatSettings, indentLevel, hasSteps, gherkinDialect);
         }
+    }
+
+    private void FormatSteps(DocumentLinesEditBuffer lines, GherkinFormatSettings formatSettings, int indentLevel,
+      IHasSteps hasSteps, GherkinDialect gherkinDialect)
+    {
+      var previousKeyword = "";
+
+      foreach (var step in hasSteps.Steps)
+      {
+        var stepIndentLevel = indentLevel + formatSettings.StepIndentLevelWithinStepContainer;
+
+        var newKeyword = step.Keyword;
+
+        if (step is DeveroomGherkinStep { StepKeyword: StepKeyword.And or StepKeyword.But })
+        {
+          stepIndentLevel += formatSettings.AndStepIndentLevelWithinSteps;
+        }
+        else
+        {
+          if (step.Keyword == previousKeyword)
+          {
+            var andKeyword = GetAndKeyword(gherkinDialect);
+            newKeyword = $"{andKeyword}";
+          }
+          else
+            previousKeyword = step.Keyword;
+        }
+
+
+        SetLine(lines, step, $"{GetIndent(formatSettings, stepIndentLevel)}{newKeyword}{step.Text}");
+
+        switch (step.Argument)
+        {
+          case DataTable dataTable:
+            FormatTable(lines, dataTable, formatSettings, stepIndentLevel + formatSettings.DataTableIndentLevelWithinStep);
+            break;
+          case DocString docString:
+            FormatDocString(lines, docString, formatSettings, stepIndentLevel + formatSettings.DocStringIndentLevelWithinStep);
+            break;
+        }
+      }
+    }
+
+    private static string GetAndKeyword(GherkinDialect gherkinDialect)
+    {
+      return gherkinDialect.AndStepKeywords.First(keyword => keyword != GherkinDialect.AsteriskKeyword);
     }
 
     private void SetTagsAndLine(DocumentLinesEditBuffer lines, IHasLocation hasLocation, string indent)
