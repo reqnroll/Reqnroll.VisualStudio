@@ -2,9 +2,11 @@
 
 ## Improvements:
 
+* Update autoformatting to replace sequential equivalent keywords with the `And` keyword
+
 ## Bug fixes:
 
-*Contributors of this release (in alphabetical order):* 
+*Contributors of this release (in alphabetical order):* @jdb0123
 
 # v2024.8.234 - 2025-01-22
 

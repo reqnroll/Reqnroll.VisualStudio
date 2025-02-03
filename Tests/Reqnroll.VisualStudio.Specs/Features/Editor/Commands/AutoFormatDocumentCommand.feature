@@ -302,3 +302,34 @@ Scenario: Formatting of Descriptions and Comments are not changed
 
 		    Given I have entered 50 into the calculator
 		"""
+
+Rule: Auto format should replace repeated keywords with "And"
+
+Scenario: Repeating keywords are replaced with "And"
+
+	Given there is a Reqnroll project scope
+	And the following feature file in the editor
+		"""
+		Feature: Addition
+
+		Scenario: Add two numbers
+		    Given I have entered 50 into the calculator
+		    Given I have entered 70 into the calculator
+			When I add them
+			When I check the result
+			Then there should be no error
+			Then the result should be 120
+		"""
+	When I invoke the "Auto Format Document" command without waiting for the tag changes
+	Then the editor should be updated to
+		"""
+		Feature: Addition
+
+		Scenario: Add two numbers
+		    Given I have entered 50 into the calculator
+		    And I have entered 70 into the calculator
+		    When I add them
+		    And I check the result
+		    Then there should be no error
+		    And the result should be 120
+		"""
