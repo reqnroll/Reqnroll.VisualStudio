@@ -21,9 +21,8 @@ internal class DiscoveryInvoker
 
     public int CreateProjectHash(ProjectSettings projectSettings, ConfigSource testAssemblySource) =>
         projectSettings.GetHashCode() ^ testAssemblySource.GetHashCode();
-
-    public ConfigSource GetTestAssemblySource(ProjectSettings projectSettings) =>
-        projectSettings.IsReqnrollTestProject
+        public ConfigSource GetTestAssemblySource(ProjectSettings projectSettings) =>
+        projectSettings.IsReqnrollProject
             ? ConfigSource.TryGetConfigSource(projectSettings.OutputAssemblyPath, _fileSystem, _logger)
             : ConfigSource.CreateInvalid("The project is not detected to be a Reqnroll project, therefore some Reqnroll Visual Studio Extension features are disabled.");
 
@@ -70,7 +69,7 @@ internal class DiscoveryInvoker
 
         public IDiscovery AndProjectIsReqnrollProject()
         {
-            if (_projectSettings.IsReqnrollTestProject)
+            if (_projectSettings.IsReqnrollProject)
                 return this;
 
             _logger.LogVerbose("Non-Reqnroll test project");
