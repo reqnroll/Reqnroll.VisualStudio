@@ -7,7 +7,7 @@
 ## Bug fixes:
 
 *Contributors of this release (in alphabetical order):* @jdb0123
-
+* Bug Fix: Improved heuristics used to identify whether to display the 'FindStepDefinitionUsages' and 'FindUnusedStepDefinitionUsages' commands (#68)
 # v2024.8.234 - 2025-01-22
 
 ## Improvements:
