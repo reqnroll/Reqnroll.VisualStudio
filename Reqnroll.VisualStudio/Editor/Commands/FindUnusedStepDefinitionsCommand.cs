@@ -30,7 +30,7 @@
         {
             var status = base.QueryStatus(textView, commandKey);
 
-            var heuristicTest = textView.TextBuffer.CurrentSnapshot.GetText().Contains("Reqnroll") || textView.TextBuffer.CurrentSnapshot.GetText().Contains("SpecFlow");
+            var heuristicTest = FindStepDefinitionUsagesCommand.IsBufferContainsReqnrollBindingFileContent(textView.TextBuffer.CurrentSnapshot.GetText());
 
             if (status != DeveroomEditorCommandStatus.NotSupported)
                 // very basic heuristic: if the word "Reqnroll" or "SpecFlow" is in the content of the file, it might be a binding class
