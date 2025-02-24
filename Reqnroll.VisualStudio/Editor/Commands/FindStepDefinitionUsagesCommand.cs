@@ -31,7 +31,7 @@ public class FindStepDefinitionUsagesCommand : DeveroomEditorCommandBase, IDever
     {
         var status = base.QueryStatus(textView, commandKey);
 
-        var heuristicTest = textView.TextBuffer.CurrentSnapshot.GetText().Contains("Reqnroll") || textView.TextBuffer.CurrentSnapshot.GetText().Contains("SpecFlow");
+        var heuristicTest = IsBufferContainsReqnrollBindingFileContent(textView.TextBuffer.CurrentSnapshot.GetText());
         if (status != DeveroomEditorCommandStatus.NotSupported)
             // very basic heuristic: if the word "Reqnroll" (or "SpecFlow" for backwards compatibility) is in the content of the file, it might be a binding class
             status = heuristicTest
@@ -39,6 +39,19 @@ public class FindStepDefinitionUsagesCommand : DeveroomEditorCommandBase, IDever
                 : DeveroomEditorCommandStatus.NotSupported;
 
         return status;
+    }
+
+    // Fix for Reqnroll.VisualStudio #68 in which Reqnroll binding content is not recognized because the 'using Reqnoll;' has been moved to a global using file.
+    // This method re-used by the FindUnusedStepDefinitionsCommand
+    internal static bool IsBufferContainsReqnrollBindingFileContent(string buffer)
+    {
+        var keywords = new string[] {"Reqnroll",
+            "SpecFlow",
+            "Binding",
+            "Given",
+            "When",
+            "Then"};
+        return keywords.Any(k => buffer.Contains(k));
     }
 
     public override bool PreExec(IWpfTextView textView, DeveroomEditorCommandTargetKey commandKey,
@@ -62,7 +75,7 @@ public class FindStepDefinitionUsagesCommand : DeveroomEditorCommandBase, IDever
                 Logger.LogVerbose($"Find Step Definition Usages: PreExec: binding registry not available: {(bindingRegistry == null ? "null" : "invalid")}");
         }
 
-        if (project == null || !project.GetProjectSettings().IsReqnrollProject || bindingsNotYetLoaded )
+        if (project == null || !project.GetProjectSettings().IsReqnrollProject || bindingsNotYetLoaded)
         {
             IdeScope.Actions.ShowProblem(
                 "Unable to find step definition usages: the project is not detected to be a Reqnroll project or it is not initialized yet.");
