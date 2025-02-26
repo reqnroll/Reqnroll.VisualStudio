@@ -1,4 +1,4 @@
-#nullable disable
+﻿#nullable disable
 namespace Reqnroll.VisualStudio.Editor.Completions;
 
 public class DeveroomCompletionSource : DeveroomCompletionSourceBase
@@ -65,13 +65,30 @@ public class DeveroomCompletionSource : DeveroomCompletionSourceBase
     private List<Completion> GetStepCompletions(DeveroomGherkinStep step)
     {
         var discoveryService = _project.GetDiscoveryService();
-        var bindingRegistry = discoveryService.BindingRegistryCache.Value;
+        var featureFiles = _project.GetProjectFiles(".feature");
+        var configuration = _project.GetDeveroomConfiguration();
+        var stepDefinitions = discoveryService.BindingRegistryCache.Value.StepDefinitions;
 
-        var sampler = new StepDefinitionSampler();
-
-        return bindingRegistry.StepDefinitions
+        var steps = stepDefinitions
             .Where(sd => sd.IsValid && sd.StepDefinitionType == step.ScenarioBlock)
-            .Select(sd => new Completion(sampler.GetStepDefinitionSample(sd)))
+            .ToArray();
+
+        var stepDefinitionUsageFinder = new StepDefinitionUsageFinder(_ideScope);
+        var orderedSteps = stepDefinitionUsageFinder
+            .FindUsageCounts(steps, featureFiles, configuration)
+            .OrderByDescending(kvp => kvp.Value)
+            .ToList();
+
+        return orderedSteps
+            .Select((step, index) =>
+            {
+                var isTop5 = index < 5;
+                return new Completion(step.Key)
+                {
+                    DisplayText = isTop5 ? $"★ {step.Key}" : step.Key,
+                    Description = $"Step usage: {step.Value}"
+                };
+            })
             .ToList();
     }
 
@@ -133,19 +150,19 @@ public class DeveroomCompletionSource : DeveroomCompletionSourceBase
                         "Used to combine steps in a readable format");
                     break;
                 case TokenType.DocStringSeparator:
-                    AddCompletions(completions, new[] {"\"\"\"", "```"},
+                    AddCompletions(completions, new[] { "\"\"\"", "```" },
                         "Doc-string separator: Provides multi-line text parameter for the step");
                     break;
                 case TokenType.TableRow:
-                    AddCompletions(completions, new[] {"| "},
+                    AddCompletions(completions, new[] { "| " },
                         "Data table and examples table cell separator");
                     break;
                 case TokenType.Language:
-                    AddCompletions(completions, new[] {"#language: "},
+                    AddCompletions(completions, new[] { "#language: " },
                         "Specifies the language of the feature file");
                     break;
                 case TokenType.TagLine:
-                    AddCompletions(completions, new[] {"@tag1 "},
+                    AddCompletions(completions, new[] { "@tag1 " },
                         "Labels a scenario, a feature or an examples block");
                     break;
             }
