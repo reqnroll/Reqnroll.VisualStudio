@@ -21,6 +21,10 @@ body:
   attributes:
     label: Content of reqnroll.json (if present)
     placeholder: PLEASE COPY THE ENTIRE reqnroll.json
+    value: |
+    ```json
+    // content of reqnroll.json
+    ```
 - type: textarea
   attributes:
     label: Issue Description
