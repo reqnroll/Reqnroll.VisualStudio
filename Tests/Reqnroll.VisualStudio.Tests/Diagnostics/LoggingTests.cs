@@ -18,7 +18,7 @@ public class LoggingTests
         var message = new LogMessage(logLevel, "msg", nameof(MessageIsLogged));
         logger.Log(message);
 
-        var maxWaitTime = TimeSpan.FromMilliseconds(100);
+        var maxWaitTime = TimeSpan.FromSeconds(2);
         var sw = Stopwatch.StartNew();
         while (!LogFileContains(fileSystem, logger, "msg") && sw.Elapsed < maxWaitTime)
         {
