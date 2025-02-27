@@ -1,5 +1,7 @@
 namespace Reqnroll.VisualStudio.Tests.Discovery;
 
+
+
 public class ProjectBindingRegistryCacheTests
 {
     private readonly ITestOutputHelper _testOutputHelper;

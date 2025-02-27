@@ -1,5 +1,6 @@
 namespace Reqnroll.VisualStudio.Tests.Diagnostics;
 
+[Collection(NonParallelTestCollectionDefinition.Name)]
 public class LoggingTests
 {
     [Theory]
