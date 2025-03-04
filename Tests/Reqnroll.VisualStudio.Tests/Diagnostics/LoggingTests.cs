@@ -1,8 +1,9 @@
 namespace Reqnroll.VisualStudio.Tests.Diagnostics;
 
+[Collection(NonParallelTestCollectionDefinition.Name)]
 public class LoggingTests
 {
-    [SkippableTheory(Skip = "Flaky, see https://github.com/reqnroll/Reqnroll.VisualStudio/issues/40 @quarantine")]
+    [Theory]
     [InlineData(TraceLevel.Verbose)]
     [InlineData(TraceLevel.Info)]
     [InlineData(TraceLevel.Warning)]
@@ -18,16 +19,21 @@ public class LoggingTests
         var message = new LogMessage(logLevel, "msg", nameof(MessageIsLogged));
         logger.Log(message);
 
+        var maxWaitTime = TimeSpan.FromSeconds(2);
         var sw = Stopwatch.StartNew();
-        while (!fileSystem.File.ReadAllText(logger.LogFilePath).Contains("msg") &&
-               sw.Elapsed < TimeSpan.FromMilliseconds(10))
+        while (!LogFileContains(fileSystem, logger, "msg") && sw.Elapsed < maxWaitTime)
+        {
             Thread.Sleep(10);
+        }
 
         //assert
         fileSystem.File.Exists(logger.LogFilePath).Should().BeTrue("the log should be written quickly");
-        fileSystem.File.ReadAllText(logger.LogFilePath).Should().Contain(
+        string loggedText = fileSystem.File.ReadAllText(logger.LogFilePath);
+        loggedText.Should().Contain(
             $"{message.TimeStamp:yyyy-MM-ddTHH\\:mm\\:ss.fffzzz}, {message.Level}@{message.ManagedThreadId}, {message.CallerMethod}: {message.Message}");
     }
+
+    private static bool LogFileContains(MockFileSystemForVs fileSystem, AsynchronousFileLogger logger, string message) => fileSystem.File.Exists(logger.LogFilePath) && fileSystem.File.ReadAllText(logger.LogFilePath).Contains(message);
 
     private void Warmup(AsynchronousFileLogger logger, IFileSystemForVs fileSystem)
     {
