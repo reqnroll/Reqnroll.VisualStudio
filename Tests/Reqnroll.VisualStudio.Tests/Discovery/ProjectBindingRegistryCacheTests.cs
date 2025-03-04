@@ -76,7 +76,7 @@ public class ProjectBindingRegistryCacheTests
         var ideScope = new Mock<IIdeScope>(MockBehavior.Strict);
         var stubLogger = new StubLogger();
         var logger = new DeveroomCompositeLogger();
-       // logger.Add(new DeveroomXUnitLogger(_testOutputHelper));
+       
         logger.Add(stubLogger);
 
         ideScope.SetupGet(s => s.Logger).Returns(logger);
@@ -87,7 +87,7 @@ public class ProjectBindingRegistryCacheTests
         var oldVersions = new ConcurrentQueue<int>();
         var initialRegistry = new ProjectBindingRegistry(Array.Empty<ProjectStepDefinitionBinding>(), Array.Empty<ProjectHookBinding>(), 123456);
 
-        var timeout = TimeSpan.FromSeconds(60);
+        var timeout = TimeSpan.FromSeconds(20);
         using var cts = new CancellationTokenSource(timeout);
         int i = 0;
         var taskCreationOptions = TaskCreationOptions.LongRunning | TaskCreationOptions.DenyChildAttach |
