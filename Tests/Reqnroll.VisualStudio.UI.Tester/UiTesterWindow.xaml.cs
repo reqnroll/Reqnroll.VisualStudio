@@ -79,6 +79,13 @@ public partial class UiTesterWindow : Window
         dialog.ShowDialog();
     }
 
+    private void Test_UpgradeDialogRealChangelog(object sender, RoutedEventArgs e)
+    {
+        var viewModel = UpgradeDialogViewModel.GetDesignDataWithRealChangeLog();
+        var dialog = new WelcomeDialog(viewModel);
+        dialog.ShowDialog();
+    }
+
     private void Test_ProjectTemplateWizard(object sender, RoutedEventArgs e)
     {
         var viewModel = AddNewReqnrollProjectViewModel.DesignData;

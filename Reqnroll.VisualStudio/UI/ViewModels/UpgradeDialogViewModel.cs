@@ -39,6 +39,8 @@ public class UpgradeDialogViewModel : WizardViewModel
         * .NET Core Bindings: Unable to load BoDi.dll (temporary fix)
 
         """.Replace("$#", "#")); // # on a line start confuses compiler
+    public static UpgradeDialogViewModel GetDesignDataWithRealChangeLog() => 
+        new("1.0.99", File.ReadAllText("../../../../../CHANGELOG.md"));
 #endif
 
     public UpgradeDialogViewModel(string newVersion, string changeLog) : base("Close", "Welcome to Reqnroll",
