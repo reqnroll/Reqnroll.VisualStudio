@@ -76,7 +76,7 @@ public class ProjectBindingRegistryCacheTests
         var ideScope = new Mock<IIdeScope>(MockBehavior.Strict);
         var stubLogger = new StubLogger();
         var logger = new DeveroomCompositeLogger();
-        logger.Add(new DeveroomXUnitLogger(_testOutputHelper));
+       // logger.Add(new DeveroomXUnitLogger(_testOutputHelper));
         logger.Add(stubLogger);
 
         ideScope.SetupGet(s => s.Logger).Returns(logger);
