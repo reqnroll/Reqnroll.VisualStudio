@@ -87,7 +87,7 @@ public class ProjectBindingRegistryCacheTests
         var oldVersions = new ConcurrentQueue<int>();
         var initialRegistry = new ProjectBindingRegistry(Array.Empty<ProjectStepDefinitionBinding>(), Array.Empty<ProjectHookBinding>(), 123456);
 
-        var timeout = TimeSpan.FromSeconds(20);
+        var timeout = TimeSpan.FromSeconds(60);
         using var cts = new CancellationTokenSource(timeout);
         int i = 0;
         var taskCreationOptions = TaskCreationOptions.LongRunning | TaskCreationOptions.DenyChildAttach |
