@@ -69,15 +69,16 @@ public class ProjectBindingRegistryCacheTests
     }
 
     [Fact]
-    public void ParallelUpdate()
+    public async Task ParallelUpdate()
     {
         //arrange
         var start = DateTimeOffset.UtcNow;
         var ideScope = new Mock<IIdeScope>(MockBehavior.Strict);
         var stubLogger = new StubLogger();
-        var logger = new DeveroomCompositeLogger();
-        logger.Add(new DeveroomXUnitLogger(_testOutputHelper));
-        logger.Add(stubLogger);
+        var logger = new DeveroomCompositeLogger
+        {
+            stubLogger
+        };
 
         ideScope.SetupGet(s => s.Logger).Returns(logger);
         ideScope.Setup(s => s.CalculateSourceLocationTrackingPositions(It.IsAny<IEnumerable<SourceLocation>>()));
@@ -98,22 +99,23 @@ public class ProjectBindingRegistryCacheTests
         //act
         try
         {
-            Task.Factory.StartNew(async () => { await GetLatestInvoker(cts, projectBindingRegistryCache); }, cts.Token,
-                taskCreationOptions, TaskScheduler.Default);
+            await Task.Factory.StartNew(async () => { await GetLatestInvoker(cts, projectBindingRegistryCache); }, cts.Token,
+                 taskCreationOptions, TaskScheduler.Default);
 
             for (i = 0; i < 1000 && !cts.IsCancellationRequested; ++i)
             {
-                Task.Factory.StartNew(
+                await Task.Factory.StartNew(
                     async () => { await InvokeUpdate(cts, projectBindingRegistryCache, oldVersions, stubLogger); },
                     cts.Token, taskCreationOptions, TaskScheduler.Default);
 #pragma warning disable VSTHRD002
-                Task.Delay(i / 10, cts.Token).Wait(cts.Token);
+                await Task.Delay(i / 10, cts.Token).WaitAsync(cts.Token);
 #pragma warning restore
             }
         }
-        catch (OperationCanceledException e)
+        catch (OperationCanceledException)
         {
-            _testOutputHelper.WriteLine(e.ToString());
+            // The OperationCanceledException is expected as we do a cancellation in InvokeUpdate in the test class
+            _testOutputHelper.WriteLine($"canceled test with task {_updateTaskCount}");
         }
 
         //assert
@@ -121,14 +123,22 @@ public class ProjectBindingRegistryCacheTests
         _testOutputHelper.WriteLine($"i:{i} cancelled:{cts.IsCancellationRequested} elapsed:{elapsed}");
 #pragma warning disable VSTHRD002
         var cachedRegistry = projectBindingRegistryCache.Value;
-        var registry = projectBindingRegistryCache.GetLatest().Result;
+        try
+        {
+            var registry = await projectBindingRegistryCache.GetLatest();
 #pragma warning restore
-        registry.Version.Should()
-            .BeGreaterOrEqualTo(cachedRegistry.Version, "cached value is modified at the end of the update");
-        registry.Version.Should().BeGreaterOrEqualTo(initialRegistry.Version + _updateTaskCount);
+            registry.Version.Should()
+                .BeGreaterOrEqualTo(cachedRegistry.Version, "cached value is modified at the end of the update");
+            registry.Version.Should().BeGreaterOrEqualTo(initialRegistry.Version + _updateTaskCount);
 
-        oldVersions.Count.Should().BeGreaterOrEqualTo(_updateTaskCount);
-        oldVersions.Should().BeInAscendingOrder();
+            oldVersions.Count.Should().BeGreaterOrEqualTo(_updateTaskCount);
+            oldVersions.Should().BeInAscendingOrder();
+        }
+        catch (Exception)
+        {
+            _testOutputHelper.WriteLine("Full logs: \n" + string.Join("\n", stubLogger.Logs));
+            throw;
+        }
     }
 
     private static void WarmUpThreads(DeveroomCompositeLogger logger, TimeSpan timeout)
