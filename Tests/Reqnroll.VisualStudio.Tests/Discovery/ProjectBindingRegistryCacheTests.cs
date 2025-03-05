@@ -75,9 +75,10 @@ public class ProjectBindingRegistryCacheTests
         var start = DateTimeOffset.UtcNow;
         var ideScope = new Mock<IIdeScope>(MockBehavior.Strict);
         var stubLogger = new StubLogger();
-        var logger = new DeveroomCompositeLogger();
-
-        logger.Add(stubLogger);
+        var logger = new DeveroomCompositeLogger
+        {
+            stubLogger
+        };
 
         ideScope.SetupGet(s => s.Logger).Returns(logger);
         ideScope.Setup(s => s.CalculateSourceLocationTrackingPositions(It.IsAny<IEnumerable<SourceLocation>>()));
@@ -124,8 +125,6 @@ public class ProjectBindingRegistryCacheTests
         var cachedRegistry = projectBindingRegistryCache.Value;
         try
         {
-
-
             var registry = await projectBindingRegistryCache.GetLatest();
 #pragma warning restore
             registry.Version.Should()
