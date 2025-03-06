@@ -1,6 +1,5 @@
 namespace Reqnroll.VisualStudio.Tests.Discovery;
 
-[Collection(NonParallelTestCollectionDefinition.Name)]
 public class ProjectBindingRegistryCacheTests
 {
     private readonly ITestOutputHelper _testOutputHelper;
