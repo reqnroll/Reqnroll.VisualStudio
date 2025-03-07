@@ -11,7 +11,7 @@
     <ProjectItem SubType="" TargetFileName="reqnroll.json" ReplaceParameters="true">reqnroll.json</ProjectItem>
   </TemplateContent>
   <WizardExtension>
-    <Assembly>Reqnroll.VisualStudio.Package, Version=2024.9.0.0, Culture=neutral, PublicKeyToken=611ce36403091019</Assembly>
+    <Assembly>Reqnroll.VisualStudio.Package, Version=2025.1.0.0, Culture=neutral, PublicKeyToken=611ce36403091019</Assembly>
     <FullClassName>Reqnroll.VisualStudio.Wizards.VsReqnrollConfigFileWizard</FullClassName>
   </WizardExtension>
 </VSTemplate>
