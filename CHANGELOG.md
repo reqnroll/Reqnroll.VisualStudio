@@ -2,15 +2,15 @@
 
 ## Improvements:
 
-* Update autoformatting to replace sequential equivalent keywords with the `And` keyword
+* Autoformatting replaces repeating `Given`/`When`/`Then` keywords with `And` keyword  (#58)
 
 ## Bug fixes:
 
-* Bug Fix: Improved heuristics used to identify whether to display the 'FindStepDefinitionUsages' and 'FindUnusedStepDefinitionUsages' commands (#68)
+* Fix: The 'FindStepDefinitionUsages' and 'FindUnusedStepDefinitionUsages' commands were not displayed in certain cases (e.g. when implicit usings were enabled) (#68)
 
-*Contributors of this release (in alphabetical order):* @jdb0123, @clrudolphi
+*Contributors of this release (in alphabetical order):* @304NotModified, @clrudolphi, @gasparnagy, @jdb0123
 
-# v2024.8.234 - 2025-01-22
+# v2024.8.234 - 2025-01-221
 
 ## Improvements:
 
