@@ -11,7 +11,7 @@
     <ProjectItem SubType="" TargetFileName="$fileinputname$.feature" ReplaceParameters="true">Feature1.feature</ProjectItem>
   </TemplateContent>
   <WizardExtension>
-    <Assembly>Reqnroll.VisualStudio.Package, Version=2025.1.0.0, Culture=neutral, PublicKeyToken=611ce36403091019</Assembly>
+    <Assembly>Reqnroll.VisualStudio.Package, Version=2025.2.0.0, Culture=neutral, PublicKeyToken=611ce36403091019</Assembly>
     <FullClassName>Reqnroll.VisualStudio.Wizards.VsFeatureFileWizard</FullClassName>
   </WizardExtension>
 </VSTemplate>

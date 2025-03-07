@@ -2,6 +2,14 @@
 
 ## Improvements:
 
+## Bug fixes:
+
+*Contributors of this release (in alphabetical order):* 
+
+# v2025.1.256 - 2025-03-07
+
+## Improvements:
+
 * Autoformatting replaces repeating `Given`/`When`/`Then` keywords with `And` keyword  (#58)
 
 ## Bug fixes:
