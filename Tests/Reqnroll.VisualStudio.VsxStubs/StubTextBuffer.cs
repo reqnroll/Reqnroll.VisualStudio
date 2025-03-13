@@ -1,20 +1,29 @@
+
+using NSubstitute;
+
 namespace Reqnroll.VisualStudio.VsxStubs;
 
-public class StubTextBuffer : Mock<ITextBuffer2>, ITextBuffer2
+public class StubTextBuffer : ITextBuffer2
 {
-    public StubTextBuffer(IProjectScope projectScope) : base(MockBehavior.Strict)
+    public ITextBuffer2 Substitute { get; }
+
+    public StubTextBuffer(IProjectScope projectScope)
     {
+        Substitute = NSubstitute.Substitute.For<ITextBuffer2>();
+
         Properties = new PropertyCollection();
         Properties.AddProperty(typeof(IProjectScope), projectScope);
         CurrentStubSnapshot = StubTextSnapshot.FromTextBuffer(this);
 
-        var contentType = new Mock<IContentType>(MockBehavior.Strict);
-        contentType.Setup(t => t.IsOfType(VsContentTypes.FeatureFile)).Returns(true);
-        StubContentType = new StubContentType(Array.Empty<IContentType>(), VsContentTypes.FeatureFile,
-            VsContentTypes.FeatureFile);
+        var contentType = NSubstitute.Substitute.For<IContentType>();
+        contentType.IsOfType(VsContentTypes.FeatureFile).Returns(true);
+        StubContentType = new StubContentType(Array.Empty<IContentType>(), VsContentTypes.FeatureFile, VsContentTypes.FeatureFile);
 
-        SetupAdd(tb => tb.ChangedOnBackground += It.IsAny<EventHandler<TextContentChangedEventArgs>>());
-        SetupRemove(tb => tb.ChangedOnBackground -= It.IsAny<EventHandler<TextContentChangedEventArgs>>());
+        Substitute.When(tb => tb.ChangedOnBackground += Arg.Any<EventHandler<TextContentChangedEventArgs>>())
+                   .Do(info => _changedOnBackground += info.Arg<EventHandler<TextContentChangedEventArgs>>());
+
+        Substitute.When(tb => tb.ChangedOnBackground -= Arg.Any<EventHandler<TextContentChangedEventArgs>>())
+                   .Do(info => _changedOnBackground -= info.Arg<EventHandler<TextContentChangedEventArgs>>());
     }
 
     public StubContentType StubContentType { get; set; }
@@ -71,16 +80,8 @@ public class StubTextBuffer : Mock<ITextBuffer2>, ITextBuffer2
 
     public event EventHandler<TextContentChangedEventArgs>? ChangedOnBackground
     {
-        add
-        {
-            Object.ChangedOnBackground += value;
-            _changedOnBackground += value;
-        }
-        remove
-        {
-            Object.ChangedOnBackground -= value;
-            _changedOnBackground -= value;
-        }
+        add => Substitute.ChangedOnBackground += value;
+        remove => Substitute.ChangedOnBackground -= value;
     }
 
     private event EventHandler<TextContentChangedEventArgs>? _changedOnBackground;
@@ -96,7 +97,6 @@ public class StubTextBuffer : Mock<ITextBuffer2>, ITextBuffer2
         var beforeSnapshot = CurrentStubSnapshot;
         var afterSnapshot = CurrentStubSnapshot = CurrentStubSnapshot.CreateNext();
 
-        //VS invokes this event multiple times for some reason
         _changedOnBackground?.Invoke(this,
             new TextContentChangedEventArgs(beforeSnapshot, afterSnapshot, EditOptions.None, string.Empty));
         _changedOnBackground?.Invoke(this,

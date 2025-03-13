@@ -3,7 +3,6 @@ global using ApprovalTests.Namers;
 global using ApprovalTests.Reporters;
 global using Castle.DynamicProxy.Generators.Emitters;
 global using FluentAssertions;
-global using Moq;
 global using ReqnrollConnector;
 global using ReqnrollConnector.Discovery;
 global using ReqnrollConnector.Logging;

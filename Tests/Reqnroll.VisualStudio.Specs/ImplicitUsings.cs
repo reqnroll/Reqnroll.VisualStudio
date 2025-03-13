@@ -6,7 +6,6 @@ global using Microsoft.VisualStudio.Text;
 global using Microsoft.VisualStudio.Text.Editor;
 global using Microsoft.VisualStudio.Text.Tagging;
 global using Microsoft.VisualStudio.Threading;
-global using Moq;
 global using Reqnroll.SampleProjectGenerator;
 global using Reqnroll.VisualStudio.Common;
 global using Reqnroll.VisualStudio.Configuration;

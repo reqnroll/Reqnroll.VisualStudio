@@ -31,13 +31,14 @@ internal class DiscoveryInvoker
     {
         var stopwatch = new Stopwatch();
         stopwatch.Start();
+        var projectSettings = _projectScope.GetProjectSettings();
         var bindingRegistry = new Discovery(_logger, _errorListServices, this)
-            .WhenProjectSettingsIsInitialized(_projectScope.GetProjectSettings())
-            .AndProjectIsReqnrollProject()
-            .AndBindingSourceIsValid()
-            .AndDiscoveryProviderSucceed(_discoveryResultProvider)
-            .ThenImportBindings(_projectScope.ProjectName)
-            .AndCreateBindingRegistry(_monitoringService);
+                              .WhenProjectSettingsIsInitialized(projectSettings)
+                              .AndProjectIsReqnrollProject()
+                              .AndBindingSourceIsValid()
+                              .AndDiscoveryProviderSucceed(_discoveryResultProvider)
+                              .ThenImportBindings(_projectScope.ProjectName)
+                              .AndCreateBindingRegistry(_monitoringService);
         stopwatch.Stop();
 
         _logger.LogVerbose(

@@ -1,13 +1,14 @@
 #nullable disable
 using System;
 using System.Linq;
+using NSubstitute;
 
 namespace Reqnroll.VisualStudio.Tests.Analytics;
 
 public class AnalyticsTransmitterTests
 {
-    private Mock<IAnalyticsTransmitterSink> analyticsTransmitterSinkStub;
-    private Mock<IEnableAnalyticsChecker> enableAnalyticsCheckerStub;
+    private IAnalyticsTransmitterSink analyticsTransmitterSinkStub;
+    private IEnableAnalyticsChecker enableAnalyticsCheckerStub;
 
     [Fact]
     public void Should_NotSendAnalytics_WhenDisabled()
@@ -15,10 +16,10 @@ public class AnalyticsTransmitterTests
         var sut = CreateSut();
         GivenAnalyticsDisabled();
 
-        sut.TransmitEvent(It.IsAny<IAnalyticsEvent>());
+        sut.TransmitEvent(Substitute.For<IAnalyticsEvent>());
 
-        enableAnalyticsCheckerStub.Verify(analyticsChecker => analyticsChecker.IsEnabled(), Times.Once);
-        analyticsTransmitterSinkStub.Verify(sink => sink.TransmitEvent(It.IsAny<IAnalyticsEvent>()), Times.Never);
+        enableAnalyticsCheckerStub.Received(1).IsEnabled();
+        analyticsTransmitterSinkStub.DidNotReceive().TransmitEvent(Arg.Any<IAnalyticsEvent>());
     }
 
     [Fact]
@@ -27,10 +28,10 @@ public class AnalyticsTransmitterTests
         var sut = CreateSut();
         GivenAnalyticsEnabled();
 
-        sut.TransmitEvent(It.IsAny<IAnalyticsEvent>());
+        sut.TransmitEvent(Substitute.For<IAnalyticsEvent>());
 
-        enableAnalyticsCheckerStub.Verify(analyticsChecker => analyticsChecker.IsEnabled(), Times.Once);
-        analyticsTransmitterSinkStub.Verify(sink => sink.TransmitEvent(It.IsAny<IAnalyticsEvent>()), Times.Once);
+        enableAnalyticsCheckerStub.Received(1).IsEnabled();
+        analyticsTransmitterSinkStub.Received(1).TransmitEvent(Arg.Any<IAnalyticsEvent>());
     }
 
     [Theory]
@@ -44,24 +45,23 @@ public class AnalyticsTransmitterTests
 
         sut.TransmitEvent(new GenericEvent(eventName));
 
-        analyticsTransmitterSinkStub.Verify(
-            sink => sink.TransmitEvent(It.Is<IAnalyticsEvent>(ae => ae.EventName == eventName)), Times.Once);
+        analyticsTransmitterSinkStub.Received(1).TransmitEvent(Arg.Is<IAnalyticsEvent>(ae => ae.EventName == eventName));
     }
 
     private void GivenAnalyticsEnabled()
     {
-        enableAnalyticsCheckerStub.Setup(analyticsChecker => analyticsChecker.IsEnabled()).Returns(true);
+        enableAnalyticsCheckerStub.IsEnabled().Returns(true);
     }
 
     private void GivenAnalyticsDisabled()
     {
-        enableAnalyticsCheckerStub.Setup(analyticsChecker => analyticsChecker.IsEnabled()).Returns(false);
+        enableAnalyticsCheckerStub.IsEnabled().Returns(false);
     }
 
     public AnalyticsTransmitter CreateSut()
     {
-        analyticsTransmitterSinkStub = new Mock<IAnalyticsTransmitterSink>();
-        enableAnalyticsCheckerStub = new Mock<IEnableAnalyticsChecker>();
-        return new AnalyticsTransmitter(analyticsTransmitterSinkStub.Object, enableAnalyticsCheckerStub.Object);
+        analyticsTransmitterSinkStub = Substitute.For<IAnalyticsTransmitterSink>();
+        enableAnalyticsCheckerStub = Substitute.For<IEnableAnalyticsChecker>();
+        return new AnalyticsTransmitter(analyticsTransmitterSinkStub, enableAnalyticsCheckerStub);
     }
 }

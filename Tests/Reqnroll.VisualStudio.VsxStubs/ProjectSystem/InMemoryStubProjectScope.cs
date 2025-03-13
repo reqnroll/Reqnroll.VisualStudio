@@ -1,6 +1,14 @@
+using NSubstitute;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using Reqnroll.VisualStudio.VsxStubs.ProjectSystem;
+
 namespace Reqnroll.VisualStudio.VsxStubs.ProjectSystem;
 
-public class InMemoryStubProjectScope : Mock<IProjectScope>, IProjectScope
+public class InMemoryStubProjectScope : IProjectScope
 {
     public List<NuGetPackageReference> PackageReferencesList = new();
 

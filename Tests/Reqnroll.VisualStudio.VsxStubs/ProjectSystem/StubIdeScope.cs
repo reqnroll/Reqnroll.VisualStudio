@@ -1,15 +1,21 @@
+using NSubstitute;
+
 namespace Reqnroll.VisualStudio.VsxStubs.ProjectSystem;
 
-public class StubIdeScope : Mock<IIdeScope>, IIdeScope, IDisposable
+public class StubIdeScope : IIdeScope, IDisposable
 {
-    public StubIdeScope(ITestOutputHelper testOutputHelper) : base(MockBehavior.Strict)
+    public IIdeScope Substitute { get; }
+
+    public StubIdeScope(ITestOutputHelper testOutputHelper)
     {
+        Substitute = NSubstitute.Substitute.For<IIdeScope>();
+
         AnalyticsTransmitter = new StubAnalyticsTransmitter(Logger);
         MonitoringService =
             new MonitoringService(
                 AnalyticsTransmitter,
-                new Mock<IWelcomeService>().Object,
-                new Mock<ITelemetryConfigurationHolder>().Object);
+                NSubstitute.Substitute.For<IWelcomeService>(),
+                NSubstitute.Substitute.For<ITelemetryConfigurationHolder>());
 
         CompositeLogger.Add(new DeveroomXUnitLogger(testOutputHelper));
         CompositeLogger.Add(StubLogger);
@@ -19,7 +25,7 @@ public class StubIdeScope : Mock<IIdeScope>, IIdeScope, IDisposable
         SetupFireAndForget();
         SetupFireAndForgetOnBackgroundThread();
 
-        CurrentTextView = new Mock<IWpfTextView>(MockBehavior.Strict).Object;
+        CurrentTextView = NSubstitute.Substitute.For<IWpfTextView>();
         TextViewFactory = (inputText, filePath) =>
             BasicTextViewFactory(inputText, filePath, VsContentTypes.FeatureFile);
         BackgroundTaskTokenSource = new DebuggableCancellationTokenSource(TimeSpan.FromSeconds(20));
@@ -64,7 +70,7 @@ public class StubIdeScope : Mock<IIdeScope>, IIdeScope, IDisposable
     public IFileSystemForVs FileSystem { get; private set; } = new MockFileSystemForVs();
 
     public IDeveroomOutputPaneServices DeveroomOutputPaneServices { get; } =
-        new Mock<IDeveroomOutputPaneServices>().Object;
+        NSubstitute.Substitute.For<IDeveroomOutputPaneServices>();
 
     public IDeveroomErrorListServices DeveroomErrorListServices => StubErrorListServices;
     public IMonitoringService MonitoringService { get; }
@@ -84,7 +90,7 @@ public class StubIdeScope : Mock<IIdeScope>, IIdeScope, IDisposable
             return true;
         }
 
-        textBuffer = new Mock<ITextBuffer>(MockBehavior.Strict).Object;
+        textBuffer = NSubstitute.Substitute.For<ITextBuffer>();
         return false;
     }
 
@@ -96,19 +102,19 @@ public class StubIdeScope : Mock<IIdeScope>, IIdeScope, IDisposable
 
     public void FireAndForget(Func<Task> action, Action<Exception> onException,
         [CallerMemberName] string callerName = "???")
-        => Object.FireAndForget(action, onException, callerName);
+        => Substitute.FireAndForget(action, onException, callerName);
 
     private void SetupFireAndForget()
     {
-        Setup(s => s.FireAndForget(It.IsAny<Func<Task>>(), It.IsAny<Action<Exception>>(),
-                It.IsAny<string>()))
-            .Callback((Func<Task> action, Action<Exception> onException, string _) =>
+        Substitute.When(s => s.FireAndForget(Arg.Any<Func<Task>>(), Arg.Any<Action<Exception>>(), Arg.Any<string>()))
+            .Do(callInfo =>
             {
+                var action = callInfo.Arg<Func<Task>>();
+                var onException = callInfo.Arg<Action<Exception>>();
+
                 try
                 {
-#pragma warning disable VSTHRD002
                     action().Wait();
-#pragma warning restore
                 }
                 catch (Exception e)
                 {
@@ -119,7 +125,7 @@ public class StubIdeScope : Mock<IIdeScope>, IIdeScope, IDisposable
     }
 
     public void FireAndForgetOnBackgroundThread(Func<CancellationToken, Task> action, string callerName = "???") =>
-        Object.FireAndForgetOnBackgroundThread(action, callerName);
+        Substitute.FireAndForgetOnBackgroundThread(action, callerName);
 
     private volatile int _taskId;
 
@@ -136,9 +142,13 @@ public class StubIdeScope : Mock<IIdeScope>, IIdeScope, IDisposable
 
     private void SetupFireAndForgetOnBackgroundThread()
     {
-        Setup(s => s.FireAndForgetOnBackgroundThread(It.IsAny<Func<CancellationToken, Task>>(), It.IsAny<string>()))
-            .Callback((Func<CancellationToken, Task> action, string callerName) =>
-                BackGroundTasks = BackGroundTasks.Add($"{Interlocked.Increment(ref _taskId)}:{callerName}", action));
+        Substitute.When(s => s.FireAndForgetOnBackgroundThread(Arg.Any<Func<CancellationToken, Task>>(), Arg.Any<string>()))
+            .Do(callInfo =>
+            {
+                var action = callInfo.Arg<Func<CancellationToken, Task>>();
+                var callerName = callInfo.Arg<string>();
+                BackGroundTasks = BackGroundTasks.Add($"{Interlocked.Increment(ref _taskId)}:{callerName}", action);
+            });
     }
 
     public Task RunOnUiThread(Action action)
@@ -158,7 +168,7 @@ public class StubIdeScope : Mock<IIdeScope>, IIdeScope, IDisposable
 
     public IProjectScope[] GetProjectsWithFeatureFiles() => ProjectScopes.ToArray();
 
-    public IDisposable CreateUndoContext(string undoLabel) => new Mock<IDisposable>().Object;
+    public IDisposable CreateUndoContext(string undoLabel) => NSubstitute.Substitute.For<IDisposable>();
 
     public IWpfTextView CreateTextView(TestText inputText, string filePath)
     {

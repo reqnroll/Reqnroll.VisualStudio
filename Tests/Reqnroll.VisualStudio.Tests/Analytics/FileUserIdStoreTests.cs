@@ -1,10 +1,12 @@
 #nullable disable
+using NSubstitute;
+
 namespace Reqnroll.VisualStudio.Tests.Analytics;
 
 public class FileUserIdStoreTests
 {
     private const string UserId = "491ed5c0-9f25-4c27-941a-19b17cc81c87";
-    private Mock<IFileSystemForVs> fileSystemStub;
+    private IFileSystemForVs fileSystemStub;
 
     [Fact]
     public void Should_GetUserIdFromFile_WhenFileExists()
@@ -29,30 +31,29 @@ public class FileUserIdStoreTests
         string userId = sut.GetUserId();
 
         userId.Should().NotBeEmpty();
-        fileSystemStub.Verify(fileSystem => fileSystem.File.WriteAllText(FileUserIdStore.UserIdFilePath, userId),
-            Times.Once());
+        fileSystemStub.File.Received(1).WriteAllText(FileUserIdStore.UserIdFilePath, userId);
     }
 
 
     public FileUserIdStore CreateSut()
     {
-        fileSystemStub = new Mock<IFileSystemForVs>();
-        return new FileUserIdStore(fileSystemStub.Object);
+        fileSystemStub = Substitute.For<IFileSystemForVs>();
+        return new FileUserIdStore(fileSystemStub);
     }
 
     private void GivenFileExists()
     {
-        fileSystemStub.Setup(fileSystem => fileSystem.File.Exists(It.IsAny<string>())).Returns(true);
+        fileSystemStub.File.Exists(Arg.Any<string>()).Returns(true);
     }
 
     private void GivenFileDoesNotExists()
     {
-        fileSystemStub.Setup(fileSystem => fileSystem.File.Exists(It.IsAny<string>())).Returns(false);
-        fileSystemStub.Setup(fileSystem => fileSystem.Directory.Exists(It.IsAny<string>())).Returns(true);
+        fileSystemStub.File.Exists(Arg.Any<string>()).Returns(false);
+        fileSystemStub.Directory.Exists(Arg.Any<string>()).Returns(true);
     }
 
     private void GivenUserIdStringInFile(string userIdString)
     {
-        fileSystemStub.Setup(fileSystem => fileSystem.File.ReadAllText(It.IsAny<string>())).Returns(userIdString);
+        fileSystemStub.File.ReadAllText(Arg.Any<string>()).Returns(userIdString);
     }
 }

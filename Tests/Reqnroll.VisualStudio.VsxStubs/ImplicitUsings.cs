@@ -9,7 +9,6 @@ global using Microsoft.VisualStudio.Text.Tagging;
 global using Microsoft.VisualStudio.TextManager.Interop;
 global using Microsoft.VisualStudio.Threading;
 global using Microsoft.VisualStudio.Utilities;
-global using Moq;
 global using Reqnroll.VisualStudio.Analytics;
 global using Reqnroll.VisualStudio.Annotations;
 global using Reqnroll.VisualStudio.Common;

@@ -1,3 +1,5 @@
+using NSubstitute;
+
 namespace Reqnroll.VisualStudio.Tests.Editor.Services;
 
 public class GherkinDocumentFormatterTests
@@ -9,13 +11,13 @@ public class GherkinDocumentFormatterTests
     private DeveroomGherkinDocument ParseGherkinDocument(TestText inputText)
     {
         var parser = new DeveroomGherkinParser(new ReqnrollGherkinDialectProvider("en-US"),
-            new Mock<IMonitoringService>().Object);
+            Substitute.For<IMonitoringService>());
         parser.ParseAndCollectErrors(inputText.ToString(), new DeveroomNullLogger(), out var gherkinDocument, out _);
         return gherkinDocument;
     }
 
     private DocumentLinesEditBuffer GetLinesBuffer(TestText inputText) =>
-        new(new Mock<ITextSnapshot>().Object, 0, inputText.Lines.Length - 1,
+        new(Substitute.For<ITextSnapshot>(), 0, inputText.Lines.Length - 1,
             inputText.Lines);
 
     [Fact]

@@ -1,3 +1,5 @@
+using NSubstitute;
+
 namespace Reqnroll.VisualStudio.Tests.Editor.Commands;
 
 public class CommentUncommentCommandTests
@@ -7,7 +9,7 @@ public class CommentUncommentCommandTests
 
     public CommentUncommentCommandTests(ITestOutputHelper testOutputHelper)
     {
-        _taggerProvider = new Mock<IDeveroomTaggerProvider>().Object;
+        _taggerProvider = Substitute.For<IDeveroomTaggerProvider>();
         _ideScope = new StubIdeScope(testOutputHelper);
     }
 
