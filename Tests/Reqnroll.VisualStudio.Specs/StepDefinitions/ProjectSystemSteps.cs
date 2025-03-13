@@ -1,8 +1,4 @@
 #nullable disable
-using Microsoft.Build.Framework.XamlTypes;
-using NSubstitute;
-using ScenarioBlock = Reqnroll.VisualStudio.Editor.Services.Parser.ScenarioBlock;
-
 namespace Reqnroll.VisualStudio.Specs.StepDefinitions;
 
 [Binding]
@@ -22,12 +18,8 @@ public class ProjectSystemSteps : Steps
     public ProjectSystemSteps(StubIdeScope stubIdeScope)
     {
         _ideScope = stubIdeScope;
-        _ideScope.Substitute.When(m => m 
-                 .FireAndForgetOnBackgroundThread(Arg.Any<Func<CancellationToken, Task>>(), Arg.Any<string>()))
-                 .Do(callInfo =>
-                 {
-                     callInfo.Arg<Func<CancellationToken, Task>>()(_ideScope.BackgroundTaskTokenSource.Token);
-                 });
+
+        _ideScope.SetupFireAndForgetOnBackgroundThread((action, callerName) =>  action(_ideScope.BackgroundTaskTokenSource.Token));
     }
 
     private StubIdeActions ActionsMock => (StubIdeActions) _ideScope.Actions;

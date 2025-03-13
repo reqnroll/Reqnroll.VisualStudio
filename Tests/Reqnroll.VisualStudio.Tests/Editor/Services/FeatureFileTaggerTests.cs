@@ -247,7 +247,7 @@ public class FeatureFileTaggerTests
 
         discoveryService.Received().WeakBindingRegistryChanged -= Arg.Any<EventHandler<EventArgs>>();
         configurationProvider.Received().WeakConfigurationChanged -= Arg.Any<EventHandler<EventArgs>>();
-        sut.StubTextBuffer.Substitute.Received().ChangedOnBackground -= Arg.Any<EventHandler<TextContentChangedEventArgs>>();
+        sut.StubTextBuffer.Received().ChangedOnBackground -= Arg.Any<EventHandler<TextContentChangedEventArgs>>();
     }
 
     [Fact]

@@ -1,6 +1,4 @@
 #nullable disable
-using NSubstitute;
-
 namespace Reqnroll.VisualStudio.Specs.StepDefinitions;
 
 [Binding]
@@ -17,10 +15,8 @@ public class DeveroomSteps : Steps
     {
         _outputHelper = outputHelper;
         _stubIdeScope = stubIdeScope;
-        _stubIdeScope.Substitute.When(m => m 
-            .FireAndForgetOnBackgroundThread(Arg.Any<Func<CancellationToken, Task>>(), Arg.Any<string>()))
-            .Do(callInfo => FireAndForgetCallBack(callInfo.Arg<Func<CancellationToken, Task>>(), callInfo.Arg<string>()));
-
+        _stubIdeScope.SetupFireAndForgetOnBackgroundThread(FireAndForgetCallBack);
+        
         async void FireAndForgetCallBack(Func<CancellationToken, Task> action, string _)
         {
             try

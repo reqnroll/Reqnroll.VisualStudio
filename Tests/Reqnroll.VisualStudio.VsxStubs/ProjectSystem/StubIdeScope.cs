@@ -4,18 +4,18 @@ namespace Reqnroll.VisualStudio.VsxStubs.ProjectSystem;
 
 public class StubIdeScope : IIdeScope, IDisposable
 {
-    public IIdeScope Substitute { get; }
+    private readonly IIdeScope _substitute;
 
     public StubIdeScope(ITestOutputHelper testOutputHelper)
     {
-        Substitute = NSubstitute.Substitute.For<IIdeScope>();
+        _substitute = Substitute.For<IIdeScope>();
 
         AnalyticsTransmitter = new StubAnalyticsTransmitter(Logger);
         MonitoringService =
             new MonitoringService(
                 AnalyticsTransmitter,
-                NSubstitute.Substitute.For<IWelcomeService>(),
-                NSubstitute.Substitute.For<ITelemetryConfigurationHolder>());
+                Substitute.For<IWelcomeService>(),
+                Substitute.For<ITelemetryConfigurationHolder>());
 
         CompositeLogger.Add(new DeveroomXUnitLogger(testOutputHelper));
         CompositeLogger.Add(StubLogger);
@@ -23,9 +23,9 @@ public class StubIdeScope : IIdeScope, IDisposable
         VsxStubObjects.Initialize();
 
         SetupFireAndForget();
-        SetupFireAndForgetOnBackgroundThread();
+        SetupFireAndForgetOnBackgroundThread((action, callerName) => BackGroundTasks = BackGroundTasks.Add($"{Interlocked.Increment(ref _taskId)}:{callerName}", action));
 
-        CurrentTextView = NSubstitute.Substitute.For<IWpfTextView>();
+        CurrentTextView = Substitute.For<IWpfTextView>();
         TextViewFactory = (inputText, filePath) =>
             BasicTextViewFactory(inputText, filePath, VsContentTypes.FeatureFile);
         BackgroundTaskTokenSource = new DebuggableCancellationTokenSource(TimeSpan.FromSeconds(20));
@@ -70,7 +70,7 @@ public class StubIdeScope : IIdeScope, IDisposable
     public IFileSystemForVs FileSystem { get; private set; } = new MockFileSystemForVs();
 
     public IDeveroomOutputPaneServices DeveroomOutputPaneServices { get; } =
-        NSubstitute.Substitute.For<IDeveroomOutputPaneServices>();
+        Substitute.For<IDeveroomOutputPaneServices>();
 
     public IDeveroomErrorListServices DeveroomErrorListServices => StubErrorListServices;
     public IMonitoringService MonitoringService { get; }
@@ -90,7 +90,7 @@ public class StubIdeScope : IIdeScope, IDisposable
             return true;
         }
 
-        textBuffer = NSubstitute.Substitute.For<ITextBuffer>();
+        textBuffer = Substitute.For<ITextBuffer>();
         return false;
     }
 
@@ -102,11 +102,11 @@ public class StubIdeScope : IIdeScope, IDisposable
 
     public void FireAndForget(Func<Task> action, Action<Exception> onException,
         [CallerMemberName] string callerName = "???")
-        => Substitute.FireAndForget(action, onException, callerName);
+        => _substitute.FireAndForget(action, onException, callerName);
 
     private void SetupFireAndForget()
     {
-        Substitute.When(s => s.FireAndForget(Arg.Any<Func<Task>>(), Arg.Any<Action<Exception>>(), Arg.Any<string>()))
+        _substitute.When(s => s.FireAndForget(Arg.Any<Func<Task>>(), Arg.Any<Action<Exception>>(), Arg.Any<string>()))
             .Do(callInfo =>
             {
                 var action = callInfo.Arg<Func<Task>>();
@@ -125,7 +125,7 @@ public class StubIdeScope : IIdeScope, IDisposable
     }
 
     public void FireAndForgetOnBackgroundThread(Func<CancellationToken, Task> action, string callerName = "???") =>
-        Substitute.FireAndForgetOnBackgroundThread(action, callerName);
+        _substitute.FireAndForgetOnBackgroundThread(action, callerName);
 
     private volatile int _taskId;
 
@@ -140,14 +140,15 @@ public class StubIdeScope : IIdeScope, IDisposable
         return Task.WhenAll(allTasks);
     }
 
-    private void SetupFireAndForgetOnBackgroundThread()
+    public void SetupFireAndForgetOnBackgroundThread(Action<Func<CancellationToken, Task>, string> callback)
     {
-        Substitute.When(s => s.FireAndForgetOnBackgroundThread(Arg.Any<Func<CancellationToken, Task>>(), Arg.Any<string>()))
+        _substitute.When(s => s.FireAndForgetOnBackgroundThread(Arg.Any<Func<CancellationToken, Task>>(), Arg.Any<string>()))
             .Do(callInfo =>
             {
                 var action = callInfo.Arg<Func<CancellationToken, Task>>();
                 var callerName = callInfo.Arg<string>();
-                BackGroundTasks = BackGroundTasks.Add($"{Interlocked.Increment(ref _taskId)}:{callerName}", action);
+                callback(action, callerName);
+                
             });
     }
 
@@ -168,7 +169,7 @@ public class StubIdeScope : IIdeScope, IDisposable
 
     public IProjectScope[] GetProjectsWithFeatureFiles() => ProjectScopes.ToArray();
 
-    public IDisposable CreateUndoContext(string undoLabel) => NSubstitute.Substitute.For<IDisposable>();
+    public IDisposable CreateUndoContext(string undoLabel) => Substitute.For<IDisposable>();
 
     public IWpfTextView CreateTextView(TestText inputText, string filePath)
     {

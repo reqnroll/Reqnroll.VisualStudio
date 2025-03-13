@@ -5,11 +5,11 @@ namespace Reqnroll.VisualStudio.VsxStubs;
 
 public class StubTextBuffer : ITextBuffer2
 {
-    public ITextBuffer2 Substitute { get; }
+    private readonly ITextBuffer2 _substitute;
 
     public StubTextBuffer(IProjectScope projectScope)
     {
-        Substitute = NSubstitute.Substitute.For<ITextBuffer2>();
+        _substitute = Substitute.For<ITextBuffer2>();
 
         Properties = new PropertyCollection();
         Properties.AddProperty(typeof(IProjectScope), projectScope);
@@ -19,10 +19,10 @@ public class StubTextBuffer : ITextBuffer2
         contentType.IsOfType(VsContentTypes.FeatureFile).Returns(true);
         StubContentType = new StubContentType(Array.Empty<IContentType>(), VsContentTypes.FeatureFile, VsContentTypes.FeatureFile);
 
-        Substitute.When(tb => tb.ChangedOnBackground += Arg.Any<EventHandler<TextContentChangedEventArgs>>())
+        _substitute.When(tb => tb.ChangedOnBackground += Arg.Any<EventHandler<TextContentChangedEventArgs>>())
                    .Do(info => _changedOnBackground += info.Arg<EventHandler<TextContentChangedEventArgs>>());
 
-        Substitute.When(tb => tb.ChangedOnBackground -= Arg.Any<EventHandler<TextContentChangedEventArgs>>())
+        _substitute.When(tb => tb.ChangedOnBackground -= Arg.Any<EventHandler<TextContentChangedEventArgs>>())
                    .Do(info => _changedOnBackground -= info.Arg<EventHandler<TextContentChangedEventArgs>>());
     }
 
@@ -80,8 +80,8 @@ public class StubTextBuffer : ITextBuffer2
 
     public event EventHandler<TextContentChangedEventArgs>? ChangedOnBackground
     {
-        add => Substitute.ChangedOnBackground += value;
-        remove => Substitute.ChangedOnBackground -= value;
+        add => _substitute.ChangedOnBackground += value;
+        remove => _substitute.ChangedOnBackground -= value;
     }
 
     private event EventHandler<TextContentChangedEventArgs>? _changedOnBackground;

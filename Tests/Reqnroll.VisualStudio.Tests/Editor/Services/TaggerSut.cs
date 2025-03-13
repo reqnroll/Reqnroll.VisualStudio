@@ -38,7 +38,7 @@ public record TaggerSut
             .AndDoes(callInfo => { projectScope.IdeScope.Logger.Trace($"Parsing {callInfo.Arg<ITextSnapshot>()}"); });
 
         projectScope.StubIdeScope.TextViewFactory =
-            (inputText, filePath) => new StubWpfTextView(new StubTextBuffer(projectScope));
+            (inputText, filePath) => new StubWpfTextView(Substitute.ForPartsOf<StubTextBuffer>(projectScope));
 
         var sut = new TaggerSut(projectScope, projectScope.StubIdeScope, tagParser);
 
@@ -71,7 +71,7 @@ public record TaggerSut
         IdeScope.CreateTextView(new TestText(Array.Empty<string>()),
             IdeScope.ProjectScopes.Select(p => p.ProjectFullName).DefaultIfEmpty(string.Empty).Single());
 
-        var tagger = (T) taggerProvider.CreateTagger<DeveroomTag>(IdeScope.CurrentTextView.TextBuffer);
+        var tagger = (T)taggerProvider.CreateTagger<DeveroomTag>(IdeScope.CurrentTextView.TextBuffer);
 
         return tagger;
     }
@@ -115,13 +115,13 @@ public record TaggerSut
         tagParserMock.Parse(Arg.Any<ITextSnapshot>())
             .Returns(callInfo => realParser.Parse(callInfo.Arg<ITextSnapshot>()));
 
-        return this with {TagParser = tagParserMock};
+        return this with { TagParser = tagParserMock };
     }
 
     public TaggerSut WithoutProject()
     {
         var voidProjectScope = new VoidProjectScope(IdeScope);
-        var withoutProject = this with {ProjectScope = voidProjectScope};
+        var withoutProject = this with { ProjectScope = voidProjectScope };
         IdeScope.ProjectScopes.Clear();
         IdeScope.TextViewFactory =
             (inputText, filePath) => new StubWpfTextView(new StubTextBuffer(voidProjectScope));

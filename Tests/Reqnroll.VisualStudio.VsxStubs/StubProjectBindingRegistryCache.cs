@@ -5,14 +5,14 @@ namespace Reqnroll.VisualStudio.VsxStubs;
 
 public class StubProjectBindingRegistryCache : IProjectBindingRegistryCache
 {
-    public IProjectBindingRegistryCache Substitute { get; }
+    private readonly IProjectBindingRegistryCache _substitute;
 
     public StubProjectBindingRegistryCache()
     {
-        Substitute = NSubstitute.Substitute.For<IProjectBindingRegistryCache>();
+        _substitute = Substitute.For<IProjectBindingRegistryCache>();
 
         Value = ProjectBindingRegistry.Invalid;
-        Substitute.Update(Arg.Any<Func<ProjectBindingRegistry, Task<ProjectBindingRegistry>>>())
+        _substitute.Update(Arg.Any<Func<ProjectBindingRegistry, Task<ProjectBindingRegistry>>>())
                    .Returns(async callInfo =>
                    {
                        var updateFunc = callInfo.Arg<Func<ProjectBindingRegistry, Task<ProjectBindingRegistry>>>();
@@ -26,7 +26,7 @@ public class StubProjectBindingRegistryCache : IProjectBindingRegistryCache
         => Update(registry => Task.FromResult(updateFunc(registry)));
 
     public Task Update(Func<ProjectBindingRegistry, Task<ProjectBindingRegistry>> updateTask)
-        => Substitute.Update(updateTask);
+        => _substitute.Update(updateTask);
 
     public ProjectBindingRegistry Value { get; private set; }
     public Task<ProjectBindingRegistry> GetLatest() => throw new NotImplementedException();
