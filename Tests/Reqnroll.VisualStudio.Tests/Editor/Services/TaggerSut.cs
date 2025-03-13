@@ -112,10 +112,8 @@ public record TaggerSut
         var realParser = new DeveroomTagParser(IdeScope.Logger, IdeScope.MonitoringService,
             deveroomConfigurationProvider, discoveryService);
         var tagParserMock = Substitute.For<IDeveroomTagParser>();
-        tagParserMock.Parse(
-                Arg.Any<ITextSnapshot>())
-            .Returns(callInfo
-                => realParser.Parse(callInfo.Arg<ITextSnapshot>()));
+        tagParserMock.Parse(Arg.Any<ITextSnapshot>())
+            .Returns(callInfo => realParser.Parse(callInfo.Arg<ITextSnapshot>()));
 
         return this with {TagParser = tagParserMock};
     }
