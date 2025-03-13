@@ -18,7 +18,6 @@ public class ProjectSystemSteps : Steps
     public ProjectSystemSteps(StubIdeScope stubIdeScope)
     {
         _ideScope = stubIdeScope;
-
         _ideScope.SetupFireAndForgetOnBackgroundThread((action, callerName) =>  action(_ideScope.BackgroundTaskTokenSource.Token));
     }
 

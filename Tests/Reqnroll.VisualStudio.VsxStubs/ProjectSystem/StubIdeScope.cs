@@ -146,7 +146,6 @@ public class StubIdeScope : IIdeScope, IDisposable
                 var action = callInfo.Arg<Func<CancellationToken, Task>>();
                 var callerName = callInfo.Arg<string>();
                 callback(action, callerName);
-                
             });
     }
 
