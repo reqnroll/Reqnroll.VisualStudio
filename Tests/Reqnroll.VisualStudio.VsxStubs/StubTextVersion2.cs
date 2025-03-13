@@ -1,5 +1,3 @@
-using NSubstitute;
-
 namespace Reqnroll.VisualStudio.VsxStubs;
 
 public record StubTextVersion2(

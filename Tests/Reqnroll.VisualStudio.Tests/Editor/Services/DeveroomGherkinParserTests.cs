@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using NSubstitute;
 
 namespace Reqnroll.VisualStudio.Tests.Editor.Services;
 

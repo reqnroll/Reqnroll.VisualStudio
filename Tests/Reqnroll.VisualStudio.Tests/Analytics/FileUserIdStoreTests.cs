@@ -1,6 +1,4 @@
 #nullable disable
-using NSubstitute;
-
 namespace Reqnroll.VisualStudio.Tests.Analytics;
 
 public class FileUserIdStoreTests

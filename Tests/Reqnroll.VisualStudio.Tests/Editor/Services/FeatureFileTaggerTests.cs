@@ -1,5 +1,3 @@
-using NSubstitute;
-
 namespace Reqnroll.VisualStudio.Tests.Editor.Services;
 
 public class FeatureFileTaggerTests

@@ -1,6 +1,3 @@
-
-using NSubstitute;
-
 namespace Reqnroll.VisualStudio.VsxStubs;
 
 public class StubTextBuffer : ITextBuffer2

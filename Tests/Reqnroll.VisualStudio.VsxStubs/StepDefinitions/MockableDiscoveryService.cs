@@ -1,5 +1,4 @@
 using Gherkin.CucumberMessages.Types;
-using NSubstitute;
 using Newtonsoft.Json;
 
 namespace Reqnroll.VisualStudio.VsxStubs.StepDefinitions;

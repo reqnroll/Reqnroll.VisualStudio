@@ -1,6 +1,4 @@
 #nullable enable
-using NSubstitute;
-
 namespace Reqnroll.VisualStudio.VsxStubs;
 
 public class StubProjectBindingRegistryCache : IProjectBindingRegistryCache

@@ -1,5 +1,3 @@
-using NSubstitute;
-
 namespace Reqnroll.VisualStudio.VsxStubs.ProjectSystem;
 
 public class StubIdeScope : IIdeScope, IDisposable
