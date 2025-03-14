@@ -12,7 +12,7 @@ public class StubTextBuffer : ITextBuffer2
         Properties.AddProperty(typeof(IProjectScope), projectScope);
         CurrentStubSnapshot = StubTextSnapshot.FromTextBuffer(this);
 
-        var contentType = NSubstitute.Substitute.For<IContentType>();
+        var contentType = Substitute.For<IContentType>();
         contentType.IsOfType(VsContentTypes.FeatureFile).Returns(true);
         StubContentType = new StubContentType(Array.Empty<IContentType>(), VsContentTypes.FeatureFile, VsContentTypes.FeatureFile);
 

@@ -109,7 +109,6 @@ public class StubIdeScope : IIdeScope, IDisposable
             {
                 var action = callInfo.Arg<Func<Task>>();
                 var onException = callInfo.Arg<Action<Exception>>();
-
                 try
                 {
                     action().Wait();
