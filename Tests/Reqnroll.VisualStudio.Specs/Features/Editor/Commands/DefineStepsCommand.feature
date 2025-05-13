@@ -149,7 +149,7 @@ Scenario: DefineSteps command properly escapes empty brackets when using Regex e
 		Feature: Scenario using empty brackets
 		
 		Scenario: Client has a simple basket
-			When I use (parenthesis), {curly braces}, \ backslash, and/or . period
+			When I use (parenthesis), {curly braces}, \ backslash, / forwardslash, or . period
 		"""
 	And the reqnroll.json configuration file contains
 		"""
@@ -161,5 +161,5 @@ Scenario: DefineSteps command properly escapes empty brackets when using Regex e
 	When I invoke the "Define Steps" command
 	Then the define steps dialog should be opened with the following step definition skeletons
 		| type | expression |
-		| When | I use \\(parenthesis\), \\{curly braces}, \\\ backslash, and/or \\. period |
+		| When | I use \\(parenthesis\), \\{curly braces}, \\\ backslash, \/ forwardslash, or \\. period |
 
