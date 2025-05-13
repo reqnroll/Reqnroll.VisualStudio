@@ -23,7 +23,10 @@ public class RegexStepDefinitionSkeletonProvider : DeveroomStepDefinitionSkeleto
         return result.ToString();
     }
 
-    private static string EscapeRegex(string text) => Regex.Escape(text).Replace("\"", "\"\"").Replace("\\ ", " ");
+    private static string EscapeRegex(string text) => Regex.Escape(text)
+        .Replace("\"", "\"\"")
+        .Replace("\\ ", " ")
+        .Replace("/", @"\/");
 
     protected override IStepTextAnalyzer CreateStepTextAnalyzer() => new RegexExpressionStepTextAnalyzer();
 }
