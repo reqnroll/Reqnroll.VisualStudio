@@ -32,10 +32,19 @@ public class ReqnrollProjectWizard : IDeveroomWizard
 
         _monitoringService.MonitorProjectTemplateWizardCompleted(viewModel.DotNetFramework, viewModel.UnitTestFramework,
             viewModel.FluentAssertionsIncluded);
-        var packageReferencesToInclude = _newProjectMetaDataProvider.DependenciesOf(viewModel.UnitTestFramework);
+
+        var dependencies = _newProjectMetaDataProvider.DependenciesOf(viewModel.UnitTestFramework);
+        var keys = new List<string>() { "Reqnroll_Lib", "TestFramework_Lib", "Adapter_Lib" };
         // Add custom parameters.
+        foreach(string k in keys)
+        {
+            var package = dependencies[k];
+            var name = package.name;
+            var version = package.version;
+            wizardRunParameters.ReplacementsDictionary.Add($"${k}$",$"<PackageReference Include=\"{name}\" Version=\"{version}\" />");
+        }
+
         wizardRunParameters.ReplacementsDictionary.Add("$dotnetframework$", viewModel.DotNetFramework);
-        wizardRunParameters.ReplacementsDictionary.Add("$unittestframework$", packageReferencesToInclude);
         wizardRunParameters.ReplacementsDictionary.Add("$fluentassertionsincluded$",
             viewModel.FluentAssertionsIncluded.ToString(CultureInfo.InvariantCulture));
 

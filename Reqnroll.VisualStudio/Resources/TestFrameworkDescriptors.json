@@ -1,14 +1,53 @@
 {
   "xUnit": {
     "description": "Use xUnit v2 test executor with Reqnroll",
-    "dependencies": "<PackageReference Include=\"Reqnroll.xUnit\" Version=\"3.0.0\" />\n<PackageReference Include=\"xunit\" Version=\"2.8.1\" />\n<PackageReference Include=\"xunit.runner.visualstudio\" Version=\"2.8.1\" />"
+    "dependencies": {
+      "Reqnroll_Lib": {
+        "name": "Reqnroll.xUnit",
+        "version": "2.4.1"
+      },
+      "TestFramework_Lib": {
+        "name": "xunit",
+        "version": "2.8.1"
+      },
+      "Adapter_Lib": {
+        "name": "xunit.runner.visualstudio",
+        "version": "2.8.1"
+      }
+    }
   },
   "MsTest": {
     "description": "Use MsTest v3 test executor with Reqnroll",
-    "dependencies": "<PackageReference Include=\"Reqnroll.MsTest\" Version=\"3.0.0\" />\n<PackageReference Include=\"MSTest.TestAdapter\" Version=\"3.4.3\" />\n<PackageReference Include=\"MSTest.TestFramework\" Version=\"3.4.3\" />"
+    "dependencies": {
+      "Reqnroll_Lib": {
+        "name": "Reqnroll.MsTest",
+        "version": "2.4.1"
+      },
+      "TestFramework_Lib": {
+        "name": "MSTest.TestFramework",
+        "version": "3.4.3"
+      },
+      "Adapter_Lib": {
+        "name": "MSTest.TestAdapter",
+        "version": "3.4.3"
+      }
+    }
   },
   "NUnit": {
     "description": "Use NUnit v3 test executor with Reqnroll",
-    "dependencies": "<PackageReference Include=\"Reqnroll.NUnit\" Version=\"2.2.1\" />\n<PackageReference Include=\"nunit\" Version=\"3.14.0\" />\n<PackageReference Include=\"NUnit3TestAdapter\" Version=\"4.5.0\" />"
+    "dependencies": {
+      "Reqnroll_Lib": {
+        "name": "Reqnroll.NUnit",
+        "version": "2.4.1"
+      },
+      "TestFramework_Lib": {
+        "name": "nunit",
+        "version": "3.14.0"
+      },
+      "Adapter_Lib": {
+        "name": "NUnit3TestAdapter",
+        "version": "4.5.0"
+      }
+    }
   }
 }

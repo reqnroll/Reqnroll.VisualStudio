@@ -3,9 +3,10 @@ namespace Reqnroll.VisualStudio.Wizards.Infrastructure;
 public interface INewProjectMetaDataProvider
 {
     IEnumerable<string> TestFrameworks { get; }
-    string DependenciesOf(string testFramework);
+    IDictionary<string, NugetPackageDescriptor> DependenciesOf(string testFramework);
 }
-public record TestFrameworkInfoModel(string description, string dependencies);
+public record NugetPackageDescriptor(string name, string version);
+public record TestFrameworkInfoModel(string description, Dictionary<string, NugetPackageDescriptor> dependencies);
 
 [Export(typeof(INewProjectMetaDataProvider))]
 public class NewProjectMetaDataProvider : INewProjectMetaDataProvider
@@ -58,10 +59,10 @@ public class NewProjectMetaDataProvider : INewProjectMetaDataProvider
         }
     }
 
-    public string DependenciesOf(string testFramework)
+    public IDictionary<string, NugetPackageDescriptor> DependenciesOf(string testFramework)
     {
         var descriptors = _resolvedTestFrameworkDescriptors.Value;
-        return descriptors[testFramework].dependencies.Replace("\\n", Environment.NewLine);
+        return descriptors[testFramework].dependencies;
     }
 
     private Dictionary<string, TestFrameworkInfoModel> FinishRetrievalOfTestFrameworkDescriptors()
