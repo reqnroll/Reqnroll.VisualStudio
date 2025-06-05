@@ -1,0 +1,14 @@
+{
+  "xUnit": {
+    "description": "Use xUnit v2 test executor with Reqnroll",
+    "dependencies": "<PackageReference Include=\"Reqnroll.xUnit\" Version=\"3.0.0\" />\n<PackageReference Include=\"xunit\" Version=\"2.8.1\" />\n<PackageReference Include=\"xunit.runner.visualstudio\" Version=\"2.8.1\" />"
+  },
+  "MsTest": {
+    "description": "Use MsTest v3 test executor with Reqnroll",
+    "dependencies": "<PackageReference Include=\"Reqnroll.MsTest\" Version=\"3.0.0\" />\n<PackageReference Include=\"MSTest.TestAdapter\" Version=\"3.4.3\" />\n<PackageReference Include=\"MSTest.TestFramework\" Version=\"3.4.3\" />"
+  },
+  "NUnit": {
+    "description": "Use NUnit v3 test executor with Reqnroll",
+    "dependencies": "<PackageReference Include=\"Reqnroll.NUnit\" Version=\"2.2.1\" />\n<PackageReference Include=\"nunit\" Version=\"3.14.0\" />\n<PackageReference Include=\"NUnit3TestAdapter\" Version=\"4.5.0\" />"
+  }
+}

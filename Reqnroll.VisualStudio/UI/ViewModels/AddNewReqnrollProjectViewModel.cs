@@ -6,6 +6,11 @@ public class AddNewReqnrollProjectViewModel : INotifyPropertyChanged
     private const string MsTest = "MsTest";
     private const string Net8 = "net8.0";
 
+    public AddNewReqnrollProjectViewModel() { }
+    public AddNewReqnrollProjectViewModel(IEnumerable<string> testFrameworkNames)
+    {
+        TestFrameworks = new (testFrameworkNames);
+    }
 #if DEBUG
     public static AddNewReqnrollProjectViewModel DesignData = new()
     {

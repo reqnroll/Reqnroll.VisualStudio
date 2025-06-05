@@ -9,7 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\TestFrameworkDescriptors.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Include="Analytics\InstrumentationKey.txt" />
+    <EmbeddedResource Include="Resources\TestFrameworkDescriptors.json" />
   </ItemGroup>
 
   <ItemGroup>
