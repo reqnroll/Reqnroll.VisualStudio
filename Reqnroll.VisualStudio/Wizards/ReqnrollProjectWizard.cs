@@ -34,7 +34,7 @@ public class ReqnrollProjectWizard : IDeveroomWizard
             viewModel.FluentAssertionsIncluded);
 
         var dependencies = _newProjectMetaDataProvider.DependenciesOf(viewModel.UnitTestFramework);
-        var keys = new List<string>() { "Reqnroll_Lib", "TestFramework_Lib", "Adapter_Lib" };
+        var keys = new List<string>() { "reqnrolllib", "testframeworklib", "adapterlib" };
         // Add custom parameters.
         foreach(string k in keys)
         {
