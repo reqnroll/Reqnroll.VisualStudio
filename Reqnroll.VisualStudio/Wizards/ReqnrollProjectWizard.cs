@@ -33,21 +33,39 @@ public class ReqnrollProjectWizard : IDeveroomWizard
         _monitoringService.MonitorProjectTemplateWizardCompleted(viewModel.DotNetFramework, viewModel.UnitTestFramework,
             viewModel.FluentAssertionsIncluded);
 
+        int packageIndex = 0;
+
+        // insert set of replacement variables for the SDK package
+        AddPackageToReplacementDictionary(wizardRunParameters, "Microsoft.NET.Test.Sdk", "17.10.0", packageIndex);
+
         var dependencies = _newProjectMetaDataProvider.DependenciesOf(viewModel.UnitTestFramework);
-        var keys = new List<string>() { "reqnrolllib", "testframeworklib", "adapterlib" };
-        // Add custom parameters.
-        foreach(string k in keys)
+
+        foreach (var package in dependencies)
         {
-            var package = dependencies[k];
+            packageIndex++;
             var name = package.name;
             var version = package.version;
-            wizardRunParameters.ReplacementsDictionary.Add($"${k}$",$"<PackageReference Include=\"{name}\" Version=\"{version}\" />");
+            AddPackageToReplacementDictionary(wizardRunParameters, name, version, packageIndex);
         }
+
+        if (viewModel.FluentAssertionsIncluded)
+            AddPackageToReplacementDictionary(wizardRunParameters, "FluentAssertions", "6.12.0", packageIndex+1);
 
         wizardRunParameters.ReplacementsDictionary.Add("$dotnetframework$", viewModel.DotNetFramework);
         wizardRunParameters.ReplacementsDictionary.Add("$fluentassertionsincluded$",
             viewModel.FluentAssertionsIncluded.ToString(CultureInfo.InvariantCulture));
 
         return true;
+
+        static void AddPackageToReplacementDictionary(WizardRunParameters wizardRunParameters, string name, string version, int packageIndex)
+        {
+            string packagename = "packagerefname";
+            string packageversion = "packagerefversion";
+            string packagehasvalue = "packagerefhasvalue";
+
+            wizardRunParameters.ReplacementsDictionary.Add($"${packagehasvalue}{packageIndex}$", true.ToString(CultureInfo.InvariantCulture));
+            wizardRunParameters.ReplacementsDictionary.Add($"${packagename}{packageIndex}$", name);
+            wizardRunParameters.ReplacementsDictionary.Add($"${packageversion}{packageIndex}$", version);
+        }
     }
 }

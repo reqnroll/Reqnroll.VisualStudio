@@ -3,22 +3,22 @@ namespace Reqnroll.VisualStudio.Wizards.Infrastructure;
 public interface INewProjectMetaDataProvider
 {
     IEnumerable<string> TestFrameworks { get; }
-    IDictionary<string, NugetPackageDescriptor> DependenciesOf(string testFramework);
+    IEnumerable<NugetPackageDescriptor> DependenciesOf(string testFramework);
 }
 public record NugetPackageDescriptor(string name, string version);
-public record TestFrameworkInfoModel(string description, Dictionary<string, NugetPackageDescriptor> dependencies);
+public record TestFrameworkInfoModel(string description, IEnumerable<NugetPackageDescriptor> dependencies);
 
 [Export(typeof(INewProjectMetaDataProvider))]
 public class NewProjectMetaDataProvider : INewProjectMetaDataProvider
 {
-    private Dictionary<string, TestFrameworkInfoModel> _testFrameworkDescriptors = new();
+    private Dictionary<string, TestFrameworkInfoModel> _fallbackTestFrameworkDescriptors = new();
     private Task<Dictionary<string, TestFrameworkInfoModel>> _httpTask;
     private Lazy<Dictionary<string, TestFrameworkInfoModel>> _resolvedTestFrameworkDescriptors;
 
     [ImportingConstructor]
     public NewProjectMetaDataProvider()
     {
-        // read static metadata from a resource file, deserialize the resulting json, storing it in the _testFrameworkDescriptors field
+        // read static metadata from a resource file, deserialize the resulting json, storing it in the _fallbackTestFrameworkDescriptors field
         var resourceName = "Reqnroll.VisualStudio.Resources.TestFrameworkDescriptors.json";
         using (var stream = typeof(NewProjectMetaDataProvider).Assembly.GetManifestResourceStream(resourceName))
         using (var reader = new StreamReader(stream))
@@ -26,7 +26,7 @@ public class NewProjectMetaDataProvider : INewProjectMetaDataProvider
             var json = reader.ReadToEnd();
             var data = JsonSerialization.DeserializeObject<Dictionary<string, TestFrameworkInfoModel>>(json);
             if (data != null)
-                _testFrameworkDescriptors = data;
+                _fallbackTestFrameworkDescriptors = data;
         }
 
         // launch a task to read metadata from http resource and deserialize the resulting json, save the Task to a field
@@ -59,7 +59,7 @@ public class NewProjectMetaDataProvider : INewProjectMetaDataProvider
         }
     }
 
-    public IDictionary<string, NugetPackageDescriptor> DependenciesOf(string testFramework)
+    public IEnumerable<NugetPackageDescriptor> DependenciesOf(string testFramework)
     {
         var descriptors = _resolvedTestFrameworkDescriptors.Value;
         return descriptors[testFramework].dependencies;
@@ -69,20 +69,21 @@ public class NewProjectMetaDataProvider : INewProjectMetaDataProvider
     {
         // Wait for the HTTP task to complete
         if (_httpTask == null)
-            return _testFrameworkDescriptors;
+            return _fallbackTestFrameworkDescriptors;
 
         try
         {
             var result = _httpTask.GetAwaiter().GetResult();
             if (result != null)
             {
-                _testFrameworkDescriptors = result;
+                return result;
             }
         }
         catch
         {
-            // Ignore exceptions, keep existing _testFrameworkDescriptors
+            // Ignore exceptions, keep existing _fallbackTestFrameworkDescriptors
         }
-        return _testFrameworkDescriptors;
+        // If we've gotten to this point, the http end point returned no result or failed. So, we fall back.
+        return _fallbackTestFrameworkDescriptors;
     }
 }

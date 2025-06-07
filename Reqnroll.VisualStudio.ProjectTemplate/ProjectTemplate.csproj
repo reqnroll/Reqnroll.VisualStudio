@@ -6,12 +6,17 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
-    $reqnrolllib$
-    $testframeworklib$
-    $adapterlib$$if$ ('$fluentassertionsincluded$' == 'True')
-    <PackageReference Include="FluentAssertions" Version="6.12.0" />$endif$
+  <ItemGroup>$if$ ('$packagerefhasvalue0$' == 'True')
+    <PackageReference Include="$packagerefname0$" Version="$packagerefversion0$" />$endif$$if$ ('$packagerefhasvalue1$' == 'True')
+    <PackageReference Include="$packagerefname1$" Version="$packagerefversion1$" />$endif$$if$ ('$packagerefhasvalue2$' == 'True')
+    <PackageReference Include="$packagerefname2$" Version="$packagerefversion2$" />$endif$$if$ ('$packagerefhasvalue3$' == 'True')
+    <PackageReference Include="$packagerefname3$" Version="$packagerefversion3$" />$endif$$if$ ('$packagerefhasvalue4$' == 'True')
+    <PackageReference Include="$packagerefname4$" Version="$packagerefversion4$" />$endif$$if$ ('$packagerefhasvalue5$' == 'True')
+    <PackageReference Include="$packagerefname5$" Version="$packagerefversion5$" />$endif$$if$ ('$packagerefhasvalue6$' == 'True')
+    <PackageReference Include="$packagerefname6$" Version="$packagerefversion6$" />$endif$$if$ ('$packagerefhasvalue7$' == 'True')
+    <PackageReference Include="$packagerefname7$" Version="$packagerefversion7$" />$endif$$if$ ('$packagerefhasvalue8$' == 'True')
+    <PackageReference Include="$packagerefname8$" Version="$packagerefversion8$" />$endif$$if$ ('$packagerefhasvalue9$' == 'True')
+    <PackageReference Include="$packagerefname9$" Version="$packagerefversion9$" />$endif$
   </ItemGroup>
 
   <ItemGroup>
