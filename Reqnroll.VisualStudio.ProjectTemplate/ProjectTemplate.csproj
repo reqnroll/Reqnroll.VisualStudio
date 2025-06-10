@@ -20,6 +20,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    $foo$
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Drivers\" />
     <Folder Include="Support\" />
   </ItemGroup>

@@ -59,13 +59,27 @@ public class ReqnrollProjectWizard : IDeveroomWizard
 
         static void AddPackageToReplacementDictionary(WizardRunParameters wizardRunParameters, string name, string version, int packageIndex)
         {
-            string packagename = "packagerefname";
-            string packageversion = "packagerefversion";
-            string packagehasvalue = "packagerefhasvalue";
+            var refText = $"<PackageReference Include=\"{name}\" Version=\"{version}\" />";
+            const string key = "$foo$";
+            if (wizardRunParameters.ReplacementsDictionary.TryGetValue(key, out string existingValue))
+            {
+                wizardRunParameters.ReplacementsDictionary[key] =
+                    existingValue +
+                    "\r\n    " +
+                    refText;
+            }
+            else
+            {
+                wizardRunParameters.ReplacementsDictionary.Add(key, refText);
+            }
 
-            wizardRunParameters.ReplacementsDictionary.Add($"${packagehasvalue}{packageIndex}$", true.ToString(CultureInfo.InvariantCulture));
-            wizardRunParameters.ReplacementsDictionary.Add($"${packagename}{packageIndex}$", name);
-            wizardRunParameters.ReplacementsDictionary.Add($"${packageversion}{packageIndex}$", version);
+            //string packagename = "packagerefname";
+            //string packageversion = "packagerefversion";
+            //string packagehasvalue = "packagerefhasvalue";
+
+            //wizardRunParameters.ReplacementsDictionary.Add($"${packagehasvalue}{packageIndex}$", true.ToString(CultureInfo.InvariantCulture));
+            //wizardRunParameters.ReplacementsDictionary.Add($"${packagename}{packageIndex}$", name);
+            //wizardRunParameters.ReplacementsDictionary.Add($"${packageversion}{packageIndex}$", version);
         }
     }
 }
