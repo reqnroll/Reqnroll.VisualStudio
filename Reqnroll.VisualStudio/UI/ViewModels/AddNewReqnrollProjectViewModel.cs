@@ -1,26 +1,55 @@
 #nullable disable
+using Newtonsoft.Json.Linq;
+using Reqnroll.VisualStudio.Wizards.Infrastructure;
+
 namespace Reqnroll.VisualStudio.UI.ViewModels;
 
 public class AddNewReqnrollProjectViewModel : INotifyPropertyChanged
 {
     private const string MsTest = "MsTest";
-    private const string Net8 = "net8.0";
+    private const string Net8Tag = "net8.0";
+    private const string Net8Label = ".NET 8.0";
+    private IDictionary<string, string> DotNetFrameworkLabelToTagMap = new Dictionary<string, string>();
+    private IDictionary<string, FrameworkInfo> TestFrameworkMetaData;
 
     public AddNewReqnrollProjectViewModel() { }
-    public AddNewReqnrollProjectViewModel(IEnumerable<string> testFrameworkNames)
+    public AddNewReqnrollProjectViewModel(INewProjectMetaDataProvider metaDataProvider)
     {
-        TestFrameworks = new (testFrameworkNames);
+        metaDataProvider.RetrieveNewProjectMetaData(
+            (NewProjectMetaData md) =>
+            {
+                DotNetFrameworkLabelToTagMap = md.DotNetFrameworkNameToTagMap;
+                DotNetFrameworks = new(md.DotNetFrameworks);
+                DotNetFramework = md.DotNetFrameworkDefault;
+                TestFrameworks = new(md.TestFrameworks);
+                UnitTestFramework = md.TestFrameworkDefault;
+                TestFrameworkMetaData = md.TestFrameworkMetaData;
+            });
     }
 #if DEBUG
     public static AddNewReqnrollProjectViewModel DesignData = new()
     {
-        DotNetFramework = Net8,
+        DotNetFramework = Net8Label,
         UnitTestFramework = MsTest,
         FluentAssertionsIncluded = false
     };
 #endif
-    private string _dotNetFramework = Net8;
 
+
+    // The tag value of the currently selected .NET framework (ie, "net8.0")
+    public string DotNetFrameworkTag
+    {
+        get
+        {
+            return DotNetFrameworkLabelToTagMap.Count > 0 ? DotNetFrameworkLabelToTagMap[DotNetFramework] : Net8Tag;
+        }
+    }
+    private string _dotNetFramework = Net8Label;
+    private string _unitTestFramework = MsTest;
+
+    #region XAML Bound Properties
+
+    // The currently selected DotNetFramework label (ie, ".NET 8.0")
     public string DotNetFramework
     {
         get => _dotNetFramework;
@@ -30,13 +59,53 @@ public class AddNewReqnrollProjectViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(TestFrameworks));
         }
     }
+    // The list of .NET Frameworks that appear in the combobox for selection by the user
+    public ObservableCollection<string> DotNetFrameworks { get; set; } = new(new List<string> { ".NET Framework 4.8.1", ".NET 8.0" });
 
-    public string UnitTestFramework { get; set; } = MsTest;
+    // The currently selected Unit Test Framework (ie, "xUnit")
+    public string UnitTestFramework
+    {
+        get => _unitTestFramework;
+        set
+        {
+            _unitTestFramework = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(UnitTestFrameworkDescription));
+            OnPropertyChanged(nameof(UnitTestFrameworkUrl));
+        }
+    }
+
+    // The list of available Unit Test Framework that appear in a combobox for selection by the user
+    public ObservableCollection<string> TestFrameworks { get; set; } = new(new List<string> { "MSTest", "NUnit", "xUnit" });
+
+    // A line of text describing the currently selected Unit Test Framework (bound to a Textbox)
+    public string UnitTestFrameworkDescription
+    {
+        get
+        {
+            if (TestFrameworkMetaData.TryGetValue(_unitTestFramework, out var frameworkInfo))
+                return frameworkInfo.Description;
+            return "";
+        }
+    }
+
+    // URL to the home page of the currently selected Unit Test Framework (bound to a TextBox)
+    public string UnitTestFrameworkUrl
+    {
+        get
+        {
+            if (TestFrameworkMetaData.TryGetValue(_unitTestFramework, out var frameworkInfo))
+                return frameworkInfo.Url;
+            return "";
+        }
+    }
+
     // FluentAssertions suggestion is temporarily hidden from the UI as it is not free for commercial use anymore. 
     // See https://xceed.com/fluent-assertions-faq/
     // Maybe we could consider suggesting https://github.com/shouldly/shouldly instead.
     public bool FluentAssertionsIncluded { get; set; } = false;
-    public ObservableCollection<string> TestFrameworks { get; } = new(new List<string> { "MSTest", "NUnit", "xUnit" });
+
+    #endregion
 
     public event PropertyChangedEventHandler PropertyChanged;
 

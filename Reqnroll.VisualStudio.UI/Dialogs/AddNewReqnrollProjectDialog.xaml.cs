@@ -1,8 +1,9 @@
 #nullable disable
-using System.Windows;
-using System.Windows.Controls;
 using Microsoft.VisualStudio.Shell.Interop;
 using Reqnroll.VisualStudio.UI.ViewModels;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Navigation;
 
 namespace Reqnroll.VisualStudio.UI.Dialogs;
 
@@ -36,5 +37,10 @@ public partial class AddNewReqnrollProjectDialog
         if (e.AddedItems.Count == 0) return;
         ViewModel.UnitTestFramework = e.AddedItems[0].ToString();
         e.Handled = true;
+    }
+
+    private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+    {
+        OnLinkClicked(sender, e);
     }
 }

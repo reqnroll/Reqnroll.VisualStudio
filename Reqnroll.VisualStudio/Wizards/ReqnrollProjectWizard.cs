@@ -1,7 +1,8 @@
+using Reqnroll.VisualStudio.ProjectSystem;
+using Reqnroll.VisualStudio.Wizards.Infrastructure;
 using System;
 using System.Globalization;
 using System.Linq;
-using Reqnroll.VisualStudio.Wizards.Infrastructure;
 
 namespace Reqnroll.VisualStudio.Wizards;
 
@@ -24,43 +25,38 @@ public class ReqnrollProjectWizard : IDeveroomWizard
     {
         _monitoringService.MonitorProjectTemplateWizardStarted();
 
-        var frameworkNames = _newProjectMetaDataProvider.TestFrameworks;
-
-        var viewModel = new AddNewReqnrollProjectViewModel(frameworkNames);
+        var viewModel = new AddNewReqnrollProjectViewModel(_newProjectMetaDataProvider);
         var dialogResult = _deveroomWindowManager.ShowDialog(viewModel);
         if (!dialogResult.HasValue || !dialogResult.Value) return false;
 
-        _monitoringService.MonitorProjectTemplateWizardCompleted(viewModel.DotNetFramework, viewModel.UnitTestFramework,
+        _monitoringService.MonitorProjectTemplateWizardCompleted(viewModel.DotNetFrameworkTag, viewModel.UnitTestFramework,
             viewModel.FluentAssertionsIncluded);
 
-        int packageIndex = 0;
-
         // insert set of replacement variables for the SDK package
-        AddPackageToReplacementDictionary(wizardRunParameters, "Microsoft.NET.Test.Sdk", "17.10.0", packageIndex);
+        AddPackageToReplacementDictionary(wizardRunParameters, "Microsoft.NET.Test.Sdk", "17.10.0");
 
         var dependencies = _newProjectMetaDataProvider.DependenciesOf(viewModel.UnitTestFramework);
 
         foreach (var package in dependencies)
         {
-            packageIndex++;
             var name = package.name;
             var version = package.version;
-            AddPackageToReplacementDictionary(wizardRunParameters, name, version, packageIndex);
+            AddPackageToReplacementDictionary(wizardRunParameters, name, version);
         }
 
         if (viewModel.FluentAssertionsIncluded)
-            AddPackageToReplacementDictionary(wizardRunParameters, "FluentAssertions", "6.12.0", packageIndex+1);
+            AddPackageToReplacementDictionary(wizardRunParameters, "FluentAssertions", "6.12.0");
 
-        wizardRunParameters.ReplacementsDictionary.Add("$dotnetframework$", viewModel.DotNetFramework);
+        wizardRunParameters.ReplacementsDictionary.Add("$dotnetframework$", viewModel.DotNetFrameworkTag);
         wizardRunParameters.ReplacementsDictionary.Add("$fluentassertionsincluded$",
             viewModel.FluentAssertionsIncluded.ToString(CultureInfo.InvariantCulture));
 
         return true;
 
-        static void AddPackageToReplacementDictionary(WizardRunParameters wizardRunParameters, string name, string version, int packageIndex)
+        static void AddPackageToReplacementDictionary(WizardRunParameters wizardRunParameters, string name, string version)
         {
             var refText = $"<PackageReference Include=\"{name}\" Version=\"{version}\" />";
-            const string key = "$foo$";
+            const string key = "$nugetpackagereferences$";
             if (wizardRunParameters.ReplacementsDictionary.TryGetValue(key, out string existingValue))
             {
                 wizardRunParameters.ReplacementsDictionary[key] =
@@ -72,14 +68,6 @@ public class ReqnrollProjectWizard : IDeveroomWizard
             {
                 wizardRunParameters.ReplacementsDictionary.Add(key, refText);
             }
-
-            //string packagename = "packagerefname";
-            //string packageversion = "packagerefversion";
-            //string packagehasvalue = "packagerefhasvalue";
-
-            //wizardRunParameters.ReplacementsDictionary.Add($"${packagehasvalue}{packageIndex}$", true.ToString(CultureInfo.InvariantCulture));
-            //wizardRunParameters.ReplacementsDictionary.Add($"${packagename}{packageIndex}$", name);
-            //wizardRunParameters.ReplacementsDictionary.Add($"${packageversion}{packageIndex}$", version);
         }
     }
 }
