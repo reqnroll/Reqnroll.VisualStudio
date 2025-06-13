@@ -11,29 +11,31 @@ public class NewProjectMetaDataProvider : INewProjectMetaDataProvider
 {
     private const string environmentVariableOverrideOfMetaDataEndpointURL = "REQNROLL_VISUALSTUDIOEXTENSION_NPW_FRAMEWORKMETADATAENDPOINTURL";
     private const string _metaDataEndpointUrl = "https://assets.reqnroll.net/testframeworkmetadata/testframeworks.json";
-    private NewProjectMetaRecord _retrievedData;
+    private NewProjectMetaData? _metadata;
     private readonly IHttpClient _httpClient;
+    private readonly IEnvironmentWrapper _environmentWrapper;
 
     [ImportingConstructor]
-    public NewProjectMetaDataProvider(IHttpClient httpClient)
+    public NewProjectMetaDataProvider(IHttpClient httpClient, IEnvironmentWrapper environmentWrapper)
     {
         _httpClient = httpClient;
+        _environmentWrapper = environmentWrapper;
     }
 
     public void RetrieveNewProjectMetaData(Action<NewProjectMetaData> onRetrievedAction)
     {
-        _retrievedData = FetchDescriptorsFromReqnrollWebsite(_httpClient);
-        var md = new NewProjectMetaData(_retrievedData);
-        onRetrievedAction(md);
+        var retrievedData = FetchDescriptorsFromReqnrollWebsite(_httpClient);
+        _metadata = new NewProjectMetaData(retrievedData);
+        onRetrievedAction(_metadata);
     }
 
-    private NewProjectMetaRecord FetchDescriptorsFromReqnrollWebsite(IHttpClient httpClient)
+    internal NewProjectMetaRecord FetchDescriptorsFromReqnrollWebsite(IHttpClient httpClient)
     {
         try
         {
             using (var cts = new DebuggableCancellationTokenSource(TimeSpan.FromSeconds(10)))
             {
-                var overrideUrl = Environment.GetEnvironmentVariable(environmentVariableOverrideOfMetaDataEndpointURL);
+                var overrideUrl = _environmentWrapper.GetEnvironmentVariable(environmentVariableOverrideOfMetaDataEndpointURL);
                 var url = overrideUrl ?? _metaDataEndpointUrl;
                 var httpJson = Task.Run(() => httpClient.GetStringAsync(url, cts)).Result;
                 var httpData = JsonSerialization.DeserializeObject<NewProjectMetaRecord>(httpJson);
@@ -48,21 +50,40 @@ public class NewProjectMetaDataProvider : INewProjectMetaDataProvider
 
     public IEnumerable<NugetPackageDescriptor> DependenciesOf(string testFramework)
     {
-        var dependencies = _retrievedData.TestFrameworks.First(tf => tf.Label == testFramework).Dependencies;
+        IEnumerable<NugetPackageDescriptor> dependencies = Enumerable.Empty<NugetPackageDescriptor>();
+        if (_metadata != null && _metadata.TestFrameworkMetaData.TryGetValue(testFramework, out var framework))
+        {
+            dependencies = framework.Dependencies;
+        }
         return dependencies;
     }
 
     internal virtual NewProjectMetaRecord CreateFallBackMetaData()
     {
-        // read static metadata from a resource file, deserialize the resulting json, storing it in the _fallbackTestFrameworkDescriptors field
-        var resourceName = "Reqnroll.VisualStudio.Resources.TestFrameworkDescriptors.json";
-        using (var stream = typeof(NewProjectMetaDataProvider).Assembly.GetManifestResourceStream(resourceName))
-        using (var reader = new StreamReader(stream))
+        try
         {
-            var json = reader.ReadToEnd();
-            var data = JsonSerialization.DeserializeObject<NewProjectMetaRecord>(json);
-            return data;
+            // read static metadata from a resource file, deserialize the resulting json
+            var resourceName = "Reqnroll.VisualStudio.Resources.TestFrameworkDescriptors.json";
+            var assembly = typeof(NewProjectMetaDataProvider).Assembly;
+            using (var stream = assembly.GetManifestResourceStream(resourceName))
+            {
+                if (stream == null)
+                {
+                    return null; // Resource not found
+                }
+                
+                using (var reader = new StreamReader(stream))
+                {
+                    var json = reader.ReadToEnd();
+                    var data = JsonSerialization.DeserializeObject<NewProjectMetaRecord>(json);
+                    return data; // Could be null if deserialization fails
+                }
+            }
+        }
+        catch
+        {
+            // Any exception during resource reading or deserialization
+            return null;
         }
     }
-
 }
