@@ -31,7 +31,44 @@ public class AddNewReqnrollProjectViewModel : INotifyPropertyChanged
     {
         DotNetFramework = Net8Label,
         UnitTestFramework = MsTest,
-        FluentAssertionsIncluded = false
+        FluentAssertionsIncluded = false,
+        TestFrameworkMetaData = new Dictionary<string, FrameworkInfo>()
+        {
+            {
+                MsTest, new FrameworkInfo()
+                {
+                    Label = "MsTest Label",
+                    Description = "MsTest description",
+                    Url = "https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-csharp-with-mstest",
+                    Dependencies = new List<NugetPackageDescriptor>()
+                    {
+                        new("Reqnroll.MsTest", "2.4.1"),
+                        new("MSTest.TestFramework", "3.9.2"),
+                    }
+                }
+            },
+            {
+                "NUnit", new FrameworkInfo()
+                {
+                    Label = "NUnit Label",
+                    Description = "NUnit description",
+                    Url = "https://nunit.org",
+                    Dependencies = new List<NugetPackageDescriptor>()
+                    {
+                        new("Reqnroll.NUnit", "2.4.1"),
+                        new("nunit", "3.14.0"),
+                    }
+                }
+            }
+        },
+        TestFrameworks = new ObservableCollection<string>()
+        {
+            MsTest, "NUnit"
+        },
+        DotNetFrameworkLabelToTagMap = new Dictionary<string, string>()
+        {
+            { Net8Label, Net8Tag}
+        }
     };
 #endif
 
