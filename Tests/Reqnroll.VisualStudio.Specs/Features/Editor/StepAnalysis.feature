@@ -274,6 +274,33 @@ Scenario: Matches combination scoped step definitions
 		"""
 	And no binding error should be highlighted
 
+Scenario: Matches on multiple tags (without improperly highlighting as Ambiguous)
+	Given there is a Reqnroll project scope
+	And the following step definitions in the project:
+		| type | regex                               | tag scope          |
+		| When | I use a step with multiple tags     | @mytag1,@mytag2    |
+	When the following feature file is opened in the editor
+		"""
+		Feature: Addition
+
+		@mytag1
+		@mytag2
+		Scenario: Random scenario
+			When I use a step with multiple tags
+
+		"""
+	And the project is built and the initial binding discovery is performed
+	Then all section of types DefinedStep should be highlighted as
+		"""
+		Feature: Addition
+		
+		@mytag1
+		@mytag2
+		Scenario: Random scenario
+			When {DefinedStep}I use a step with multiple tags{/DefinedStep}
+		"""
+	And no binding error should be highlighted
+
 Scenario: Analyses all scopes of background steps
 	Given there is a Reqnroll project scope
 	And the following step definitions in the project:
