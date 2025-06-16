@@ -111,7 +111,6 @@
 				<Setter Property="FontWeight" Value="Regular" />
 			</Style>
 			<Style TargetType="{x:Type Label}" BasedOn="{StaticResource LabelStyleKey}" />
-            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource ThemedTextBox}" />
 			<Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource ThemedDialogComboBox}" />
 			<Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource ThemedDialogCheckBox}">
 				<Setter Property="Margin" Value="0,16,0,10" />
@@ -244,11 +243,7 @@
 						</StackPanel>
 
                         <StackPanel Grid.Row="2" Grid.Column="0">
-                            <TextBlock Margin="0,0,0,0"
-                                       Padding="8,8,8,8"
-                                       Text="{Binding UnitTestFrameworkDescription, Mode=OneWay}"
-                                       Foreground="{DynamicResource ThemedWindowPanelTextBrushKey}"
-                                       TextWrapping="Wrap" />
+                            <Label Content="{Binding UnitTestFrameworkDescription, Mode=OneWay}" />
                         </StackPanel>
 
                         <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
