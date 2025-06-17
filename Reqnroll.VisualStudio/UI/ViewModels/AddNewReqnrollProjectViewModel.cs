@@ -1,139 +1,156 @@
-#nullable disable
-using Newtonsoft.Json.Linq;
-using Reqnroll.VisualStudio.Wizards.Infrastructure;
+﻿using Reqnroll.VisualStudio.Wizards.Infrastructure;
 
 namespace Reqnroll.VisualStudio.UI.ViewModels;
 
 public class AddNewReqnrollProjectViewModel : INotifyPropertyChanged
 {
-    private const string MsTest = "MsTest";
-    private const string Net8Tag = "net8.0";
-    private const string Net8Label = ".NET 8.0";
-    private IDictionary<string, string> DotNetFrameworkLabelToTagMap = new Dictionary<string, string>();
-    private IDictionary<string, FrameworkInfo> TestFrameworkMetaData = new Dictionary<string, FrameworkInfo>();
-
-    public AddNewReqnrollProjectViewModel() { }
-    public AddNewReqnrollProjectViewModel(INewProjectMetaDataProvider metaDataProvider)
-    {
-        metaDataProvider.RetrieveNewProjectMetaData(
-            (NewProjectMetaData md) =>
-            {
-                DotNetFrameworkLabelToTagMap = md.DotNetFrameworkNameToTagMap;
-                DotNetFrameworks = new(md.DotNetFrameworks);
-                DotNetFramework = md.DotNetFrameworkDefault;
-                TestFrameworks = new(md.TestFrameworks);
-                UnitTestFramework = md.TestFrameworkDefault;
-                TestFrameworkMetaData = md.TestFrameworkMetaData;
-            });
-    }
 #if DEBUG
+    private static readonly List<DotNetFrameworkViewModel> DesignDataDotNetFrameworks = new()
+    {
+        new DotNetFrameworkViewModel("net471", ".NET Framework 4.7.1"),
+        new DotNetFrameworkViewModel("net8.0",".NET 8.0"),
+    };
+
+    private static readonly List<UnitTestFrameworkViewModel> DesignDataUnitTestFrameworks = new()
+    {
+        new UnitTestFrameworkViewModel("NUnit", "NUnit", "Use Reqnroll with NUnit", "https://nunit.org"),
+        new UnitTestFrameworkViewModel("MsTest","MsTest", "Use Reqnroll with MsTest", "https://github.com/microsoft/testfx?tab=readme-ov-file"),
+        new UnitTestFrameworkViewModel("WithoutDetailsKey", "Without Details", null, null),
+    };
+
     public static AddNewReqnrollProjectViewModel DesignData = new()
     {
-        DotNetFramework = Net8Label,
-        UnitTestFramework = MsTest,
-        FluentAssertionsIncluded = false,
-        TestFrameworkMetaData = new Dictionary<string, FrameworkInfo>()
-        {
-            {
-                MsTest, new FrameworkInfo()
-                {
-                    Label = "MsTest Label",
-                    Description = "MsTest description",
-                    Url = "https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-csharp-with-mstest",
-                    Dependencies = new List<NugetPackageDescriptor>()
-                    {
-                        new("Reqnroll.MsTest", "2.4.1"),
-                        new("MSTest.TestFramework", "3.9.2"),
-                    }
-                }
-            },
-            {
-                "NUnit", new FrameworkInfo()
-                {
-                    Label = "NUnit Label",
-                    Description = "NUnit description",
-                    Url = "https://nunit.org",
-                    Dependencies = new List<NugetPackageDescriptor>()
-                    {
-                        new("Reqnroll.NUnit", "2.4.1"),
-                        new("nunit", "3.14.0"),
-                    }
-                }
-            }
-        },
-        TestFrameworks = new ObservableCollection<string>()
-        {
-            MsTest, "NUnit"
-        },
-        DotNetFrameworkLabelToTagMap = new Dictionary<string, string>()
-        {
-            { Net8Label, Net8Tag}
-        }
+        DotNetFrameworks = DesignDataDotNetFrameworks,
+        DotNetFramework = DesignDataDotNetFrameworks[1],
+        UnitTestFrameworks = DesignDataUnitTestFrameworks,
+        UnitTestFramework = DesignDataUnitTestFrameworks[1],
     };
 #endif
 
-
-    // The tag value of the currently selected .NET framework (ie, "net8.0")
-    public string DotNetFrameworkTag
+    public class DotNetFrameworkViewModel
     {
-        get
+        public string Tag { get; set; }
+        public string Label { get; set; }
+
+        public DotNetFrameworkViewModel(string tag, string label)
         {
-            return DotNetFrameworkLabelToTagMap.Count > 0 ? DotNetFrameworkLabelToTagMap[DotNetFramework] : Net8Tag;
+            Tag = tag;
+            Label = label;
         }
     }
-    private string _dotNetFramework = Net8Label;
-    private string _unitTestFramework = MsTest;
 
-    #region XAML Bound Properties
+    public class UnitTestFrameworkViewModel
+    {
+        public string Tag { get; set; }
+        public string Label { get; set; }
+        public string? Description { get; set; }
+        public string? Url { get; set; }
 
-    // The currently selected DotNetFramework label (ie, ".NET 8.0")
-    public string DotNetFramework
+        public UnitTestFrameworkViewModel(string tag, string label, string? description, string? url)
+        {
+            Tag = tag;
+            Label = label;
+            Description = description;
+            Url = url;
+        }
+    }
+
+    public AddNewReqnrollProjectViewModel()
+    {
+        
+    }
+
+    public AddNewReqnrollProjectViewModel(INewProjectMetaDataProvider metaDataProvider)
+    {
+        _metaDataProvider = metaDataProvider;
+        LoadMetadata(_metaDataProvider.GetFallbackMetadata());
+    }
+
+    public async Task InitializeAsync()
+    {
+        if (_metaDataProvider == null)
+            return; // design time
+
+        var metadata = await _metaDataProvider.RetrieveNewProjectMetaDataAsync();
+        if (!metadata.IsFallback) // we already loaded the fallback
+            LoadMetadata(metadata);
+    }
+
+    private void LoadMetadata(NewProjectMetaData metadata)
+    {
+        DotNetFrameworks = metadata.DotNetFrameworksMetadata
+                                   .Select(fmd => new DotNetFrameworkViewModel(fmd.Tag, fmd.Label))
+                                   .ToList();
+        DotNetFramework = DotNetFrameworks.FirstOrDefault(f => f.Tag == metadata.DotNetFrameworkDefault)!;
+        UnitTestFrameworks = metadata.TestFrameworkMetaData
+                                     .Select(fmd => new UnitTestFrameworkViewModel(fmd.Key, fmd.Value.Label, fmd.Value.Description,fmd.Value.Url))
+                                     .ToList();
+        UnitTestFramework = UnitTestFrameworks.FirstOrDefault(f => f.Tag == metadata.TestFrameworkDefault)!;
+    }
+
+    private readonly INewProjectMetaDataProvider? _metaDataProvider;
+
+    private DotNetFrameworkViewModel _dotNetFramework = new DotNetFrameworkViewModel("net8.0", ".NET 8.0");
+    public DotNetFrameworkViewModel DotNetFramework
     {
         get => _dotNetFramework;
         set
         {
+            if (value == _dotNetFramework)
+            {
+                return;
+            }
+
             _dotNetFramework = value;
-            OnPropertyChanged(nameof(TestFrameworks));
+            OnPropertyChanged();
         }
     }
-    // The list of .NET Frameworks that appear in the combobox for selection by the user
-    public ObservableCollection<string> DotNetFrameworks { get; set; } = new(new List<string> { ".NET Framework 4.8.1", ".NET 8.0" });
 
-    // The currently selected Unit Test Framework (ie, "xUnit")
-    public string UnitTestFramework
+    private List<DotNetFrameworkViewModel> _dotNetFrameworks = new();
+    public List<DotNetFrameworkViewModel> DotNetFrameworks
+    {
+        get => _dotNetFrameworks;
+        set
+        {
+            if (Equals(value, _dotNetFrameworks))
+            {
+                return;
+            }
+
+            _dotNetFrameworks = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private UnitTestFrameworkViewModel _unitTestFramework = new("MsTest", "MsTest", null, null);
+    public UnitTestFrameworkViewModel UnitTestFramework
     {
         get => _unitTestFramework;
         set
         {
+            if (Equals(value, _unitTestFramework))
+            {
+                return;
+            }
+
             _unitTestFramework = value;
             OnPropertyChanged();
-            OnPropertyChanged(nameof(UnitTestFrameworkDescription));
-            OnPropertyChanged(nameof(UnitTestFrameworkUrl));
         }
     }
 
-    // The list of available Unit Test Framework that appear in a combobox for selection by the user
-    public ObservableCollection<string> TestFrameworks { get; set; } = new(new List<string> { "MSTest", "NUnit", "xUnit" });
-
-    // A line of text describing the currently selected Unit Test Framework (bound to a Textbox)
-    public string UnitTestFrameworkDescription
+    private List<UnitTestFrameworkViewModel> _unitTestFrameworks = new();
+    public List<UnitTestFrameworkViewModel> UnitTestFrameworks
     {
-        get
+        get => _unitTestFrameworks;
+        set
         {
-            if (TestFrameworkMetaData.TryGetValue(_unitTestFramework, out var frameworkInfo))
-                return frameworkInfo.Description;
-            return "";
-        }
-    }
+            if (Equals(value, _unitTestFrameworks))
+            {
+                return;
+            }
 
-    // URL to the home page of the currently selected Unit Test Framework (bound to a TextBox)
-    public string UnitTestFrameworkUrl
-    {
-        get
-        {
-            if (TestFrameworkMetaData.TryGetValue(_unitTestFramework, out var frameworkInfo))
-                return frameworkInfo.Url;
-            return "";
+            _unitTestFrameworks = value;
+            OnPropertyChanged();
         }
     }
 
@@ -142,13 +159,12 @@ public class AddNewReqnrollProjectViewModel : INotifyPropertyChanged
     // Maybe we could consider suggesting https://github.com/shouldly/shouldly instead.
     public bool FluentAssertionsIncluded { get; set; } = false;
 
-    #endregion
+    #region INotifyPropertyChanged implementation
+    public event PropertyChangedEventHandler? PropertyChanged;
 
-    public event PropertyChangedEventHandler PropertyChanged;
-
-    [NotifyPropertyChangedInvocator]
-    protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
+    #endregion
 }

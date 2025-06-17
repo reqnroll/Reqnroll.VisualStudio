@@ -1,8 +1,5 @@
-using Reqnroll.VisualStudio.ProjectSystem;
 using Reqnroll.VisualStudio.Wizards.Infrastructure;
-using System;
 using System.Globalization;
-using System.Linq;
 
 namespace Reqnroll.VisualStudio.Wizards;
 
@@ -29,13 +26,13 @@ public class ReqnrollProjectWizard : IDeveroomWizard
         var dialogResult = _deveroomWindowManager.ShowDialog(viewModel);
         if (!dialogResult.HasValue || !dialogResult.Value) return false;
 
-        _monitoringService.MonitorProjectTemplateWizardCompleted(viewModel.DotNetFrameworkTag, viewModel.UnitTestFramework,
+        _monitoringService.MonitorProjectTemplateWizardCompleted(viewModel.DotNetFramework.Tag, viewModel.UnitTestFramework.Tag,
             viewModel.FluentAssertionsIncluded);
 
         // insert set of replacement variables for the SDK package
         AddPackageToReplacementDictionary(wizardRunParameters, "Microsoft.NET.Test.Sdk", "17.10.0");
 
-        var dependencies = _newProjectMetaDataProvider.DependenciesOf(viewModel.UnitTestFramework);
+        var dependencies = _newProjectMetaDataProvider.DependenciesOf(viewModel.UnitTestFramework.Tag);
 
         foreach (var package in dependencies)
         {
@@ -47,7 +44,7 @@ public class ReqnrollProjectWizard : IDeveroomWizard
         if (viewModel.FluentAssertionsIncluded)
             AddPackageToReplacementDictionary(wizardRunParameters, "FluentAssertions", "6.12.0");
 
-        wizardRunParameters.ReplacementsDictionary.Add("$dotnetframework$", viewModel.DotNetFrameworkTag);
+        wizardRunParameters.ReplacementsDictionary.Add("$dotnetframework$", viewModel.DotNetFramework.Tag);
         wizardRunParameters.ReplacementsDictionary.Add("$fluentassertionsincluded$",
             viewModel.FluentAssertionsIncluded.ToString(CultureInfo.InvariantCulture));
 

@@ -2,13 +2,13 @@
 {
     public interface IEnvironmentWrapper
     {
-        string GetEnvironmentVariable(string name);
+        string? GetEnvironmentVariable(string name);
     }
 
     [Export(typeof(IEnvironmentWrapper))]
     public class EnvironmentWrapper : IEnvironmentWrapper
     {
-        public string GetEnvironmentVariable(string name)
+        public string? GetEnvironmentVariable(string name)
         {
             return Environment.GetEnvironmentVariable(name);
         }

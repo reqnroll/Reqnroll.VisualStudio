@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using Reqnroll.VisualStudio.ProjectSystem.Actions;
 using Reqnroll.VisualStudio.UI.Dialogs;
 using Reqnroll.VisualStudio.UI.ViewModels;
+using Reqnroll.VisualStudio.Wizards.Infrastructure;
 
 namespace Reqnroll.VisualStudio.UI.Tester;
 
@@ -94,7 +95,20 @@ public partial class UiTesterWindow : Window
         if (result != true) return;
 
         string resultMessage =
-            $"Chosen {viewModel.DotNetFramework} with {viewModel.UnitTestFramework}";
+            $"Chosen {viewModel.DotNetFramework.Tag} with {viewModel.UnitTestFramework.Tag}";
+
+        MessageBox.Show(resultMessage);
+    }
+
+    private void Test_ProjectTemplateWizardWithMetadataProvider(object sender, RoutedEventArgs e)
+    {
+        var viewModel = new AddNewReqnrollProjectViewModel(new NewProjectMetaDataProvider(new HttpClientWrapper(), new EnvironmentWrapper()));
+        var dialog = new AddNewReqnrollProjectDialog(viewModel);
+        var result = dialog.ShowDialog();
+        if (result != true) return;
+
+        string resultMessage =
+            $"Chosen {viewModel.DotNetFramework.Tag} with {viewModel.UnitTestFramework.Tag}";
 
         MessageBox.Show(resultMessage);
     }

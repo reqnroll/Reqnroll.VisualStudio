@@ -1,27 +1,19 @@
-using FluentAssertions;
-using Moq;
 using Reqnroll.VisualStudio.Wizards.Infrastructure;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace Reqnroll.VisualStudio.Tests.Wizards.Infrastructure
 {
     class StubNewProjectDataProvider : NewProjectMetaDataProvider
     {
-        private NewProjectMetaRecord _stubData;
+        private readonly NewProjectMetaRecord? _stubData;
 
-        internal StubNewProjectDataProvider(IHttpClient httpClient, IEnvironmentWrapper environmentWrapper, NewProjectMetaRecord stubData)
+        internal StubNewProjectDataProvider(IHttpClient httpClient, IEnvironmentWrapper environmentWrapper, NewProjectMetaRecord? stubData)
             : base(httpClient, environmentWrapper)
         {
             _stubData = stubData;
         }
-        internal override NewProjectMetaRecord CreateFallBackMetaData()
+        internal override NewProjectMetaRecord CreateFallBackMetaDataRecord()
         {
-            return _stubData;
+            return _stubData ?? base.CreateFallBackMetaDataRecord();
         }
     }
     public class NewProjectMetaDataProviderTests
@@ -65,7 +57,7 @@ namespace Reqnroll.VisualStudio.Tests.Wizards.Infrastructure
             var validJson = CreateValidMetadataJson();
             _environmentWrapperMock
                 .Setup(x => x.GetEnvironmentVariable(It.IsAny<string>()))
-                .Returns((string)null);
+                .Returns((string)null!);
 
             _httpClientMock
                 .Setup(x => x.GetStringAsync("https://assets.reqnroll.net/testframeworkmetadata/testframeworks.json", It.IsAny<CancellationTokenSource>()))
@@ -166,7 +158,7 @@ namespace Reqnroll.VisualStudio.Tests.Wizards.Infrastructure
             _sut.RetrieveNewProjectMetaData(_ => { });
 
             // Act
-            var dependencies = _sut.DependenciesOf("NUnit");
+            var dependencies = _sut.DependenciesOf("NUnit").ToArray();
 
             // Assert
             dependencies.Should().NotBeEmpty();
@@ -199,7 +191,7 @@ namespace Reqnroll.VisualStudio.Tests.Wizards.Infrastructure
             var provider = new NewProjectMetaDataProvider(_httpClientMock.Object, _environmentWrapperMock.Object);
 
             // Act
-            var result = provider.CreateFallBackMetaData();
+            var result = provider.CreateFallBackMetaDataRecord();
 
             // Assert
             result.Should().NotBeNull();

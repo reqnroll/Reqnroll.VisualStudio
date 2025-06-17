@@ -3,15 +3,16 @@ namespace Reqnroll.VisualStudio.Wizards.Infrastructure;
 public interface INewProjectMetaDataProvider
 {
     IEnumerable<NugetPackageDescriptor> DependenciesOf(string testFramework);
-    void RetrieveNewProjectMetaData(Action<NewProjectMetaData> onRetrieved);
+    Task<NewProjectMetaData> RetrieveNewProjectMetaDataAsync();
+    NewProjectMetaData GetFallbackMetadata();
 }
 
 [Export(typeof(INewProjectMetaDataProvider))]
 public class NewProjectMetaDataProvider : INewProjectMetaDataProvider
 {
-    private const string environmentVariableOverrideOfMetaDataEndpointURL = "REQNROLL_VISUALSTUDIOEXTENSION_NPW_FRAMEWORKMETADATAENDPOINTURL";
-    private const string _metaDataEndpointUrl = "https://assets.reqnroll.net/testframeworkmetadata/testframeworks.json";
-    private NewProjectMetaData? _metadata;
+    private const string EnvironmentVariableOverrideOfMetaDataEndpointUrl = "REQNROLL_VISUALSTUDIOEXTENSION_NPW_FRAMEWORKMETADATAENDPOINTURL";
+    private const string MetaDataEndpointUrl = "https://assets.reqnroll.net/testframeworkmetadata/testframeworks.json";
+    private NewProjectMetaData _metadata;
     private readonly IHttpClient _httpClient;
     private readonly IEnvironmentWrapper _environmentWrapper;
 
@@ -20,8 +21,32 @@ public class NewProjectMetaDataProvider : INewProjectMetaDataProvider
     {
         _httpClient = httpClient;
         _environmentWrapper = environmentWrapper;
+        _metadata = GetFallbackMetadata();
     }
 
+    public async Task<NewProjectMetaData> RetrieveNewProjectMetaDataAsync()
+    {
+        try
+        {
+            using var cts = new DebuggableCancellationTokenSource(TimeSpan.FromSeconds(10));
+
+            var overrideUrl = _environmentWrapper.GetEnvironmentVariable(EnvironmentVariableOverrideOfMetaDataEndpointUrl);
+            var url = overrideUrl ?? MetaDataEndpointUrl;
+            var httpJson = await _httpClient.GetStringAsync(url, cts);
+            var httpData = JsonSerialization.DeserializeObject<NewProjectMetaRecord?>(httpJson);
+            if (httpData != null)
+                _metadata = new NewProjectMetaData(httpData);
+            return _metadata;
+        }
+        catch
+        {
+            return _metadata;
+        }
+    }
+
+    public NewProjectMetaData GetFallbackMetadata() => new(CreateFallBackMetaDataRecord(), isFallback: true);
+
+    //TODO: remove and update tests to use RetrieveNewProjectMetaDataAsync
     public void RetrieveNewProjectMetaData(Action<NewProjectMetaData> onRetrievedAction)
     {
         var retrievedData = FetchDescriptorsFromReqnrollWebsite(_httpClient);
@@ -29,61 +54,67 @@ public class NewProjectMetaDataProvider : INewProjectMetaDataProvider
         onRetrievedAction(_metadata);
     }
 
+    //TODO: remove and update tests to use RetrieveNewProjectMetaDataAsync
     internal NewProjectMetaRecord FetchDescriptorsFromReqnrollWebsite(IHttpClient httpClient)
     {
         try
         {
             using (var cts = new DebuggableCancellationTokenSource(TimeSpan.FromSeconds(10)))
             {
-                var overrideUrl = _environmentWrapper.GetEnvironmentVariable(environmentVariableOverrideOfMetaDataEndpointURL);
-                var url = overrideUrl ?? _metaDataEndpointUrl;
+                var overrideUrl = _environmentWrapper.GetEnvironmentVariable(EnvironmentVariableOverrideOfMetaDataEndpointUrl);
+                var url = overrideUrl ?? MetaDataEndpointUrl;
                 var httpJson = Task.Run(() => httpClient.GetStringAsync(url, cts)).Result;
                 var httpData = JsonSerialization.DeserializeObject<NewProjectMetaRecord>(httpJson);
-                return httpData ?? CreateFallBackMetaData();
+                return httpData ?? CreateFallBackMetaDataRecord();
             }
         }
         catch
         {
-            return CreateFallBackMetaData(); 
+            return CreateFallBackMetaDataRecord(); 
         }
     }
 
     public IEnumerable<NugetPackageDescriptor> DependenciesOf(string testFramework)
     {
         IEnumerable<NugetPackageDescriptor> dependencies = Enumerable.Empty<NugetPackageDescriptor>();
-        if (_metadata != null && _metadata.TestFrameworkMetaData.TryGetValue(testFramework, out var framework))
+        if (_metadata.TestFrameworkMetaData.TryGetValue(testFramework, out var framework))
         {
             dependencies = framework.Dependencies;
         }
         return dependencies;
     }
 
-    internal virtual NewProjectMetaRecord CreateFallBackMetaData()
+    internal virtual NewProjectMetaRecord CreateFallBackMetaDataRecord()
     {
+        NewProjectMetaRecord CreateEmpty() =>
+            new()
+            {
+                DotNetFrameworks = new(),
+                TestFrameworks = new(),
+                ValidationFrameworks = new()
+            };
+
         try
         {
             // read static metadata from a resource file, deserialize the resulting json
             var resourceName = "Reqnroll.VisualStudio.Resources.TestFrameworkDescriptors.json";
             var assembly = typeof(NewProjectMetaDataProvider).Assembly;
-            using (var stream = assembly.GetManifestResourceStream(resourceName))
+            using var stream = assembly.GetManifestResourceStream(resourceName);
+
+            if (stream == null)
             {
-                if (stream == null)
-                {
-                    return null; // Resource not found
-                }
-                
-                using (var reader = new StreamReader(stream))
-                {
-                    var json = reader.ReadToEnd();
-                    var data = JsonSerialization.DeserializeObject<NewProjectMetaRecord>(json);
-                    return data; // Could be null if deserialization fails
-                }
+                return CreateEmpty(); // Resource not found
             }
+
+            using var reader = new StreamReader(stream);
+            var json = reader.ReadToEnd();
+            var data = JsonSerialization.DeserializeObject<NewProjectMetaRecord>(json);
+            return data; // Could be null if deserialization fails
         }
         catch
         {
             // Any exception during resource reading or deserialization
-            return null;
+            return CreateEmpty();
         }
     }
 }

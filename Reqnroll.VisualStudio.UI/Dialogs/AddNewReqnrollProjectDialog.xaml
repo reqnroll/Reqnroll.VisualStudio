@@ -222,33 +222,39 @@
 
 						<StackPanel Grid.Row="0" Grid.Column="0">
 							<Label>Framework</Label>
-							<ComboBox x:Name="DotNetFrameworkComboBox" IsEditable="True" IsReadOnly="True"
-							          Margin="0,0,0,0" Padding="8,8,8,8" ItemsSource="{Binding DotNetFrameworks}" SelectedValue="{Binding DotNetFramework}"
+							<ComboBox x:Name="DotNetFrameworkComboBox" 
+                                      IsEditable="True" 
+                                      IsReadOnly="True"
+							          Margin="0,0,0,0" 
+                                      Padding="8,8,8,8" 
+                                      ItemsSource="{Binding DotNetFrameworks}" 
+                                      DisplayMemberPath="Label"
+                                      SelectedValue="{Binding DotNetFramework}"
 							          IsSynchronizedWithCurrentItem="True" />
 						</StackPanel>
 
 						<StackPanel Grid.Row="1" Grid.Column="0">
 							<Label>Test Framework</Label>
-							<ComboBox x:Name="UnitTestFrameworkComboBox"
-							          IsEditable="True"
-							          IsReadOnly="True"
-							          Margin="0,0,0,0"
-							          Padding="8,8,8,8"
-							          ItemsSource="{Binding TestFrameworks}"
-							          SelectedValue="{Binding UnitTestFramework}"
-							          IsSynchronizedWithCurrentItem="True"
-							          SelectionChanged="TestFramework_SelectionChanged" />
+                            <ComboBox x:Name="UnitTestFrameworkComboBox"
+                                      IsEditable="True"
+                                      IsReadOnly="True"
+                                      Margin="0,0,0,0"
+                                      Padding="8,8,8,8"
+                                      ItemsSource="{Binding UnitTestFrameworks}"
+                                      DisplayMemberPath="Label"
+                                      SelectedValue="{Binding UnitTestFramework}"
+                                      IsSynchronizedWithCurrentItem="True" />
 						</StackPanel>
 
                         <StackPanel Grid.Row="2" Grid.Column="0">
-                            <Label Content="{Binding UnitTestFrameworkDescription, Mode=OneWay}" />
+                            <Label Content="{Binding UnitTestFramework.Description, Mode=OneWay}" />
                         </StackPanel>
 
                         <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
                             <Label VerticalAlignment="Center" Margin="0,0,5,0">More Information:</Label>
                             <TextBlock VerticalAlignment="Center">
-                                <Hyperlink NavigateUri="{Binding UnitTestFrameworkUrl}" RequestNavigate="Hyperlink_RequestNavigate">
-                                    <Run Text="{Binding UnitTestFrameworkUrl, Mode=OneWay}"/>
+                                <Hyperlink NavigateUri="{Binding UnitTestFramework.Url}" RequestNavigate="Hyperlink_RequestNavigate">
+                                    <Run Text="{Binding UnitTestFramework.Url, Mode=OneWay}"/>
                                 </Hyperlink>
                             </TextBlock>
                         </StackPanel>
