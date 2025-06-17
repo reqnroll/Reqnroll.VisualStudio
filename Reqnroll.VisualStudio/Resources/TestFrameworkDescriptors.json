@@ -1,6 +1,7 @@
 {
   "testFrameworks": [
     {
+      "tag":  "xunit",
       "label": "xUnit",
       "description": "Use xUnit v2 test executor with Reqnroll",
       "url": "https://xunit.net",
@@ -20,6 +21,7 @@
       ]
     },
     {
+      "tag": "mstest",
       "label": "MsTest",
       "description": "Use MsTest v3 test executor with Reqnroll",
       "url": "https://github.com/microsoft/testfx?tab=readme-ov-file",
@@ -39,6 +41,7 @@
       ]
     },
     {
+      "tag": "nunit",
       "label": "NUnit",
       "description": "Use NUnit v3 test executor with Reqnroll",
       "url": "https://nunit.org",

@@ -17,12 +17,12 @@ namespace Reqnroll.VisualStudio.Wizards.Infrastructure
         {
             TestFrameworks = retrievedData.TestFrameworks.Select(tf => tf.Label).ToList();
             DotNetFrameworks = retrievedData.DotNetFrameworks.Select(dn => dn.Label).ToList();
-            TestFrameworkDefault = retrievedData.DotNetFrameworks.First().Tag;
+            TestFrameworkDefault = retrievedData.TestFrameworks.First().Tag;
             DotNetFrameworkDefault = retrievedData.DotNetFrameworks.First(dn => dn.Default == true).Tag;
             DotNetFrameworkNameToTagMap = retrievedData.DotNetFrameworks
                 .ToDictionary(d => d.Label, d => d.Tag);
             TestFrameworkMetaData = retrievedData.TestFrameworks
-                .ToDictionary(tf => tf.Label, tf => tf);
+                .ToDictionary(tf => tf.Tag, tf => tf);
             DotNetFrameworksMetadata = retrievedData.DotNetFrameworks.ToArray();
             IsFallback = isFallback;
         }

@@ -46,34 +46,6 @@ public class NewProjectMetaDataProvider : INewProjectMetaDataProvider
 
     public NewProjectMetaData GetFallbackMetadata() => new(CreateFallBackMetaDataRecord(), isFallback: true);
 
-    //TODO: remove and update tests to use RetrieveNewProjectMetaDataAsync
-    public void RetrieveNewProjectMetaData(Action<NewProjectMetaData> onRetrievedAction)
-    {
-        var retrievedData = FetchDescriptorsFromReqnrollWebsite(_httpClient);
-        _metadata = new NewProjectMetaData(retrievedData);
-        onRetrievedAction(_metadata);
-    }
-
-    //TODO: remove and update tests to use RetrieveNewProjectMetaDataAsync
-    internal NewProjectMetaRecord FetchDescriptorsFromReqnrollWebsite(IHttpClient httpClient)
-    {
-        try
-        {
-            using (var cts = new DebuggableCancellationTokenSource(TimeSpan.FromSeconds(10)))
-            {
-                var overrideUrl = _environmentWrapper.GetEnvironmentVariable(EnvironmentVariableOverrideOfMetaDataEndpointUrl);
-                var url = overrideUrl ?? MetaDataEndpointUrl;
-                var httpJson = Task.Run(() => httpClient.GetStringAsync(url, cts)).Result;
-                var httpData = JsonSerialization.DeserializeObject<NewProjectMetaRecord>(httpJson);
-                return httpData ?? CreateFallBackMetaDataRecord();
-            }
-        }
-        catch
-        {
-            return CreateFallBackMetaDataRecord(); 
-        }
-    }
-
     public IEnumerable<NugetPackageDescriptor> DependenciesOf(string testFramework)
     {
         IEnumerable<NugetPackageDescriptor> dependencies = Enumerable.Empty<NugetPackageDescriptor>();
@@ -109,7 +81,7 @@ public class NewProjectMetaDataProvider : INewProjectMetaDataProvider
             using var reader = new StreamReader(stream);
             var json = reader.ReadToEnd();
             var data = JsonSerialization.DeserializeObject<NewProjectMetaRecord>(json);
-            return data; // Could be null if deserialization fails
+            return data ?? CreateEmpty(); // Could be null if deserialization fails
         }
         catch
         {

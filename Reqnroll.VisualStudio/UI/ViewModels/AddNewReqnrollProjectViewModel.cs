@@ -13,8 +13,8 @@ public class AddNewReqnrollProjectViewModel : INotifyPropertyChanged
 
     private static readonly List<UnitTestFrameworkViewModel> DesignDataUnitTestFrameworks = new()
     {
-        new UnitTestFrameworkViewModel("NUnit", "NUnit", "Use Reqnroll with NUnit", "https://nunit.org"),
-        new UnitTestFrameworkViewModel("MsTest","MsTest", "Use Reqnroll with MsTest", "https://github.com/microsoft/testfx?tab=readme-ov-file"),
+        new UnitTestFrameworkViewModel("nunit", "NUnit", "Use Reqnroll with NUnit", "https://nunit.org"),
+        new UnitTestFrameworkViewModel("mstest","MsTest", "Use Reqnroll with MsTest", "https://github.com/microsoft/testfx?tab=readme-ov-file"),
         new UnitTestFrameworkViewModel("WithoutDetailsKey", "Without Details", null, null),
     };
 
@@ -122,7 +122,7 @@ public class AddNewReqnrollProjectViewModel : INotifyPropertyChanged
         }
     }
 
-    private UnitTestFrameworkViewModel _unitTestFramework = new("MsTest", "MsTest", null, null);
+    private UnitTestFrameworkViewModel _unitTestFramework = new("mstest", "MsTest", null, null);
     public UnitTestFrameworkViewModel UnitTestFramework
     {
         get => _unitTestFramework;

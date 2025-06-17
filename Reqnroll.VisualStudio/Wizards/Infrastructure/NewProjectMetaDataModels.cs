@@ -11,6 +11,7 @@ public record NewProjectMetaRecord
 // Describes a framework. Used to describe both Testing Frameworks(such as Nunit) and accessory frameworks (eg, Validation frameworks like FluentAssertions)
 public record FrameworkInfo
 {
+    public string Tag { get; init; }
     public string Label { get; init; }
     public string Description { get; init; }
     public string Url { get; init; }

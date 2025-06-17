@@ -4,16 +4,18 @@ namespace Reqnroll.VisualStudio.Tests.Wizards.Infrastructure
 {
     class StubNewProjectDataProvider : NewProjectMetaDataProvider
     {
-        private readonly NewProjectMetaRecord? _stubData;
-
-        internal StubNewProjectDataProvider(IHttpClient httpClient, IEnvironmentWrapper environmentWrapper, NewProjectMetaRecord? stubData)
+        internal NewProjectMetaRecord Fallback = new NewProjectMetaRecord
+        {
+            TestFrameworks = new List<FrameworkInfo> { new FrameworkInfo { Tag = "fallbackframework", Label = "FallbackFramework" } },
+            DotNetFrameworks = new List<DotNetFrameworkInfo> { new DotNetFrameworkInfo { Tag = "fallbackDotNet", Label = "FallbackDotNetFramework", Default=true} }
+        };
+        internal StubNewProjectDataProvider(IHttpClient httpClient, IEnvironmentWrapper environmentWrapper)
             : base(httpClient, environmentWrapper)
         {
-            _stubData = stubData;
         }
         internal override NewProjectMetaRecord CreateFallBackMetaDataRecord()
         {
-            return _stubData ?? base.CreateFallBackMetaDataRecord();
+            return Fallback;
         }
     }
     public class NewProjectMetaDataProviderTests
@@ -31,7 +33,7 @@ namespace Reqnroll.VisualStudio.Tests.Wizards.Infrastructure
         }
 
         [Fact]
-        public void RetrieveNewProjectMetaData_InvokesCallback_WithMetadata()
+        public async Task RetrieveNewProjectMetaDataAsync_ReturnsMetaData()
         {
             // Arrange
             var validJson = CreateValidMetadataJson();
@@ -40,18 +42,17 @@ namespace Reqnroll.VisualStudio.Tests.Wizards.Infrastructure
                 .Returns(Task.FromResult(validJson));
 
             NewProjectMetaData? receivedMetadata = null;
-            Action<NewProjectMetaData> callback = md => receivedMetadata = md;
 
             // Act
-            _sut.RetrieveNewProjectMetaData(callback);
+            receivedMetadata = await _sut.RetrieveNewProjectMetaDataAsync();
 
             // Assert
             receivedMetadata.Should().NotBeNull();
-            receivedMetadata!.TestFrameworks.Should().Contain("NUnit");
+            receivedMetadata!.TestFrameworks.Should().Contain("Unique");
         }
 
         [Fact]
-        public void FetchDescriptorsFromReqnrollWebsite_UsesDefaultUrl_WhenNoOverride()
+        public async Task RetrieveNewProjectMetaDataAsync_UsesDefaultUrl_WhenNoOverride()
         {
             // Arrange
             var validJson = CreateValidMetadataJson();
@@ -64,7 +65,7 @@ namespace Reqnroll.VisualStudio.Tests.Wizards.Infrastructure
                 .Returns(Task.FromResult(validJson));
 
             // Act
-            var result = _sut.FetchDescriptorsFromReqnrollWebsite(_httpClientMock.Object);
+            var result = await _sut.RetrieveNewProjectMetaDataAsync();
 
             // Assert
             result.Should().NotBeNull();
@@ -74,7 +75,7 @@ namespace Reqnroll.VisualStudio.Tests.Wizards.Infrastructure
         }
 
         [Fact]
-        public void FetchDescriptorsFromReqnrollWebsite_UsesOverrideUrl_WhenSpecified()
+        public async Task RetrieveNewProjectMetaDataAsync_UsesOverrideUrl_WhenSpecified()
         {
             // Arrange
             var customUrl = "https://custom-url/metadata.json";
@@ -89,7 +90,7 @@ namespace Reqnroll.VisualStudio.Tests.Wizards.Infrastructure
                 .Returns(Task.FromResult(validJson));
 
             // Act
-            var result = _sut.FetchDescriptorsFromReqnrollWebsite(_httpClientMock.Object);
+            var result = await _sut.RetrieveNewProjectMetaDataAsync();
 
             // Assert
             result.Should().NotBeNull();
@@ -99,7 +100,7 @@ namespace Reqnroll.VisualStudio.Tests.Wizards.Infrastructure
         }
 
         [Fact]
-        public void FetchDescriptorsFromReqnrollWebsite_UsesFallback_WhenHttpRequestFails()
+        public async Task RetrieveNewProjectMetaDataAsync_UsesFallback_WhenHttpRequestFails()
         {
             // Arrange
             _httpClientMock
@@ -107,47 +108,36 @@ namespace Reqnroll.VisualStudio.Tests.Wizards.Infrastructure
                 .Throws(new Exception("Connection error"));
 
 
-            var fallbackData = new NewProjectMetaRecord
-            {
-                TestFrameworks = new List<FrameworkInfo> { new FrameworkInfo { Label = "FallbackFramework" } }
-            };
-
-            var sutWithFallbackMock = new StubNewProjectDataProvider(
-                _httpClientMock.Object, _environmentWrapperMock.Object, fallbackData);
-
+            var sutWithFallbackMock = new StubNewProjectDataProvider(_httpClientMock.Object, _environmentWrapperMock.Object);
 
             // Act
-            var result = sutWithFallbackMock.FetchDescriptorsFromReqnrollWebsite(_httpClientMock.Object);
+            var result = await sutWithFallbackMock.RetrieveNewProjectMetaDataAsync();
 
             // Assert
-            result.Should().BeSameAs(fallbackData);
+            result.IsFallback.Should().BeTrue();
+            result.Should().BeEquivalentTo(new NewProjectMetaData(sutWithFallbackMock.Fallback, true));
         }
 
         [Fact]
-        public void FetchDescriptorsFromReqnrollWebsite_UsesFallback_WhenDeserializationFails()
+        public async Task RetrieveNewProjectMetaDataAsync_UsesFallback_WhenDeserializationFails()
         {
             // Arrange
             _httpClientMock
                 .Setup(x => x.GetStringAsync(It.IsAny<string>(), It.IsAny<CancellationTokenSource>()))
                 .Returns(Task.FromResult("{ invalid json }"));
 
-            var fallbackData = new NewProjectMetaRecord
-            {
-                TestFrameworks = new List<FrameworkInfo> { new FrameworkInfo { Label = "FallbackFramework" } }
-            };
-
-            var sutWithFallbackMock = new StubNewProjectDataProvider(
-                _httpClientMock.Object, _environmentWrapperMock.Object, fallbackData);
+             var sutWithFallbackMock = new StubNewProjectDataProvider(_httpClientMock.Object, _environmentWrapperMock.Object);
 
             // Act
-            var result = sutWithFallbackMock.FetchDescriptorsFromReqnrollWebsite(_httpClientMock.Object);
+            var result = await sutWithFallbackMock.RetrieveNewProjectMetaDataAsync();
 
             // Assert
-            result.Should().BeSameAs(fallbackData);
+            result.IsFallback.Should().BeTrue();
+            result.Should().BeEquivalentTo(new NewProjectMetaData(sutWithFallbackMock.Fallback, true));
         }
 
         [Fact]
-        public void DependenciesOf_ReturnsCorrectDependencies_WhenFrameworkExists()
+        public async Task DependenciesOf_ReturnsCorrectDependencies_WhenFrameworkExists()
         {
             // Arrange
             var validJson = CreateValidMetadataJson();
@@ -155,10 +145,10 @@ namespace Reqnroll.VisualStudio.Tests.Wizards.Infrastructure
                 .Setup(x => x.GetStringAsync(It.IsAny<string>(), It.IsAny<CancellationTokenSource>()))
                 .Returns(Task.FromResult(validJson));
 
-            _sut.RetrieveNewProjectMetaData(_ => { });
+            await _sut.RetrieveNewProjectMetaDataAsync();
 
             // Act
-            var dependencies = _sut.DependenciesOf("NUnit").ToArray();
+            var dependencies = _sut.DependenciesOf("nunit").ToArray(); // using tag value
 
             // Assert
             dependencies.Should().NotBeEmpty();
@@ -167,7 +157,7 @@ namespace Reqnroll.VisualStudio.Tests.Wizards.Infrastructure
         }
 
         [Fact]
-        public void DependenciesOf_ReturnsEmptyCollection_WhenFrameworkDoesNotExist()
+        public async Task DependenciesOf_ReturnsEmptyCollection_WhenFrameworkDoesNotExist()
         {
             // Arrange
             var validJson = CreateValidMetadataJson();
@@ -175,7 +165,7 @@ namespace Reqnroll.VisualStudio.Tests.Wizards.Infrastructure
                 .Setup(x => x.GetStringAsync(It.IsAny<string>(), It.IsAny<CancellationTokenSource>()))
                 .Returns(Task.FromResult(validJson));
 
-            _sut.RetrieveNewProjectMetaData(_ => { });
+            await _sut.RetrieveNewProjectMetaDataAsync();
 
             // Act
             var dependencies = _sut.DependenciesOf("NonExistentFramework");
@@ -203,6 +193,7 @@ namespace Reqnroll.VisualStudio.Tests.Wizards.Infrastructure
             return @"{
                 ""testFrameworks"": [
                     {
+                        ""tag"": ""nunit"",
                         ""label"": ""NUnit"",
                         ""description"": ""NUnit test framework"",
                         ""url"": ""https://nunit.org"",
@@ -218,8 +209,25 @@ namespace Reqnroll.VisualStudio.Tests.Wizards.Infrastructure
                         ]
                     },
                     {
+                        ""tag"": ""xunit"",
                         ""label"": ""xUnit"",
                         ""description"": ""xUnit test framework"",
+                        ""url"": ""https://xunit.net"",
+                        ""dependencies"": [
+                            {
+                                ""name"": ""xunit"",
+                                ""version"": ""2.4.1""
+                            },
+                            {
+                                ""name"": ""xunit.runner.visualstudio"",
+                                ""version"": ""2.4.3""
+                            }
+                        ]
+                    },
+                    {
+                        ""tag"": ""unique"",
+                        ""label"": ""Unique"",
+                        ""description"": ""Dummy Test Framework Unique To This Test"",
                         ""url"": ""https://xunit.net"",
                         ""dependencies"": [
                             {
