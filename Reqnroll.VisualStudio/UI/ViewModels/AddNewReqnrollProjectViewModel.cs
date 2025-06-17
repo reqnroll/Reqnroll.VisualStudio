@@ -10,7 +10,7 @@ public class AddNewReqnrollProjectViewModel : INotifyPropertyChanged
     private const string Net8Tag = "net8.0";
     private const string Net8Label = ".NET 8.0";
     private IDictionary<string, string> DotNetFrameworkLabelToTagMap = new Dictionary<string, string>();
-    private IDictionary<string, FrameworkInfo> TestFrameworkMetaData;
+    private IDictionary<string, FrameworkInfo> TestFrameworkMetaData = new Dictionary<string, FrameworkInfo>();
 
     public AddNewReqnrollProjectViewModel() { }
     public AddNewReqnrollProjectViewModel(INewProjectMetaDataProvider metaDataProvider)

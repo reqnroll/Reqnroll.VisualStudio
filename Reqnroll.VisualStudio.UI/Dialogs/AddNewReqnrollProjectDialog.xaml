@@ -32,7 +32,6 @@
 			       BasedOn="{StaticResource VsCloseButton}">
 				<Setter Property="Width" Value="46" />
 				<Setter Property="Height" Value="33" />
-				<Setter Property="AutomationProperties.Name" Value="{Binding ToolTip,RelativeSource={RelativeSource Self}}" />
 				<Setter Property="HorizontalAlignment" Value="Right" />
 				<Setter Property="VerticalAlignment" Value="Top" />
 				<Setter Property="BorderBrush" Value="#00FFFFFF" />
@@ -231,7 +230,6 @@
 						<StackPanel Grid.Row="1" Grid.Column="0">
 							<Label>Test Framework</Label>
 							<ComboBox x:Name="UnitTestFrameworkComboBox"
-							          SelectedValuePath="Tag"
 							          IsEditable="True"
 							          IsReadOnly="True"
 							          Margin="0,0,0,0"
