@@ -1,4 +1,5 @@
 #nullable disable
+
 namespace Reqnroll.VisualStudio.Tests.Discovery;
 
 /*
@@ -73,5 +74,27 @@ public class ProjectBindingRegistryAmbiguousTests : ProjectBindingRegistryTestsB
             CreateScenarioOutlineContext(null, null, "what", new[] {"cool", "other"}));
         result.Items.Should().HaveCount(2);
         result.Items.All(r => r.Type == MatchResultType.Ambiguous).Should().BeTrue();
+    }
+
+    [Fact]
+    public void Matches_disambiguates_single_stepDef_with_multiple_matching_Scopes()
+    {
+        var methodName = "MyMethod" + Guid.NewGuid().ToString("N");
+        _stepDefinitionBindings.Add(CreateStepDefinitionBindingWithScope("my .* step", "@mytag1", methodName));
+        _stepDefinitionBindings.Add(CreateStepDefinitionBindingWithScope("my .* step", "@mytag2", methodName));
+        _stepDefinitionBindings.Add(CreateStepDefinitionBinding("other step"));
+        var sut = CreateSut();
+
+        var result = sut.MatchStep(CreateStep(text: "my cool step"), StubGherkinDocumentWithScope.Instance);
+        result.HasAmbiguous.Should().BeFalse();
+        result.Items.Should().HaveCount(1);
+        result.HasErrors.Should().BeFalse();
+        result.Items[0].MatchedStepDefinition.Implementation.Method.Should().Be(methodName);
+    }
+
+    private ProjectStepDefinitionBinding CreateStepDefinitionBindingWithScope(string stepRegex, string scopeText, string methodName)
+    {
+        var scope = new Scope() { Tag = new TagExpressionParser().Parse(scopeText) };
+        return CreateStepDefinitionBinding(stepRegex, ScenarioBlock.Given, scope, null, methodName);
     }
 }

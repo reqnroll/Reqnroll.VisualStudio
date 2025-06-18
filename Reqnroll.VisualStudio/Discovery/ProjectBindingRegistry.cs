@@ -186,7 +186,14 @@ public record ProjectBindingRegistry
             var matchesWithScope = sdMatches.Where(m =>
                 m.MatchedStepDefinition.Scope != null).ToArray();
             if (matchesWithScope.Any())
-                sdMatches = matchesWithScope;
+            {
+                // Group matches by everything except the Scope property
+                // and take the first item from each group
+                sdMatches = matchesWithScope
+                    .GroupBy(m => m.MatchedStepDefinition.Implementation)
+                    .Select(g => g.First())
+                    .ToArray();
+            }
         }
 
         return sdMatches;

@@ -27,7 +27,7 @@ public class ProjectSystemSteps : Steps
                 action(_ideScope.BackgroundTaskTokenSource.Token));
     }
 
-    private StubIdeActions ActionsMock => (StubIdeActions) _ideScope.Actions;
+    private StubIdeActions ActionsMock => (StubIdeActions)_ideScope.Actions;
 
     [Given(@"there is a Reqnroll project scope")]
     public void GivenThereIsAReqnrollProjectScope()
@@ -144,10 +144,15 @@ public class ProjectSystemSteps : Steps
         var line = _rnd.Next(1, 30);
         _projectScope.AddFile(filePath, string.Empty);
 
+        tableRow.TryGetValue("regex", out var regex);
+        tableRow.TryGetValue("type", out var stepType);
+
         var stepDefinition = new StepDefinition
         {
             Method = $"M{Guid.NewGuid():N}",
-            SourceLocation = filePath + $"|{line}|5"
+            SourceLocation = filePath + $"|{line}|5",
+            Type = stepType,
+            Regex = regex
         };
 
         tableRow.TryGetValue("tag scope", out var tagScopes);
@@ -180,20 +185,22 @@ public class ProjectSystemSteps : Steps
             var stepDef = new StepDefinition
             {
                 Method = stepDefinition.Method,
-                SourceLocation = stepDefinition.SourceLocation
+                SourceLocation = stepDefinition.SourceLocation,
+                Regex = stepDefinition.Regex,
+                Type = stepDefinition.Type,
+                Scope = new StepScope
+                {
+                    Tag = tagScope,
+                    FeatureTitle = featureScope,
+                    ScenarioTitle = scenarioScope
+                }
             };
-            stepDef.Scope = new StepScope
-            {
-                Tag = tagScope,
-                FeatureTitle = featureScope,
-                ScenarioTitle = scenarioScope
-            };
-            stepDefinitions.Add(stepDef);
-        }
+                stepDefinitions.Add(stepDef);
+            }
 
 
         return stepDefinitions.ToArray();
-    }
+        }
 
     private Hook CreateHookFromTableRow(DataTableRow tableRow)
     {
@@ -367,7 +374,7 @@ public class ProjectSystemSteps : Steps
     [When(@"I invoke the ""(.*)"" command without waiting for the tag changes")]
     public void WhenIInvokeTheCommandWithoutWaitingForTagger(string commandName)
     {
-        PerformCommand(commandName, waitForTager:false);
+        PerformCommand(commandName, waitForTager: false);
     }
 
     private void PerformCommand(string commandName, string parameter = null,
@@ -469,8 +476,8 @@ public class ProjectSystemSteps : Steps
                         taggerProvider,
                         new GherkinDocumentFormatter(),
                         new StubEditorConfigOptionsProvider());
-                _wpfTextView.SimulateType((AutoFormatTableCommand) _invokedCommand, parameter?[0] ?? '|',
-                        taggerProvider);
+                    _wpfTextView.SimulateType((AutoFormatTableCommand)_invokedCommand, parameter?[0] ?? '|',
+                            taggerProvider);
                     break;
                 }
             case "Define Steps":
@@ -656,7 +663,7 @@ public class ProjectSystemSteps : Steps
     [Then(@"all (.*) section should be highlighted as")]
     public void ThenTheStepKeywordsShouldBeHighlightedAs(string keywordType, string expectedContent)
     {
-        ThenAllSectionOfTypesShouldBeHighlightedAs(new[] {keywordType}, expectedContent);
+        ThenAllSectionOfTypesShouldBeHighlightedAs(new[] { keywordType }, expectedContent);
     }
 
     [Then(@"the tag links should target to the following URLs")]
@@ -664,7 +671,7 @@ public class ProjectSystemSteps : Steps
     {
         var tagSpans = GetVsTagSpans<UrlTag>(_wpfTextView,
             new DeveroomUrlTaggerProvider(CreateAggregatorFactory(), _ideScope)).ToArray();
-        var actualTagLinks = tagSpans.Select(t => new {Tag = t.Span.GetText(), URL = t.Tag.Url.ToString()});
+        var actualTagLinks = tagSpans.Select(t => new { Tag = t.Span.GetText(), URL = t.Tag.Url.ToString() });
         expectedTagLinksTable.CompareToSet(actualTagLinks);
     }
 
@@ -945,7 +952,7 @@ public class ProjectSystemSteps : Steps
         _completionBroker.Should().NotBeNull();
         var actualCompletions = _completionBroker.Completions
             .Where(c => filter?.Invoke(c.InsertionText) ?? true)
-            .Select(c => new {Item = c.InsertionText.Trim(), c.Description});
+            .Select(c => new { Item = c.InsertionText.Trim(), c.Description });
 
         expectedItemsTable.CompareToSet(actualCompletions);
     }
