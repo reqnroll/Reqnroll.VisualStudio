@@ -48,7 +48,7 @@ namespace Reqnroll.VisualStudio.Tests.Wizards.Infrastructure
 
             // Assert
             receivedMetadata.Should().NotBeNull();
-            receivedMetadata!.TestFrameworks.Should().Contain("Unique");
+            receivedMetadata!.TestFrameworkMetaData.Values.Select(fi => fi.Label).Should().Contain("Unique");
         }
 
         [Fact]
