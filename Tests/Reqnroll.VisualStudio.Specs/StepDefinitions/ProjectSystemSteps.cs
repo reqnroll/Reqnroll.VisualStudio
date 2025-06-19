@@ -127,10 +127,40 @@ public class ProjectSystemSteps : Steps
     [Given(@"the following step definitions in the project:")]
     public void WhenANewStepDefinitionIsAddedToTheProjectAs(Table stepDefinitionTable)
     {
-        var stepDefinitions = stepDefinitionTable.Rows.SelectMany(r => CreateStepDefinitionFromTableRow(r)).ToArray();
+        var stepDefinitions = stepDefinitionTable.CreateSet(CreateStepDefinitionFromTableRow).ToArray();
         RegisterStepDefinitions(stepDefinitions);
     }
 
+    [Given(@"the following step definition with mulitple Tag Scopes in the project:")]
+    public void GivenNewStepDefinitionsWithMultipleScopeTagsAreAddedToTheProjectAs(Table stepDefinitionTable)
+    {
+        var stepDefinitions = stepDefinitionTable.CreateSet(CreateStepDefinitionFromTableRow).ToArray();
+        var resultingStepDefinitions = new List<StepDefinition>();
+        // we expect that the Tag scope string in the table is a comma delimited set of tags to apply;
+        // So we will create a step definition for each such tag by using the built step def as a template.
+        foreach (var sd in stepDefinitions)
+        {
+            var taglist = sd.Scope.Tag.Split(',');
+            foreach (var t in taglist)
+            {
+                var stepDefToAdd = new StepDefinition
+                {
+                    Type = sd.Type,
+                    Method = sd.Method,
+                    Regex = sd.Regex,
+                    SourceLocation = sd.SourceLocation,
+                    Scope = new StepScope
+                    {
+                        Tag = t,
+                        FeatureTitle = sd.Scope.FeatureTitle,
+                        ScenarioTitle = sd.Scope.ScenarioTitle
+                    }
+                };
+                resultingStepDefinitions.Add(stepDefToAdd);
+            }
+        }
+        RegisterStepDefinitions(resultingStepDefinitions.ToArray());
+    }
     [Given("the following hooks in the project:")]
     public void GivenTheFollowingHooksInTheProject(DataTable hooksTable)
     {
@@ -138,7 +168,7 @@ public class ProjectSystemSteps : Steps
         RegisterHooks(hooks);
     }
 
-    private StepDefinition[] CreateStepDefinitionFromTableRow(DataTableRow tableRow)
+    private StepDefinition CreateStepDefinitionFromTableRow(DataTableRow tableRow)
     {
         var filePath = @"X:\ProjectMock\CalculatorSteps.cs";
         var line = _rnd.Next(1, 30);
@@ -150,9 +180,7 @@ public class ProjectSystemSteps : Steps
         var stepDefinition = new StepDefinition
         {
             Method = $"M{Guid.NewGuid():N}",
-            SourceLocation = filePath + $"|{line}|5",
-            Type = stepType,
-            Regex = regex
+            SourceLocation = filePath + $"|{line}|5"
         };
 
         tableRow.TryGetValue("tag scope", out var tagScopes);
@@ -166,41 +194,15 @@ public class ProjectSystemSteps : Steps
         if (string.IsNullOrEmpty(scenarioScope))
             scenarioScope = null;
 
-        if (tagScopes == null)
-        {
-            if (featureScope != null || scenarioScope != null)
-                stepDefinition.Scope = new StepScope
-                {
-                    Tag = tagScopes,
-                    FeatureTitle = featureScope,
-                    ScenarioTitle = scenarioScope
-                };
-            return [stepDefinition];
-        }
-        var tagScopeVariants = (tagScopes != null) ? tagScopes.Split(',').ToArray() : Array.Empty<string>();
-        var stepDefinitions = new List<StepDefinition>();
-
-        foreach (var tagScope in tagScopeVariants)
-        {
-            var stepDef = new StepDefinition
+        if (tagScopes != null || featureScope != null || scenarioScope != null)
+            stepDefinition.Scope = new StepScope
             {
-                Method = stepDefinition.Method,
-                SourceLocation = stepDefinition.SourceLocation,
-                Regex = stepDefinition.Regex,
-                Type = stepDefinition.Type,
-                Scope = new StepScope
-                {
-                    Tag = tagScope,
-                    FeatureTitle = featureScope,
-                    ScenarioTitle = scenarioScope
-                }
+                Tag = tagScopes,
+                FeatureTitle = featureScope,
+                ScenarioTitle = scenarioScope
             };
-                stepDefinitions.Add(stepDef);
-            }
-
-
-        return stepDefinitions.ToArray();
-        }
+        return stepDefinition;
+    }
 
     private Hook CreateHookFromTableRow(DataTableRow tableRow)
     {

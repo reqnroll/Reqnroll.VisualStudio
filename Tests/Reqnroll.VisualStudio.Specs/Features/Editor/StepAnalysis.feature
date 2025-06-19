@@ -276,9 +276,9 @@ Scenario: Matches combination scoped step definitions
 
 Scenario: Matches on multiple tags (without improperly highlighting as Ambiguous)
 	Given there is a Reqnroll project scope
-	And the following step definitions in the project:
-		| type | regex                               | tag scope          |
-		| When | I use a step with multiple tags     | @mytag1,@mytag2    |
+	And the following step definition with mulitple Tag Scopes in the project:
+		| type | regex                               | tag scope         |
+		| When | I use a step with multiple tags     | @mytag1,@mytag2   |
 	When the following feature file is opened in the editor
 		"""
 		Feature: Addition
