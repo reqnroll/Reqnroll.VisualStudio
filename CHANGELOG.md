@@ -2,9 +2,11 @@
 
 ## Improvements:
 
+* Generated regexes are prefixed with a caret (`^`) to ensure they are not interpreted as Cucumber expressions. (#98)
+
 ## Bug fixes:
 
-*Contributors of this release (in alphabetical order):* 
+*Contributors of this release (in alphabetical order):* @304NotModified
 
 # v2025.1.256 - 2025-03-07
 
