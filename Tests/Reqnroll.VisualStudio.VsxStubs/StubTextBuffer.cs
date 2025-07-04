@@ -94,6 +94,7 @@ public class StubTextBuffer : ITextBuffer2
         var beforeSnapshot = CurrentStubSnapshot;
         var afterSnapshot = CurrentStubSnapshot = CurrentStubSnapshot.CreateNext();
 
+        //VS invokes this event multiple times for some reason
         _changedOnBackground?.Invoke(this,
             new TextContentChangedEventArgs(beforeSnapshot, afterSnapshot, EditOptions.None, string.Empty));
         _changedOnBackground?.Invoke(this,
