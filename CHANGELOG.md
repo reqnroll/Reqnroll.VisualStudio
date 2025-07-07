@@ -2,9 +2,13 @@
 
 ## Improvements:
 
+* Generated regexes are prefixed with a caret (`^`) to ensure they are not interpreted as Cucumber expressions. (#98)
+
 ## Bug fixes:
+
 * Fix: Ambiguous steps reported wehn definition matches via more than one tag (#95)
-*Contributors of this release (in alphabetical order):* @clrudolphi
+
+*Contributors of this release (in alphabetical order):* @304NotModified, @clrudolphi
 
 # v2025.1.256 - 2025-03-07
 

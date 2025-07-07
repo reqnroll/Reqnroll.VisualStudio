@@ -11,7 +11,8 @@ public class RegexStepDefinitionSkeletonProvider : DeveroomStepDefinitionSkeleto
 
     protected override string GetExpression(AnalyzedStepText stepText)
     {
-        StringBuilder result = new StringBuilder();
+        // Prefix regex with ^ to ensure that it's detected as regex instead of a cucumber expression.  
+        StringBuilder result = new StringBuilder("^");
 
         result.Append(EscapeRegex(stepText.TextParts[0]));
         for (int i = 1; i < stepText.TextParts.Count; i++)
