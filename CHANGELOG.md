@@ -6,7 +6,9 @@
 
 ## Bug fixes:
 
-*Contributors of this release (in alphabetical order):* @304NotModified
+* Fix: Ambiguous steps reported wehn definition matches via more than one tag (#95)
+
+*Contributors of this release (in alphabetical order):* @304NotModified, @clrudolphi
 
 # v2025.1.256 - 2025-03-07
 

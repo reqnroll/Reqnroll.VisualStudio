@@ -15,8 +15,8 @@ public class FeatureFileTaggerTests
         //arrange
         using var sut = TaggerSut.Arrange(_testOutputHelper);
         var parserInvoked = false;
-        sut.TagParser.Setup(s => s.Parse(It.IsAny<ITextSnapshot>()))
-            .Returns(() =>
+        sut.TagParser.Parse(Arg.Any<ITextSnapshot>())
+            .Returns(_ =>
             {
                 parserInvoked = true;
                 return ImmutableArray<DeveroomTag>.Empty;
@@ -40,11 +40,12 @@ public class FeatureFileTaggerTests
         IReadOnlyCollection<DeveroomTag> parseResult = ImmutableArray<DeveroomTag>.Empty;
 
         sut.TagParser
-            .Setup(s => s.Parse(It.IsAny<ITextSnapshot>()))
-            .Returns<ITextSnapshot>(snapShot =>
+            .Parse(Arg.Any<ITextSnapshot>())
+            .Returns(callInfo =>
             {
+                var snapshot = callInfo.Arg<ITextSnapshot>();
                 return parseResult = Enumerable
-                    .Repeat(() => new DeveroomTag(string.Empty, new SnapshotSpan(snapShot, 0, 0)), 10)
+                    .Repeat(() => new DeveroomTag(string.Empty, new SnapshotSpan(snapshot, 0, 0)), 10)
                     .Select(d => d())
                     .ToImmutableArray();
             });
@@ -94,13 +95,13 @@ public class FeatureFileTaggerTests
         using var sut = TaggerSut.Arrange(_testOutputHelper);
 
         sut.BuildInitializedFeatureFileTagger();
-        sut.TagParser.Verify(s => s.Parse(It.IsAny<ITextSnapshot>()), Times.Once);
+        sut.TagParser.Received(1).Parse(Arg.Any<ITextSnapshot>());
 
         //act
         sut.StubTextBuffer.InvokeChangedOnBackground();
 
         //assert
-        sut.TagParser.Verify(s => s.Parse(It.IsAny<ITextSnapshot>()), Times.Exactly(2));
+        sut.TagParser.Received(2).Parse(Arg.Any<ITextSnapshot>());
     }
 
     [Fact]
@@ -112,12 +113,13 @@ public class FeatureFileTaggerTests
         IReadOnlyCollection<DeveroomTag> parseResult = ImmutableArray.Create<DeveroomTag>(VoidDeveroomTag.Instance);
 
         sut.TagParser
-            .Setup(s => s.Parse(It.IsAny<ITextSnapshot>()))
-            .Returns<ITextSnapshot>(snapShot =>
+            .Parse(Arg.Any<ITextSnapshot>())
+            .Returns(callInfo =>
             {
+                var snapshot = callInfo.Arg<ITextSnapshot>();
                 parseResult.Should().HaveCount(1, "the initial parse is called only");
                 return parseResult = Enumerable
-                    .Repeat(() => new DeveroomTag(string.Empty, new SnapshotSpan(snapShot, 0, 0)), 10)
+                    .Repeat(() => new DeveroomTag(string.Empty, new SnapshotSpan(snapshot, 0, 0)), 10)
                     .Select(d => d())
                     .ToImmutableArray();
             });
@@ -157,13 +159,14 @@ public class FeatureFileTaggerTests
         }
 
         sut.TagParser
-            .Setup(s => s.Parse(It.IsAny<ITextSnapshot>()))
-            .Returns<ITextSnapshot>(snapshot =>
+            .Parse(Arg.Any<ITextSnapshot>())
+            .Returns(callInfo =>
             {
+                var snapshot = callInfo.Arg<ITextSnapshot>();
                 parseResult.Should().BeEmpty("the initial parse is called only");
                 return parseResult = Enumerable.Range(0, 10)
-                    .Select(i => TagFactory(i, snapshot))
-                    .ToImmutableArray();
+                                               .Select(i => TagFactory(i, snapshot))
+                                               .ToImmutableArray();
             });
 
         var tagger = sut.BuildInitializedFeatureFileTagger();
@@ -183,13 +186,13 @@ public class FeatureFileTaggerTests
     {
         //arrange
         using var sut = TaggerSut.Arrange(_testOutputHelper);
-        var discoveryService = new Mock<IDiscoveryService>(MockBehavior.Strict);
-        sut.ProjectScope.Properties.AddProperty(typeof(IDiscoveryService), discoveryService.Object);
+        var discoveryService = Substitute.For<IDiscoveryService>();
+        sut.ProjectScope.Properties.AddProperty(typeof(IDiscoveryService), discoveryService);
         sut.BuildInitializedFeatureFileTagger();
         sut.WaitForTagsChangedEvent();
 
         //act
-        discoveryService.Raise(ds => ds.WeakBindingRegistryChanged -= null!, EventArgs.Empty);
+        discoveryService.WeakBindingRegistryChanged -= Raise.Event<EventHandler<EventArgs>>(EventArgs.Empty);
 
         //assert
         sut.WaitForTagsChangedEvent().Should().HaveCount(2);
@@ -223,25 +226,26 @@ public class FeatureFileTaggerTests
     {
         //arrange
         using var sut = TaggerSut.Arrange(_testOutputHelper);
-        var configurationProvider = new Mock<IDeveroomConfigurationProvider>(MockBehavior.Strict);
+        var configurationProvider = Substitute.For<IDeveroomConfigurationProvider>();
         sut.ProjectScope.Properties.RemoveProperty(typeof(IDeveroomConfigurationProvider));
-        sut.ProjectScope.Properties.AddProperty(typeof(IDeveroomConfigurationProvider), configurationProvider.Object);
-        var discoveryService = new Mock<IDiscoveryService>(MockBehavior.Strict);
-        sut.ProjectScope.Properties.AddProperty(typeof(IDiscoveryService), discoveryService.Object);
+        sut.ProjectScope.Properties.AddProperty(typeof(IDeveroomConfigurationProvider), configurationProvider);
+
+        var discoveryService = Substitute.For<IDiscoveryService>();
+        sut.ProjectScope.Properties.AddProperty(typeof(IDiscoveryService), discoveryService);
         sut.BuildFeatureFileTagger();
 
         //act
-        sut.StubTextBuffer.StubContentType = sut.StubTextBuffer.StubContentType with {TypeName = "inert"};
-        discoveryService.Raise(ds => ds.WeakBindingRegistryChanged -= null!, EventArgs.Empty);
+        sut.StubTextBuffer.StubContentType = sut.StubTextBuffer.StubContentType with { TypeName = "inert" };
+        discoveryService.WeakBindingRegistryChanged -= Raise.Event<EventHandler<EventArgs>>(EventArgs.Empty);
 
         //assert
         sut.StubTextBuffer.Properties.TryGetProperty<ITagger<DeveroomTag>>(typeof(ITagger<DeveroomTag>), out var _)
-            .Should()
-            .BeFalse();
-        discoveryService.VerifyRemove(m => m.WeakBindingRegistryChanged -= It.IsAny<EventHandler<EventArgs>>());
-        configurationProvider.VerifyRemove(m => m.WeakConfigurationChanged -= It.IsAny<EventHandler<EventArgs>>());
-        sut.StubTextBuffer.VerifyRemove(
-            tb => tb.ChangedOnBackground -= It.IsAny<EventHandler<TextContentChangedEventArgs>>());
+           .Should()
+           .BeFalse();
+
+        discoveryService.Received().WeakBindingRegistryChanged -= Arg.Any<EventHandler<EventArgs>>();
+        configurationProvider.Received().WeakConfigurationChanged -= Arg.Any<EventHandler<EventArgs>>();
+        sut.StubTextBuffer.Received().ChangedOnBackground -= Arg.Any<EventHandler<TextContentChangedEventArgs>>();
     }
 
     [Fact]

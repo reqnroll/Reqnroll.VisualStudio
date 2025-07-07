@@ -72,16 +72,16 @@ public class ProjectBindingRegistryCacheTests
     {
         //arrange
         var start = DateTimeOffset.UtcNow;
-        var ideScope = new Mock<IIdeScope>(MockBehavior.Strict);
+        var ideScope = Substitute.For<IIdeScope>();
         var stubLogger = new StubLogger();
         var logger = new DeveroomCompositeLogger();
         logger.Add(new DeveroomXUnitLogger(_testOutputHelper));
         logger.Add(stubLogger);
 
-        ideScope.SetupGet(s => s.Logger).Returns(logger);
-        ideScope.Setup(s => s.CalculateSourceLocationTrackingPositions(It.IsAny<IEnumerable<SourceLocation>>()));
+        ideScope.Logger.Returns(logger);
+        ideScope.CalculateSourceLocationTrackingPositions(Arg.Any<IEnumerable<SourceLocation>>());
 
-        var projectBindingRegistryCache = new ProjectBindingRegistryCache(ideScope.Object);
+        var projectBindingRegistryCache = new ProjectBindingRegistryCache(ideScope);
 
         var oldVersions = new ConcurrentQueue<int>();
         var initialRegistry = new ProjectBindingRegistry(Array.Empty<ProjectStepDefinitionBinding>(), Array.Empty<ProjectHookBinding>(), 123456);

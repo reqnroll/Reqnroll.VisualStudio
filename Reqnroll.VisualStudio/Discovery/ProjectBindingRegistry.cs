@@ -7,6 +7,7 @@ public record ProjectBindingRegistry
     private const string DocStringDefaultTypeName = TypeShortcuts.StringType;
     public static ProjectBindingRegistry Invalid = new(ImmutableArray<ProjectStepDefinitionBinding>.Empty, ImmutableArray<ProjectHookBinding>.Empty);
 
+    private static ProjectBindingImplementationEqualityComparer _equalityComparerForProjectBindingImplementations = new();
     private static int _versionCounter;
 
     private ProjectBindingRegistry(IEnumerable<ProjectStepDefinitionBinding> stepDefinitions, IEnumerable<ProjectHookBinding> hooks)
@@ -186,7 +187,14 @@ public record ProjectBindingRegistry
             var matchesWithScope = sdMatches.Where(m =>
                 m.MatchedStepDefinition.Scope != null).ToArray();
             if (matchesWithScope.Any())
-                sdMatches = matchesWithScope;
+            {
+                // Group matches by everything except the Scope property
+                // and take the first item from each group
+                sdMatches = matchesWithScope
+                    .GroupBy(m => m.MatchedStepDefinition.Implementation, _equalityComparerForProjectBindingImplementations)
+                    .Select(g => g.First())
+                    .ToArray();
+            }
         }
 
         return sdMatches;
