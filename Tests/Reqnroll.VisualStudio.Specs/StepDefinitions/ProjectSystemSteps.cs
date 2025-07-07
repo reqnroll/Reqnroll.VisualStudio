@@ -21,7 +21,7 @@ public class ProjectSystemSteps : Steps
         _ideScope.SetupFireAndForgetOnBackgroundThread((action, callerName) =>  action(_ideScope.BackgroundTaskTokenSource.Token));
     }
 
-    private StubIdeActions ActionsMock => (StubIdeActions) _ideScope.Actions;
+    private StubIdeActions ActionsMock => (StubIdeActions)_ideScope.Actions;
 
     [Given(@"there is a Reqnroll project scope")]
     public void GivenThereIsAReqnrollProjectScope()
@@ -125,6 +125,36 @@ public class ProjectSystemSteps : Steps
         RegisterStepDefinitions(stepDefinitions);
     }
 
+    [Given(@"the following step definition with mulitple Tag Scopes in the project:")]
+    public void GivenNewStepDefinitionsWithMultipleScopeTagsAreAddedToTheProjectAs(Table stepDefinitionTable)
+    {
+        var stepDefinitions = stepDefinitionTable.CreateSet(CreateStepDefinitionFromTableRow).ToArray();
+        var resultingStepDefinitions = new List<StepDefinition>();
+        // we expect that the Tag scope string in the table is a comma delimited set of tags to apply;
+        // So we will create a step definition for each such tag by using the built step def as a template.
+        foreach (var sd in stepDefinitions)
+        {
+            var taglist = sd.Scope.Tag.Split(',');
+            foreach (var t in taglist)
+            {
+                var stepDefToAdd = new StepDefinition
+                {
+                    Type = sd.Type,
+                    Method = sd.Method,
+                    Regex = sd.Regex,
+                    SourceLocation = sd.SourceLocation,
+                    Scope = new StepScope
+                    {
+                        Tag = t,
+                        FeatureTitle = sd.Scope.FeatureTitle,
+                        ScenarioTitle = sd.Scope.ScenarioTitle
+                    }
+                };
+                resultingStepDefinitions.Add(stepDefToAdd);
+            }
+        }
+        RegisterStepDefinitions(resultingStepDefinitions.ToArray());
+    }
     [Given("the following hooks in the project:")]
     public void GivenTheFollowingHooksInTheProject(DataTable hooksTable)
     {
@@ -136,33 +166,35 @@ public class ProjectSystemSteps : Steps
     {
         var filePath = @"X:\ProjectMock\CalculatorSteps.cs";
         var line = _rnd.Next(1, 30);
+        _projectScope.AddFile(filePath, string.Empty);
+
+        tableRow.TryGetValue("regex", out var regex);
+        tableRow.TryGetValue("type", out var stepType);
+
         var stepDefinition = new StepDefinition
         {
             Method = $"M{Guid.NewGuid():N}",
             SourceLocation = filePath + $"|{line}|5"
         };
 
-        tableRow.TryGetValue("tag scope", out var tagScope);
+        tableRow.TryGetValue("tag scope", out var tagScopes);
         tableRow.TryGetValue("feature scope", out var featureScope);
         tableRow.TryGetValue("scenario scope", out var scenarioScope);
 
-        if (string.IsNullOrEmpty(tagScope))
-            tagScope = null;
+        if (string.IsNullOrEmpty(tagScopes))
+            tagScopes = null;
         if (string.IsNullOrEmpty(featureScope))
             featureScope = null;
         if (string.IsNullOrEmpty(scenarioScope))
             scenarioScope = null;
 
-        if (tagScope != null || featureScope != null || scenarioScope != null)
+        if (tagScopes != null || featureScope != null || scenarioScope != null)
             stepDefinition.Scope = new StepScope
             {
-                Tag = tagScope,
+                Tag = tagScopes,
                 FeatureTitle = featureScope,
                 ScenarioTitle = scenarioScope
             };
-
-        _projectScope.AddFile(filePath, string.Empty);
-
         return stepDefinition;
     }
 
@@ -338,7 +370,7 @@ public class ProjectSystemSteps : Steps
     [When(@"I invoke the ""(.*)"" command without waiting for the tag changes")]
     public void WhenIInvokeTheCommandWithoutWaitingForTagger(string commandName)
     {
-        PerformCommand(commandName, waitForTager:false);
+        PerformCommand(commandName, waitForTager: false);
     }
 
     private void PerformCommand(string commandName, string parameter = null,
@@ -354,33 +386,33 @@ public class ProjectSystemSteps : Steps
         switch (commandName)
         {
             case "Go To Definition":
-            {
-                _invokedCommand = new GoToDefinitionCommand(
-                    _ideScope,
-                    aggregatorFactoryService,
-                    taggerProvider);
-                _invokedCommand.PreExec(_wpfTextView, _invokedCommand.Targets.First());
-                return;
-            }
+                {
+                    _invokedCommand = new GoToDefinitionCommand(
+                        _ideScope,
+                        aggregatorFactoryService,
+                        taggerProvider);
+                    _invokedCommand.PreExec(_wpfTextView, _invokedCommand.Targets.First());
+                    return;
+                }
             case "Go To Hooks":
-            {
-                _invokedCommand = new GoToHooksCommand(
-                    _ideScope,
-                    aggregatorFactoryService,
-                    taggerProvider);
-                _invokedCommand.PreExec(_wpfTextView, _invokedCommand.Targets.First());
-                return;
-            }
+                {
+                    _invokedCommand = new GoToHooksCommand(
+                        _ideScope,
+                        aggregatorFactoryService,
+                        taggerProvider);
+                    _invokedCommand.PreExec(_wpfTextView, _invokedCommand.Targets.First());
+                    return;
+                }
             case "Find Step Definition Usages":
-            {
-                _invokedCommand = new FindStepDefinitionUsagesCommand(
-                    _ideScope,
-                    aggregatorFactoryService,
-                    taggerProvider);
-                _invokedCommand.PreExec(_wpfTextView, _invokedCommand.Targets.First());
-                Wait.For(() => ActionsMock.IsComplete.Should().BeTrue());
-                return;
-            }
+                {
+                    _invokedCommand = new FindStepDefinitionUsagesCommand(
+                        _ideScope,
+                        aggregatorFactoryService,
+                        taggerProvider);
+                    _invokedCommand.PreExec(_wpfTextView, _invokedCommand.Targets.First());
+                    Wait.For(() => ActionsMock.IsComplete.Should().BeTrue());
+                    return;
+                }
             case "Find Unused Step Definitions":
                 {
                     _invokedCommand = new FindUnusedStepDefinitionsCommand(
@@ -392,73 +424,73 @@ public class ProjectSystemSteps : Steps
                     return;
                 }
             case "Comment":
-            {
-               _invokedCommand = new CommentCommand(
-                    _ideScope,
-                    aggregatorFactoryService,
-                    taggerProvider);
-                _invokedCommand.PreExec(_wpfTextView, _invokedCommand.Targets.First());
-                break;
-            }
+                {
+                    _invokedCommand = new CommentCommand(
+                         _ideScope,
+                         aggregatorFactoryService,
+                         taggerProvider);
+                    _invokedCommand.PreExec(_wpfTextView, _invokedCommand.Targets.First());
+                    break;
+                }
             case "Uncomment":
-            {
-                _invokedCommand = new UncommentCommand(
-                    _ideScope,
-                    aggregatorFactoryService,
-                    taggerProvider);
-                _invokedCommand.PreExec(_wpfTextView, _invokedCommand.Targets.First());
-                
-                break;
-            }
+                {
+                    _invokedCommand = new UncommentCommand(
+                        _ideScope,
+                        aggregatorFactoryService,
+                        taggerProvider);
+                    _invokedCommand.PreExec(_wpfTextView, _invokedCommand.Targets.First());
+
+                    break;
+                }
             case "Auto Format Document":
-            {
-                _invokedCommand = new AutoFormatDocumentCommand(
-                    _ideScope,
-                    aggregatorFactoryService,
-                    taggerProvider,
-                    new GherkinDocumentFormatter(),
-                    new StubEditorConfigOptionsProvider());
-                _invokedCommand.PreExec(_wpfTextView, AutoFormatDocumentCommand.FormatDocumentKey);
-                break;
-            }
+                {
+                    _invokedCommand = new AutoFormatDocumentCommand(
+                        _ideScope,
+                        aggregatorFactoryService,
+                        taggerProvider,
+                        new GherkinDocumentFormatter(),
+                        new StubEditorConfigOptionsProvider());
+                    _invokedCommand.PreExec(_wpfTextView, AutoFormatDocumentCommand.FormatDocumentKey);
+                    break;
+                }
             case "Auto Format Selection":
-            {
-                _invokedCommand = new AutoFormatDocumentCommand(
-                    _ideScope,
-                    aggregatorFactoryService,
-                    taggerProvider,
-                    new GherkinDocumentFormatter(),
-                    new StubEditorConfigOptionsProvider());
-                _invokedCommand.PreExec(_wpfTextView, AutoFormatDocumentCommand.FormatSelectionKey);
-                break;
-            }
+                {
+                    _invokedCommand = new AutoFormatDocumentCommand(
+                        _ideScope,
+                        aggregatorFactoryService,
+                        taggerProvider,
+                        new GherkinDocumentFormatter(),
+                        new StubEditorConfigOptionsProvider());
+                    _invokedCommand.PreExec(_wpfTextView, AutoFormatDocumentCommand.FormatSelectionKey);
+                    break;
+                }
             case "Auto Format Table":
-            {
-                _invokedCommand = new AutoFormatTableCommand(
-                    _ideScope,
-                    aggregatorFactoryService,
-                    taggerProvider,
-                    new GherkinDocumentFormatter(),
-                    new StubEditorConfigOptionsProvider());
-                _wpfTextView.SimulateType((AutoFormatTableCommand) _invokedCommand, parameter?[0] ?? '|',
-                    taggerProvider);
-                break;
-            }
+                {
+                    _invokedCommand = new AutoFormatTableCommand(
+                        _ideScope,
+                        aggregatorFactoryService,
+                        taggerProvider,
+                        new GherkinDocumentFormatter(),
+                        new StubEditorConfigOptionsProvider());
+                    _wpfTextView.SimulateType((AutoFormatTableCommand)_invokedCommand, parameter?[0] ?? '|',
+                            taggerProvider);
+                    break;
+                }
             case "Define Steps":
-            {
-                _invokedCommand = new DefineStepsCommand(_ideScope, aggregatorFactoryService, taggerProvider);
-                _invokedCommand.PreExec(_wpfTextView, _invokedCommand.Targets.First());
-                return;
-            }
+                {
+                    _invokedCommand = new DefineStepsCommand(_ideScope, aggregatorFactoryService, taggerProvider);
+                    _invokedCommand.PreExec(_wpfTextView, _invokedCommand.Targets.First());
+                    return;
+                }
             case "Complete":
             case "Filter Completion":
-            {
-                EnsureStubCompletionBroker();
-                _invokedCommand = new CompleteCommand(
-                    _ideScope,
-                    aggregatorFactoryService,
-                    taggerProvider,
-                    _completionBroker);
+                {
+                    EnsureStubCompletionBroker();
+                    _invokedCommand = new CompleteCommand(
+                        _ideScope,
+                        aggregatorFactoryService,
+                        taggerProvider,
+                        _completionBroker);
                     if (parameter == null)
                     {
                         _invokedCommand.PreExec(_wpfTextView, commandTargetKey ?? _invokedCommand.Targets.First());
@@ -466,18 +498,18 @@ public class ProjectSystemSteps : Steps
                     }
                     else
                         _wpfTextView.SimulateTypeText((CompleteCommand)_invokedCommand, parameter, taggerProvider);
-                break;
-            }
+                    break;
+                }
             case "Rename Step":
-            {
-                _invokedCommand = new RenameStepCommand(
-                    _ideScope,
-                    aggregatorFactoryService,
-                    taggerProvider);
-                _invokedCommand.PreExec(_wpfTextView, _invokedCommand.Targets.First());
+                {
+                    _invokedCommand = new RenameStepCommand(
+                        _ideScope,
+                        aggregatorFactoryService,
+                        taggerProvider);
+                    _invokedCommand.PreExec(_wpfTextView, _invokedCommand.Targets.First());
 
-                break;
-            }
+                    break;
+                }
             default:
                 throw new NotImplementedException(commandName);
         }
@@ -627,7 +659,7 @@ public class ProjectSystemSteps : Steps
     [Then(@"all (.*) section should be highlighted as")]
     public void ThenTheStepKeywordsShouldBeHighlightedAs(string keywordType, string expectedContent)
     {
-        ThenAllSectionOfTypesShouldBeHighlightedAs(new[] {keywordType}, expectedContent);
+        ThenAllSectionOfTypesShouldBeHighlightedAs(new[] { keywordType }, expectedContent);
     }
 
     [Then(@"the tag links should target to the following URLs")]
@@ -635,7 +667,7 @@ public class ProjectSystemSteps : Steps
     {
         var tagSpans = GetVsTagSpans<UrlTag>(_wpfTextView,
             new DeveroomUrlTaggerProvider(CreateAggregatorFactory(), _ideScope)).ToArray();
-        var actualTagLinks = tagSpans.Select(t => new {Tag = t.Span.GetText(), URL = t.Tag.Url.ToString()});
+        var actualTagLinks = tagSpans.Select(t => new { Tag = t.Span.GetText(), URL = t.Tag.Url.ToString() });
         expectedTagLinksTable.CompareToSet(actualTagLinks);
     }
 
@@ -916,7 +948,7 @@ public class ProjectSystemSteps : Steps
         _completionBroker.Should().NotBeNull();
         var actualCompletions = _completionBroker.Completions
             .Where(c => filter?.Invoke(c.InsertionText) ?? true)
-            .Select(c => new {Item = c.InsertionText.Trim(), c.Description});
+            .Select(c => new { Item = c.InsertionText.Trim(), c.Description });
 
         expectedItemsTable.CompareToSet(actualCompletions);
     }
