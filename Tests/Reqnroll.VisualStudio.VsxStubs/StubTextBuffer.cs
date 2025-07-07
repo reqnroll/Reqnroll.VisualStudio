@@ -1,20 +1,26 @@
 namespace Reqnroll.VisualStudio.VsxStubs;
 
-public class StubTextBuffer : Mock<ITextBuffer2>, ITextBuffer2
+public class StubTextBuffer : ITextBuffer2
 {
-    public StubTextBuffer(IProjectScope projectScope) : base(MockBehavior.Strict)
+    private readonly ITextBuffer2 _substitute;
+
+    public StubTextBuffer(IProjectScope projectScope)
     {
+        _substitute = Substitute.For<ITextBuffer2>();
+
         Properties = new PropertyCollection();
         Properties.AddProperty(typeof(IProjectScope), projectScope);
         CurrentStubSnapshot = StubTextSnapshot.FromTextBuffer(this);
 
-        var contentType = new Mock<IContentType>(MockBehavior.Strict);
-        contentType.Setup(t => t.IsOfType(VsContentTypes.FeatureFile)).Returns(true);
-        StubContentType = new StubContentType(Array.Empty<IContentType>(), VsContentTypes.FeatureFile,
-            VsContentTypes.FeatureFile);
+        var contentType = Substitute.For<IContentType>();
+        contentType.IsOfType(VsContentTypes.FeatureFile).Returns(true);
+        StubContentType = new StubContentType(Array.Empty<IContentType>(), VsContentTypes.FeatureFile, VsContentTypes.FeatureFile);
 
-        SetupAdd(tb => tb.ChangedOnBackground += It.IsAny<EventHandler<TextContentChangedEventArgs>>());
-        SetupRemove(tb => tb.ChangedOnBackground -= It.IsAny<EventHandler<TextContentChangedEventArgs>>());
+        _substitute.When(tb => tb.ChangedOnBackground += Arg.Any<EventHandler<TextContentChangedEventArgs>>())
+                   .Do(info => _changedOnBackground += info.Arg<EventHandler<TextContentChangedEventArgs>>());
+
+        _substitute.When(tb => tb.ChangedOnBackground -= Arg.Any<EventHandler<TextContentChangedEventArgs>>())
+                   .Do(info => _changedOnBackground -= info.Arg<EventHandler<TextContentChangedEventArgs>>());
     }
 
     public StubContentType StubContentType { get; set; }
@@ -71,16 +77,8 @@ public class StubTextBuffer : Mock<ITextBuffer2>, ITextBuffer2
 
     public event EventHandler<TextContentChangedEventArgs>? ChangedOnBackground
     {
-        add
-        {
-            Object.ChangedOnBackground += value;
-            _changedOnBackground += value;
-        }
-        remove
-        {
-            Object.ChangedOnBackground -= value;
-            _changedOnBackground -= value;
-        }
+        add => _substitute.ChangedOnBackground += value;
+        remove => _substitute.ChangedOnBackground -= value;
     }
 
     private event EventHandler<TextContentChangedEventArgs>? _changedOnBackground;

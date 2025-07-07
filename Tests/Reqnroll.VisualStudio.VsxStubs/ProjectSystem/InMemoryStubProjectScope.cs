@@ -1,6 +1,6 @@
 namespace Reqnroll.VisualStudio.VsxStubs.ProjectSystem;
 
-public class InMemoryStubProjectScope : Mock<IProjectScope>, IProjectScope
+public class InMemoryStubProjectScope : IProjectScope
 {
     public List<NuGetPackageReference> PackageReferencesList = new();
 

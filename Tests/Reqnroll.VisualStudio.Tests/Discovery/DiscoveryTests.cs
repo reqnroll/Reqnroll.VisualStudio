@@ -21,20 +21,16 @@ public class DiscoveryTests
 
     private Sut ArrangeSut()
     {
-        var bindingRegistryCache = new StubProjectBindingRegistryCache();
+        var bindingRegistryCache = Substitute.ForPartsOf<StubProjectBindingRegistryCache>();
         var projectScope = new InMemoryStubProjectScope(_testOutputHelper);
         var discoveryResultProvider = new StubDiscoveryResultProvider();
 #pragma warning disable VSTHRD002
-        projectScope.StubIdeScope
-            .Setup(
-                s => s.FireAndForgetOnBackgroundThread(It.IsAny<Func<CancellationToken, Task>>(), It.IsAny<string>()))
-            .Callback((Func<CancellationToken, Task> action, string _)
-                => action(projectScope.StubIdeScope.BackgroundTaskTokenSource.Token).Wait());
+        projectScope.StubIdeScope.SetupFireAndForgetOnBackgroundThread((action, callerName) => action(projectScope.StubIdeScope.BackgroundTaskTokenSource.Token).Wait());
 #pragma warning restore VSTHRD002
 
         InMemoryStubProjectBuilder.CreateOutputAssembly(projectScope);
 
-        return new Sut(bindingRegistryCache, projectScope, discoveryResultProvider);
+        return Substitute.For<Sut>(bindingRegistryCache, projectScope, discoveryResultProvider);
     }
 
     [Fact]
@@ -48,8 +44,7 @@ public class DiscoveryTests
         discoveryService.TriggerDiscovery();
 
         //assert
-        sut.BindingRegistryCache.Verify(c =>
-            c.Update(It.IsAny<Func<ProjectBindingRegistry, Task<ProjectBindingRegistry>>>()));
+        sut.BindingRegistryCache.Received().Update(Arg.Any<Func<ProjectBindingRegistry, Task<ProjectBindingRegistry>>>());
         sut.BindingRegistryCache.Value.Version.Should().NotBe(1);
     }
 
@@ -65,8 +60,7 @@ public class DiscoveryTests
         triggerEvent.Data(sut);
 
         //assert
-        sut.BindingRegistryCache.Verify(c =>
-            c.Update(It.IsAny<Func<ProjectBindingRegistry, Task<ProjectBindingRegistry>>>()));
+        sut.BindingRegistryCache.Received().Update(Arg.Any<Func<ProjectBindingRegistry, Task<ProjectBindingRegistry>>>());
         sut.BindingRegistryCache.Value.Version.Should().NotBe(1);
     }
 
@@ -84,9 +78,7 @@ public class DiscoveryTests
         triggerEvent.Data(sut);
 
         //assert
-        sut.BindingRegistryCache.Verify(c =>
-                c.Update(It.IsAny<Func<ProjectBindingRegistry, Task<ProjectBindingRegistry>>>()), Times.Once,
-            "the cache update have to be called only once when the project haven't changed");
+        sut.BindingRegistryCache.Received(1).Update(Arg.Any<Func<ProjectBindingRegistry, Task<ProjectBindingRegistry>>>()); // the cache update have to be called only once when the project haven't changed
         sut.BindingRegistryCache.Value.Should().BeSameAs(bindingRegistry, "the cache must not be modified");
         sut.ProjectScope.StubIdeScope.StubLogger.Messages.Where(m => m == "Projects built or settings initialized")
             .Should().HaveCount(2, "the event is fired twice");

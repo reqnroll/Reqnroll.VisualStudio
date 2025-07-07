@@ -6,8 +6,8 @@ namespace Reqnroll.VisualStudio.VsxStubs.StepDefinitions;
 public class MockableDiscoveryService : DiscoveryService
 {
     public MockableDiscoveryService(IProjectScope projectScope,
-        Mock<IDiscoveryResultProvider> discoveryResultProviderMock)
-        : base(projectScope, discoveryResultProviderMock.Object, new ProjectBindingRegistryCache(projectScope.IdeScope))
+        IDiscoveryResultProvider discoveryResultProviderMock)
+        : base(projectScope, discoveryResultProviderMock, new ProjectBindingRegistryCache(projectScope.IdeScope))
     {
     }
 
@@ -23,7 +23,7 @@ public class MockableDiscoveryService : DiscoveryService
     public static MockableDiscoveryService SetupWithInitialStepDefinitions(IProjectScope projectScope,
         StepDefinition[] stepDefinitions, TimeSpan discoveryDelay)
     {
-        var discoveryResultProviderMock = new Mock<IDiscoveryResultProvider>(MockBehavior.Strict);
+        var discoveryResultProviderMock = Substitute.For<IDiscoveryResultProvider>();
 
         var allStepDefinitions = new List<StepDefinition>();
         foreach (var stepDefinition in stepDefinitions)
@@ -60,8 +60,8 @@ public class MockableDiscoveryService : DiscoveryService
         InMemoryStubProjectBuilder.CreateOutputAssembly(projectScope);
 
         discoveryResultProviderMock
-            .Setup(ds => ds.RunDiscovery(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<ProjectSettings>()))
-            .Returns(() =>
+            .RunDiscovery(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<ProjectSettings>())
+            .Returns(_ =>
             {
                 Thread.Sleep(discoveryDelay); //make it a bit more realistic
                 return discoveryService.LastDiscoveryResult;

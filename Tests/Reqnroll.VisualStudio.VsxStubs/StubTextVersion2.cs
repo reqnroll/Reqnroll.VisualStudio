@@ -10,10 +10,10 @@ public record StubTextVersion2(
     : ITextVersion2
 {
     public static StubTextVersion2 Default = new(
-        Mock.Of<INormalizedTextChangeCollection>(m => m.Count == 0, MockBehavior.Strict),
+        Substitute.For<INormalizedTextChangeCollection>(),
         0,
-        0, Mock.Of<ITextBuffer>(MockBehavior.Strict),
-        0, Mock.Of<ITextImageVersion>(MockBehavior.Strict));
+        0, Substitute.For<ITextBuffer>(),
+        0, Substitute.For<ITextImageVersion>());
 
     [CanBeNull] public ITextVersion Next { get; private set; } = null!;
 
