@@ -14,6 +14,7 @@
 		<Button Click="Test_UpgradeDialog">Test upgrade dialog</Button>
         <Button Click="Test_UpgradeDialogRealChangelog">Test upgrade dialog (real changelog)</Button>
 		<Button Click="Test_ProjectTemplateWizard">Test Project Template Wizard</Button>
+		<Button Click="Test_ProjectTemplateWizardWithMetadataProvider">Test Project Template Wizard (with metadata provider)</Button>
 		<Button Click="Test_RenameStep">Test Rename Step</Button>
 	</StackPanel>
 </Window>
