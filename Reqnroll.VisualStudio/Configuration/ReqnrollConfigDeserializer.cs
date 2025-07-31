@@ -15,7 +15,7 @@ public class ReqnrollConfigDeserializer : IConfigDeserializer<DeveroomConfigurat
             config.DefaultFeatureLanguage = featureLanguage;
         if (reqnrollJsonConfiguration.Language != null &&
             reqnrollJsonConfiguration.Language.TryGetValue("binding", out var bindingCulture))
-            config.DefaultFeatureLanguage = bindingCulture;
+            config.ConfiguredBindingCulture = bindingCulture;
         if (reqnrollJsonConfiguration.BindingCulture != null &&
             reqnrollJsonConfiguration.BindingCulture.TryGetValue("name", out var bindingCultureFromSpecFlow))
             config.ConfiguredBindingCulture = bindingCultureFromSpecFlow;
