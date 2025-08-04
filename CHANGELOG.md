@@ -4,6 +4,8 @@
 
 ## Bug fixes:
 * Fix: Ambiguous steps reported wehn definition matches via more than one tag (#95)
+* Fix incorrect reading of binding language (#104)
+
 *Contributors of this release (in alphabetical order):* @clrudolphi
 
 # v2025.1.256 - 2025-03-07
