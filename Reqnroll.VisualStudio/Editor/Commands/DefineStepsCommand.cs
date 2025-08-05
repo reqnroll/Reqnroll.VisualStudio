@@ -4,13 +4,17 @@ namespace Reqnroll.VisualStudio.Editor.Commands;
 [Export(typeof(IDeveroomFeatureEditorCommand))]
 public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEditorCommand
 {
+    private readonly IEditorConfigOptionsProvider _editorConfigOptionsProvider;
+
     [ImportingConstructor]
     public DefineStepsCommand(
         IIdeScope ideScope,
         IBufferTagAggregatorFactoryService aggregatorFactory,
-        IDeveroomTaggerProvider taggerProvider)
+        IDeveroomTaggerProvider taggerProvider,
+        IEditorConfigOptionsProvider editorConfigOptionsProvider)
         : base(ideScope, aggregatorFactory, taggerProvider)
     {
+        _editorConfigOptionsProvider = editorConfigOptionsProvider;
     }
 
     public override DeveroomEditorCommandTargetKey[] Targets => new[]
@@ -101,7 +105,7 @@ public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEdi
         switch (viewModel.Result)
         {
             case CreateStepDefinitionsDialogResult.Create:
-                SaveAsStepDefinitionClass(projectScope, combinedSnippet, viewModel.ClassName, indent, newLine);
+                SaveAsStepDefinitionClass(projectScope, combinedSnippet, viewModel.ClassName, indent, newLine, textView);
                 break;
             case CreateStepDefinitionsDialogResult.CopyToClipboard:
                 Logger.LogVerbose($"Copy to clipboard: {combinedSnippet}");
@@ -114,7 +118,7 @@ public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEdi
     }
 
     private void SaveAsStepDefinitionClass(IProjectScope projectScope, string combinedSnippet, string className,
-        string indent, string newLine)
+        string indent, string newLine, IWpfTextView textView)
     {
         string targetFolder = projectScope.ProjectFolder;
         var projectSettings = projectScope.GetProjectSettings();
@@ -130,7 +134,30 @@ public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEdi
         var isSpecFlow = projectTraits.HasFlag(ReqnrollProjectTraits.LegacySpecFlow) || projectTraits.HasFlag(ReqnrollProjectTraits.SpecFlowCompatibility);
         var libraryNameSpace = isSpecFlow ? "SpecFlow" : "Reqnroll";
 
-        var template = "using System;" + newLine +
+        // Get C# code generation configuration from EditorConfig
+        var csharpConfig = new CSharpCodeGenerationConfiguration();
+        var editorConfigOptions = _editorConfigOptionsProvider.GetEditorConfigOptions(textView);
+        editorConfigOptions.UpdateFromEditorConfig(csharpConfig);
+
+        string template;
+        if (csharpConfig.UseFileScopedNamespaces)
+        {
+            // Generate file-scoped namespace
+            template = "using System;" + newLine +
+                       $"using {libraryNameSpace};" + newLine +
+                       newLine +
+                       $"namespace {fileNamespace};" + newLine +
+                       newLine +
+                       "[Binding]" + newLine +
+                       $"public class {className}" + newLine +
+                       "{" + newLine +
+                       combinedSnippet +
+                       "}" + newLine;
+        }
+        else
+        {
+            // Generate block-scoped namespace (existing behavior)
+            template = "using System;" + newLine +
                        $"using {libraryNameSpace};" + newLine +
                        newLine +
                        $"namespace {fileNamespace}" + newLine +
@@ -141,6 +168,7 @@ public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEdi
                        combinedSnippet +
                        $"{indent}}}" + newLine +
                        "}" + newLine;
+        }
 
         var targetFile = FileDetails
             .FromPath(targetFolder, className + ".cs")
