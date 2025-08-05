@@ -146,7 +146,7 @@ public class ReqnrollConfigDeserializerTests
 
         // Assert
         config.DefaultFeatureLanguage.Should().Be("en-US"); // Default
-        config.ConfiguredBindingCulture.Should().Be("de-DE"); // Legacy format processed last, overwrites
-        config.BindingCulture.Should().Be("de-DE");
+        config.ConfiguredBindingCulture.Should().Be("fr-FR"); // language.binding takes priority
+        config.BindingCulture.Should().Be("fr-FR");
     }
 }

@@ -13,12 +13,12 @@ public class ReqnrollConfigDeserializer : IConfigDeserializer<DeveroomConfigurat
         if (reqnrollJsonConfiguration.Language != null &&
             reqnrollJsonConfiguration.Language.TryGetValue("feature", out var featureLanguage))
             config.DefaultFeatureLanguage = featureLanguage;
-        if (reqnrollJsonConfiguration.Language != null &&
-            reqnrollJsonConfiguration.Language.TryGetValue("binding", out var bindingCulture))
-            config.ConfiguredBindingCulture = bindingCulture;
         if (reqnrollJsonConfiguration.BindingCulture != null &&
             reqnrollJsonConfiguration.BindingCulture.TryGetValue("name", out var bindingCultureFromSpecFlow))
             config.ConfiguredBindingCulture = bindingCultureFromSpecFlow;
+        if (reqnrollJsonConfiguration.Language != null &&
+            reqnrollJsonConfiguration.Language.TryGetValue("binding", out var bindingCulture))
+            config.ConfiguredBindingCulture = bindingCulture;
         if (reqnrollJsonConfiguration.Trace != null &&
             reqnrollJsonConfiguration.Trace.TryGetValue("stepDefinitionSkeletonStyle", out var sdSnippetStyle)) {
             if (sdSnippetStyle == "CucumberExpressionAttribute")
