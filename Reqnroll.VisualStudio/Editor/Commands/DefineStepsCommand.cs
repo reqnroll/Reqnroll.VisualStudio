@@ -1,5 +1,4 @@
 #nullable disable
-using Reqnroll.VisualStudio.Configuration;
 
 namespace Reqnroll.VisualStudio.Editor.Commands;
 

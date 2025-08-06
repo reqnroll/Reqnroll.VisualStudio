@@ -1,5 +1,3 @@
-using Reqnroll.VisualStudio.Editor.Services.EditorConfig;
-
 namespace Reqnroll.VisualStudio.Configuration;
 
 public class CSharpCodeGenerationConfiguration
