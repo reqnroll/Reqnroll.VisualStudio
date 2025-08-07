@@ -12,7 +12,7 @@ public class CSharpCodeGenerationConfiguration
     /// <summary>
     /// Determines if file-scoped namespaces should be used based on the EditorConfig setting.
     /// </summary>
-    public bool UseFileScopedNamespaces => 
-        NamespaceDeclarationStyle != null && 
+    public bool UseFileScopedNamespaces =>
+        NamespaceDeclarationStyle != null &&
         NamespaceDeclarationStyle.StartsWith("file_scoped", StringComparison.OrdinalIgnoreCase);
 }
