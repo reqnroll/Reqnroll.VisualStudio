@@ -86,13 +86,13 @@ public record StubTextSnapshot(
 
     public static StubTextSnapshot FromTextBuffer(ITextBuffer textBuffer) =>
         new(
-            Mock.Of<IContentType>(MockBehavior.Strict),
+            Substitute.For<IContentType>(),
             0,
             0,
             Array.Empty<ITextSnapshotLine>(),
             textBuffer,
             StubTextVersion2.Default with {TextBuffer = textBuffer},
-            Mock.Of<ITextImage>(MockBehavior.Strict),
+            Substitute.For<ITextImage>(),
             new TestText());
 
     public StubTextSnapshot WithText(string testText)

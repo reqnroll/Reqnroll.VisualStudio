@@ -1,8 +1,8 @@
 namespace Reqnroll.VisualStudio.VsxStubs.ProjectSystem;
 
-public class StubProjectSettingsProvider : Mock<IProjectSettingsProvider>, IProjectSettingsProvider
+public class StubProjectSettingsProvider : IProjectSettingsProvider
 {
-    public StubProjectSettingsProvider(InMemoryStubProjectScope inMemoryStubProjectScope) : base(MockBehavior.Strict)
+    public StubProjectSettingsProvider(InMemoryStubProjectScope inMemoryStubProjectScope)
     {
         ProjectSettings = new ProjectSettings(
             DeveroomProjectKind.ReqnrollTestProject,
@@ -17,9 +17,6 @@ public class StubProjectSettingsProvider : Mock<IProjectSettingsProvider>, IProj
             ReqnrollProjectTraits.CucumberExpression,
             ProjectProgrammingLanguage.CSharp
         );
-
-        Setup(p => p.GetProjectSettings()).Returns(() => ProjectSettings);
-        Setup(p => p.CheckProjectSettings()).Returns(() => ProjectSettings);
     }
 
     private ProjectSettings ProjectSettings { get; set; }
@@ -27,17 +24,17 @@ public class StubProjectSettingsProvider : Mock<IProjectSettingsProvider>, IProj
     public DeveroomProjectKind Kind
     {
         get => ProjectSettings.Kind;
-        set => ProjectSettings = ProjectSettings with {Kind = value};
+        set => ProjectSettings = ProjectSettings with { Kind = value };
     }
 
     public event EventHandler<EventArgs>? WeakSettingsInitialized;
     public event EventHandler<EventArgs>? SettingsInitialized;
 
-    public ProjectSettings GetProjectSettings() => Object.GetProjectSettings();
-    public ProjectSettings CheckProjectSettings() => Object.CheckProjectSettings();
+    public ProjectSettings GetProjectSettings() => ProjectSettings;
+    public ProjectSettings CheckProjectSettings() => ProjectSettings;
 
     public void InvokeWeakSettingsInitializedEvent()
     {
-        WeakSettingsInitialized!.Invoke(this, EventArgs.Empty);
+        WeakSettingsInitialized?.Invoke(this, EventArgs.Empty);
     }
 }
