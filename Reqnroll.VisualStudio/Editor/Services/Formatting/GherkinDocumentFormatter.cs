@@ -111,6 +111,21 @@ public class GherkinDocumentFormatter
             .Replace("\n", "\\n")
             .Replace("|", "\\|");
 
+    private bool IsTableCellContentNumeric(string cellValue)
+    {
+        if (string.IsNullOrWhiteSpace(cellValue))
+            return false;
+        // Return true if the cell value contains any digit
+        return cellValue.Any(char.IsDigit);
+    }
+
+    private bool IsTableCellContentRightAligned(string cellValue, GherkinFormatSettings formatSettings)
+    {
+        if (!formatSettings.RightAlignNumericTableCells)
+            return false;
+        // Return true if the cell value contains any digit and is not empty
+        return IsTableCellContentNumeric(cellValue);
+    }
     private string GetUnfinishedTableCell(string lineText)
     {
         var match = Regex.Match(lineText, @"(?<!\\)(\\\\)*\|(?<remaining>.*?)$", RegexOptions.RightToLeft);
@@ -140,7 +155,10 @@ public class GherkinDocumentFormatter
             foreach (var item in row.Cells.Select((c, i) => new {c, i}))
             {
                 result.Append(formatSettings.TableCellPadding);
-                result.Append(EscapeTableCellValue(item.c.Value).PadRight(widths[item.i]));
+                var escapedCellValue = EscapeTableCellValue(item.c.Value);
+                var width = widths[item.i];
+                var paddedCell = IsTableCellContentRightAligned(item.c.Value, formatSettings) ? escapedCellValue.PadLeft(width) : escapedCellValue.PadRight(width);
+                result.Append(paddedCell);
                 result.Append(formatSettings.TableCellPadding);
                 result.Append('|');
             }

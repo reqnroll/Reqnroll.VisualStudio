@@ -23,6 +23,8 @@ public class GherkinFormatSettings
 
     public string TableCellPadding => new(' ', Configuration.TableCellPaddingSize);
 
+    public bool RightAlignNumericTableCells => Configuration.TableCellRightAlignNumericContent;
+
 
     public static GherkinFormatSettings Load(IEditorConfigOptionsProvider editorConfigOptionsProvider,
         IWpfTextView textView, DeveroomConfiguration configuration)

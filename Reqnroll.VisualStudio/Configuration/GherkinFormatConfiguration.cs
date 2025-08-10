@@ -56,6 +56,12 @@ public class GherkinFormatConfiguration
     [EditorConfigSetting("gherkin_table_cell_padding_size")]
     public int TableCellPaddingSize { get; set; } = 1;
 
+    /// <summary>
+    ///     Right-align numeric table cells
+    /// </summary>
+    [EditorConfigSetting("gherkin_table_cell_right_align_numeric_content")]
+    public bool TableCellRightAlignNumericContent { get; set; } = true;
+
     public void CheckConfiguration()
     {
         // nop
@@ -71,7 +77,8 @@ public class GherkinFormatConfiguration
                                                                IndentDocString == other.IndentDocString &&
                                                                IndentExamples == other.IndentExamples &&
                                                                IndentExamplesTable == other.IndentExamplesTable &&
-                                                               TableCellPaddingSize == other.TableCellPaddingSize;
+                                                               TableCellPaddingSize == other.TableCellPaddingSize &&
+                                                               TableCellRightAlignNumericContent == other.TableCellRightAlignNumericContent;
 
     public override bool Equals(object obj)
     {
@@ -94,7 +101,8 @@ public class GherkinFormatConfiguration
             hashCode = (hashCode * 397) ^ IndentDocString.GetHashCode();
             hashCode = (hashCode * 397) ^ IndentExamples.GetHashCode();
             hashCode = (hashCode * 397) ^ IndentExamplesTable.GetHashCode();
-            hashCode = (hashCode * 397) ^ TableCellPaddingSize;
+            hashCode = (hashCode * 397) ^ TableCellPaddingSize.GetHashCode();
+            hashCode = (hashCode * 397) ^ TableCellRightAlignNumericContent.GetHashCode();
             return hashCode;
         }
     }
