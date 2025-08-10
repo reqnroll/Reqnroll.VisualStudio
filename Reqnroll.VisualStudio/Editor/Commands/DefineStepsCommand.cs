@@ -140,35 +140,33 @@ public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEdi
         var editorConfigOptions = _editorConfigOptionsProvider.GetEditorConfigOptions(textView);
         editorConfigOptions.UpdateFromEditorConfig(csharpConfig);
 
-        string template;
+        // Build template with common structure
+        var template = "using System;" + newLine +
+                       $"using {libraryNameSpace};" + newLine +
+                       newLine;
+
         if (csharpConfig.UseFileScopedNamespaces)
         {
             // Generate file-scoped namespace
-            template = "using System;" + newLine +
-                       $"using {libraryNameSpace};" + newLine +
-                       newLine +
-                       $"namespace {fileNamespace};" + newLine +
-                       newLine +
-                       "[Binding]" + newLine +
-                       $"public class {className}" + newLine +
-                       "{" + newLine +
-                       combinedSnippet +
-                       "}" + newLine;
+            template += $"namespace {fileNamespace};" + newLine +
+                        newLine +
+                        "[Binding]" + newLine +
+                        $"public class {className}" + newLine +
+                        "{" + newLine +
+                        combinedSnippet +
+                        "}" + newLine;
         }
         else
         {
             // Generate block-scoped namespace (existing behavior)
-            template = "using System;" + newLine +
-                       $"using {libraryNameSpace};" + newLine +
-                       newLine +
-                       $"namespace {fileNamespace}" + newLine +
-                       "{" + newLine +
-                       $"{indent}[Binding]" + newLine +
-                       $"{indent}public class {className}" + newLine +
-                       $"{indent}{{" + newLine +
-                       combinedSnippet +
-                       $"{indent}}}" + newLine +
-                       "}" + newLine;
+            template += $"namespace {fileNamespace}" + newLine +
+                        "{" + newLine +
+                        $"{indent}[Binding]" + newLine +
+                        $"{indent}public class {className}" + newLine +
+                        $"{indent}{{" + newLine +
+                        combinedSnippet +
+                        $"{indent}}}" + newLine +
+                        "}" + newLine;
         }
 
         var targetFile = FileDetails
