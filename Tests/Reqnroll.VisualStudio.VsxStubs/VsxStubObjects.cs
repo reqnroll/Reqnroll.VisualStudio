@@ -79,8 +79,8 @@ public class VsxStubObjects
             CreateObject<object>(
                 "Microsoft.VisualStudio.Text.Utilities.GuardedOperations, Microsoft.VisualStudio.Platform.VSEditor");
         BufferGraphFactoryService = CreateObject<IBufferGraphFactoryService>(
-            "Microsoft.VisualStudio.Text.Projection.Implementation.BufferGraphFactoryService, Microsoft.VisualStudio.Platform.VSEditor");
-        SetField(BufferGraphFactoryService, nameof(GuardedOperations), GuardedOperations);
+            "Microsoft.VisualStudio.Text.Projection.Implementation.BufferGraphFactoryService, Microsoft.VisualStudio.Platform.VSEditor",
+            GuardedOperations);
 
         BufferFactoryService = CreateObject<ITextBufferFactoryService>(
             "Microsoft.VisualStudio.Text.Implementation.BufferFactoryService, Microsoft.VisualStudio.Platform.VSEditor");
