@@ -26,8 +26,8 @@ Scenario: Autoformats DataTable when typing last pipe
 		Scenario: Add two numbers
 			Given the following numbers added
 				| number | reason        |
-				| 1      | first number  |
-				| 2      | second number |
+				|      1 | first number  |
+				|      2 | second number |
 		"""
 
 Scenario: Autoformats DataTable when typing middle pipe
@@ -48,8 +48,8 @@ Scenario: Autoformats DataTable when typing middle pipe
 		Scenario: Add two numbers
 			Given the following numbers added
 				| number | reason        |
-				| 1      | first number  |
-				| 2      | second number |
+				|      1 | first number  |
+				|      2 | second number |
 		"""
 		
 Scenario: Autoformats one-liner DataTable
@@ -90,7 +90,7 @@ Scenario: Autoformats Examples table
 			When I press add
 		Examples: 
 			| number | reason        |
-			| 1      | first number  |
-			| 2      | second number |
+			|      1 | first number  |
+			|      2 | second number |
 		"""
 		

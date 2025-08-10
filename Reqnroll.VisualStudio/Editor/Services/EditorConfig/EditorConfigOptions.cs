@@ -3,33 +3,70 @@ using Microsoft.CodeAnalysis.Options;
 
 namespace Reqnroll.VisualStudio.Editor.Services.EditorConfig;
 
+/// <summary>
+/// A simplified implementation of IEditorConfigOptions that extracts values directly from the DocumentOptionSet.
+/// </summary>
 public class EditorConfigOptions : IEditorConfigOptions
 {
     private readonly DocumentOptionSet _options;
+    private readonly Dictionary<string, string> _directEditorConfigValues;
 
     public EditorConfigOptions(DocumentOptionSet options)
     {
         _options = options;
+        _directEditorConfigValues = ExtractEditorConfigValues();
     }
 
     public TResult GetOption<TResult>(string editorConfigKey, TResult defaultValue)
     {
-        var storageLocation = CreateStorageLocation<TResult>(editorConfigKey);
-        if (storageLocation == null)
-            return defaultValue;
-        return _options.GetOption(new Option<TResult>("reqnroll.vs", editorConfigKey, defaultValue, storageLocation));
+        if (_directEditorConfigValues.TryGetValue(editorConfigKey, out var simplifiedValue))
+        {
+            if (TryConvertFromString(simplifiedValue, defaultValue, out var convertedValue))
+            {
+                return convertedValue;
+            }
+        }
+        return defaultValue;
     }
 
-    private OptionStorageLocation CreateStorageLocation<TResult>(string editorConfigKey)
+    private static bool TryConvertFromString<TResult>(string value, TResult defaultValue, out TResult convertedValue)
     {
-        var supportedTypes = new[] {typeof(bool), typeof(string), typeof(int)};
-        if (!supportedTypes.Contains(typeof(TResult)))
-            throw new NotSupportedException($"Editor config setting type {typeof(TResult).Name} is not supported.");
-        var typeName = typeof(TResult) == typeof(bool) ? "Bool" : typeof(TResult).Name;
-        return
-            typeof(OptionSet).Assembly.GetType("Microsoft.CodeAnalysis.Options.EditorConfigStorageLocation", false)?
-                    .GetMethod($"For{typeName}Option", BindingFlags.Public | BindingFlags.Static)?
-                    .Invoke(null, new object[] {editorConfigKey})
-                as OptionStorageLocation;
+        try
+        {
+            convertedValue = (TResult)Convert.ChangeType(value, typeof(TResult));
+            return true;
+        }
+        catch
+        {
+            convertedValue = defaultValue;
+            return false;
+        }
+    }
+
+    private Dictionary<string, string> ExtractEditorConfigValues()
+    {
+        var values = new Dictionary<string, string>();
+
+        try
+        {
+            // Use reflection to access the underlying options collection safely
+            var optionsType = _options.GetType();
+            var structuredAnalyzerConfigOptionsField = optionsType.GetField("_configOptions", BindingFlags.NonPublic | BindingFlags.Instance);
+            var structuredAnalyzerConfigOptions = structuredAnalyzerConfigOptionsField?.GetValue(_options);
+
+            var structuredAnalyzerConfigOptionsType = structuredAnalyzerConfigOptions?.GetType();
+            var optionsField = structuredAnalyzerConfigOptionsType?.GetField("_options", BindingFlags.NonPublic | BindingFlags.Instance);
+            var optionsAnalyzerConfigOptions = optionsField?.GetValue(structuredAnalyzerConfigOptions);
+            var dacOptionsField = optionsAnalyzerConfigOptions?.GetType()?.GetField("Options", BindingFlags.NonPublic | BindingFlags.Instance);
+            var optionsCollection = dacOptionsField?.GetValue(optionsAnalyzerConfigOptions) as ImmutableDictionary<string, string>;
+            if (optionsCollection != null)
+                values = new Dictionary<string, string>(optionsCollection);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Failed to extract EditorConfig values: {ex.Message}");
+        }
+
+        return values;
     }
 }

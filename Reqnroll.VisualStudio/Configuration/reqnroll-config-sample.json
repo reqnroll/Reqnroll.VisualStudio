@@ -19,7 +19,8 @@
         "indentDocString": true,
         "indentExamples": false,
         "indentExamplesTable": true,
-        "tableCellPaddingSize": 1
+        "tableCellPaddingSize": 1,
+        "tableCellRightAlignNumericContent": true
       }
     }
   }

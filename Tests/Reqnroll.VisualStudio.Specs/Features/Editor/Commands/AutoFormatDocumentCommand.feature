@@ -66,8 +66,8 @@ Scenario: Misformatted feature file is cleaned up
 		Scenario: Add two numbers
 		    Given the following numbers added
 		        | number | reason        |
-		        | 1      | first number  |
-		        | 2      | second number |
+		        |      1 | first number  |
+		        |      2 | second number |
 		    And foo
 		    When bar
 
@@ -85,10 +85,10 @@ Scenario: Misformatted feature file is cleaned up
 		@optimal
 		Examples:
 		    | number1 | number2 |
-		    | 1       | 2       |
+		    |       1 |       2 |
 		Examples: negative numbers
 		    | number1 | number2 |
-		    | -101    | -59     |
+		    |    -101 |     -59 |
 		"""
 
 Rule: Formatting rules can be customized in the configuration file or from .editorconfig files
@@ -127,7 +127,8 @@ Scenario: The formatting rules are customized from configuration file
 						"indentDocString": false, // editorconfig: gherkin_indent_docstring = false
 						"indentExamples": true, // editorconfig: gherkin_indent_examples = true
 						"indentExamplesTable": false, // editorconfig: gherkin_indent_examples_table = false
-						"tableCellPaddingSize": 0 // editorconfig: gherkin_table_cell_padding_size = 0
+						"tableCellPaddingSize": 0, // editorconfig: gherkin_table_cell_padding_size = 0
+						"tableCellRightAlignNumericContent": false // editorconfig: gherkin_table_cell_right_align_numeric_content = false
 					}
 				}
 			}
@@ -250,8 +251,8 @@ Scenario: Selected part of feature file is formatted
 		  Scenario: Add two numbers
 		    Given the following numbers added
 		        | number | reason        |
-		        | 1      | first number  |
-		        | 2      | second number |
+		        |      1 | first number  |
+		        |      2 | second number |
 		    And foo
 		   When   bar
 		"""

@@ -138,4 +138,34 @@ public class GherkinDocumentFormatterTests
             @"");
         Assert.Equal(expectedText.ToString(), linesBuffer.GetModifiedText(Environment.NewLine));
     }
+
+    [Theory]
+    // Header is 13 chars, so all cells will be padded to width 13
+    [InlineData("| 123 |", true, "|         123 |")] // Right-align: only digits
+    [InlineData("| abc123 |", true, "|      abc123 |")] // Right-align: mixed letters and digits
+    [InlineData("| 12abc |", true, "|       12abc |")] // Right-align: digits at start
+    [InlineData("| abc |", true, "| abc         |")] // Left-align: only letters
+    [InlineData("| !@#4$% |", true, "|      !@#4$% |")] // Right-align: special chars and digit
+    [InlineData("| !@#$% |", true, "| !@#$%       |")] // Left-align: only special chars
+    [InlineData("| 123 |", false, "| 123         |")] // Left-align: only digits, but right-align disabled
+    [InlineData("| abc123 |", false, "| abc123      |")] // Left-align: mixed, but right-align disabled
+    public void Should_align_table_cells_based_on_content_and_setting(string tableRow, bool rightAlign, string expectedCell)
+    {
+        var sut = CreateSUT();
+        var formatSettings = new GherkinFormatSettings();
+        formatSettings.Configuration.TableCellRightAlignNumericContent = rightAlign;
+        formatSettings.Configuration.TableCellPaddingSize = 1;
+        formatSettings.Indent = "    ";
+        var inputText = new TestText(
+            "Feature: foo",
+            "Scenario: bar",
+            "    Given table",
+            "    | HeaderValue |", // header row sets width to 13
+            $"    {tableRow}",
+            "");
+        var linesBuffer = GetLinesBuffer(inputText);
+        sut.FormatGherkinDocument(ParseGherkinDocument(inputText), linesBuffer, formatSettings);
+        var formattedLine = linesBuffer.GetLineOneBased(5).TrimEnd().TrimStart(); // data row is now line 5
+        Assert.Equal(expectedCell, formattedLine);
+    }
 }
