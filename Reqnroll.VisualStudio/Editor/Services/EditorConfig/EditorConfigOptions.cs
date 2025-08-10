@@ -1,5 +1,4 @@
 #nullable disable
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Options;
 
 namespace Reqnroll.VisualStudio.Editor.Services.EditorConfig;
@@ -32,15 +31,16 @@ public class EditorConfigOptions : IEditorConfigOptions
 
     private static bool TryConvertFromString<TResult>(string value, TResult defaultValue, out TResult convertedValue)
     {
-        convertedValue = typeof(TResult) switch
+        try
         {
-            var t when t == typeof(bool) && bool.TryParse(value, out var boolVal) => (TResult)(object)boolVal,
-            var t when t == typeof(int) && int.TryParse(value, out var intVal) => (TResult)(object)intVal,
-            var t when t == typeof(string) => (TResult)(object)value,
-            _ => defaultValue
-        };
-
-        return !Equals(convertedValue, defaultValue);
+            convertedValue = (TResult)Convert.ChangeType(value, typeof(TResult));
+            return true;
+        }
+        catch
+        {
+            convertedValue = defaultValue;
+            return false;
+        }
     }
 
     private Dictionary<string, string> ExtractEditorConfigValues()
@@ -57,7 +57,7 @@ public class EditorConfigOptions : IEditorConfigOptions
             var structuredAnalyzerConfigOptionsType = structuredAnalyzerConfigOptions?.GetType();
             var optionsField = structuredAnalyzerConfigOptionsType?.GetField("_options", BindingFlags.NonPublic | BindingFlags.Instance);
             var optionsAnalyzerConfigOptions = optionsField?.GetValue(structuredAnalyzerConfigOptions);
-            var dacOptionsField = optionsAnalyzerConfigOptions?.GetType().GetField("Options", BindingFlags.NonPublic | BindingFlags.Instance);
+            var dacOptionsField = optionsAnalyzerConfigOptions?.GetType()?.GetField("Options", BindingFlags.NonPublic | BindingFlags.Instance);
             var optionsCollection = dacOptionsField?.GetValue(optionsAnalyzerConfigOptions) as ImmutableDictionary<string, string>;
             if (optionsCollection != null)
                 values = new Dictionary<string, string>(optionsCollection);
