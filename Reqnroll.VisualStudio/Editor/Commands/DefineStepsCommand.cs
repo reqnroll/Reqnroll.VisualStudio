@@ -186,7 +186,7 @@ public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEdi
                     defaultButton: MessageBoxResult.No) != MessageBoxResult.Yes)
                 return;
 
-        projectScope.AddFile(targetFile, template);
+        projectScope.AddFile(targetFile, template.ToString());
         projectScope.IdeScope.Actions.NavigateTo(new SourceLocation(targetFile, 9, 1));
         IDiscoveryService discoveryService = projectScope.GetDiscoveryService();
 
