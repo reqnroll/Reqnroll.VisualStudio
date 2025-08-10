@@ -1,5 +1,7 @@
 #nullable disable
 
+using System.Text;
+
 namespace Reqnroll.VisualStudio.Editor.Commands;
 
 [Export(typeof(IDeveroomFeatureEditorCommand))]
@@ -141,37 +143,42 @@ public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEdi
         editorConfigOptions.UpdateFromEditorConfig(csharpConfig);
 
         // Build template with common structure
-        var template = "using System;" + newLine +
-                       $"using {libraryNameSpace};" + newLine +
-                       newLine;
+        var template = new StringBuilder();
+        template.AppendLine("using System;");
+        template.AppendLine($"using {libraryNameSpace};");
+        template.AppendLine();
 
+        // Determine indentation level based on namespace style
+        var classIndent = csharpConfig.UseFileScopedNamespaces ? "" : indent;
+        
+        // Add namespace declaration
         if (csharpConfig.UseFileScopedNamespaces)
         {
-            // Generate file-scoped namespace
-            template += $"namespace {fileNamespace};" + newLine +
-                        newLine +
-                        "[Binding]" + newLine +
-                        $"public class {className}" + newLine +
-                        "{" + newLine +
-                        combinedSnippet +
-                        "}" + newLine;
+            template.AppendLine($"namespace {fileNamespace};");
+            template.AppendLine();
         }
         else
         {
-            // Generate block-scoped namespace (existing behavior)
-            template += $"namespace {fileNamespace}" + newLine +
-                        "{" + newLine +
-                        $"{indent}[Binding]" + newLine +
-                        $"{indent}public class {className}" + newLine +
-                        $"{indent}{{" + newLine +
-                        combinedSnippet +
-                        $"{indent}}}" + newLine +
-                        "}" + newLine;
+            template.AppendLine($"namespace {fileNamespace}");
+            template.AppendLine("{");
+        }
+
+        // Add class declaration (common structure with appropriate indentation)
+        template.AppendLine($"{classIndent}[Binding]");
+        template.AppendLine($"{classIndent}public class {className}");
+        template.AppendLine($"{classIndent}{{");
+        template.Append(combinedSnippet);
+        template.AppendLine($"{classIndent}}}");
+        
+        // Close namespace if block-scoped
+        if (!csharpConfig.UseFileScopedNamespaces)
+        {
+            template.AppendLine("}");
         }
 
         var targetFile = FileDetails
             .FromPath(targetFolder, className + ".cs")
-            .WithCSharpContent(template);
+            .WithCSharpContent(template.ToString());
 
         if (IdeScope.FileSystem.File.Exists(targetFile.FullName))
             if (IdeScope.Actions.ShowSyncQuestion("Overwrite file?",
