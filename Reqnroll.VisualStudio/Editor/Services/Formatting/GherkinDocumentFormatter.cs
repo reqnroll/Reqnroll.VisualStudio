@@ -155,7 +155,9 @@ public class GherkinDocumentFormatter
             foreach (var item in row.Cells.Select((c, i) => new {c, i}))
             {
                 result.Append(formatSettings.TableCellPadding);
-                var paddedCell = IsTableCellContentRightAligned(item.c.Value, formatSettings) ? EscapeTableCellValue(item.c.Value).PadLeft(widths[item.i]) : EscapeTableCellValue(item.c.Value).PadRight(widths[item.i]);
+                var escapedCellValue = EscapeTableCellValue(item.c.Value);
+                var width = widths[item.i];
+                var paddedCell = IsTableCellContentRightAligned(item.c.Value, formatSettings) ? escapedCellValue.PadLeft(width) : escapedCellValue.PadRight(width);
                 result.Append(paddedCell);
                 result.Append(formatSettings.TableCellPadding);
                 result.Append('|');
