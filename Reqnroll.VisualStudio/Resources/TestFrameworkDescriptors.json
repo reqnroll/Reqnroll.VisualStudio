@@ -1,0 +1,120 @@
+{
+  "testFrameworks": [
+    {
+      "tag":  "xunit",
+      "label": "xUnit",
+      "description": "Use xUnit v2 test executor with Reqnroll",
+      "url": "https://xunit.net",
+      "dependencies": [
+        {
+          "name": "Reqnroll.xUnit",
+          "version": "2.4.1"
+        },
+        {
+          "name": "xunit",
+          "version": "2.8.1"
+        },
+        {
+          "name": "xunit.runner.visualstudio",
+          "version": "2.8.1"
+        }
+      ]
+    },
+    {
+      "tag": "mstest",
+      "label": "MsTest",
+      "description": "Use MsTest v3 test executor with Reqnroll",
+      "url": "https://github.com/microsoft/testfx?tab=readme-ov-file",
+      "dependencies": [
+        {
+          "name": "Reqnroll.MsTest",
+          "version": "2.4.1"
+        },
+        {
+          "name": "MSTest.TestFramework",
+          "version": "3.4.3"
+        },
+        {
+          "name": "MSTest.TestAdapter",
+          "version": "3.4.3"
+        }
+      ]
+    },
+    {
+      "tag": "nunit",
+      "label": "NUnit",
+      "description": "Use NUnit v3 test executor with Reqnroll",
+      "url": "https://nunit.org",
+      "dependencies": [
+        {
+          "name": "Reqnroll.NUnit",
+          "version": "2.4.1"
+        },
+        {
+          "name": "nunit",
+          "version": "3.14.0"
+        },
+        {
+          "name": "NUnit3TestAdapter",
+          "version": "4.5.0"
+        }
+      ]
+    }
+  ],
+  "dotNetFrameworks": [
+    {
+      "tag": "net462",
+      "label": ".NET Framework 4.6.2"
+    },
+    {
+      "tag": "net47",
+      "label": ".NET Framework 4.7"
+    },
+    {
+      "tag": "net471",
+      "label": ".NET Framework 4.7.1"
+    },
+    {
+      "tag": "net472",
+      "label": ".NET Framework 4.7.2"
+    },
+    {
+      "tag": "net48",
+      "label": ".NET Framework 4.8"
+    },
+    {
+      "tag": "net48",
+      "label": ".NET Framework 4.8.1"
+    },
+    {
+      "tag": "net6.0",
+      "label": ".NET 6.0"
+    },
+    {
+      "tag": "net7.0",
+      "label": ".NET 7.0"
+    },
+    {
+      "tag": "net8.0",
+      "label": ".NET 8.0",
+      "default": true
+    },
+    {
+      "tag": "net9.0",
+      "label": ".NET 9.0"
+    }
+  ],
+  "validationFrameworks": [
+    {
+      "label": "FluentAssertions",
+      "description": "Use Fluent Assertions library with Reqnroll",
+      "url": "https://fluentassertions.com",
+      "dependencies": [
+        {
+          "name": "FluentAssertions",
+          "version": "8.3.0"
+        }
+      ]
+    }
+  ]
+}

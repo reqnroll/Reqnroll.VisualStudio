@@ -32,7 +32,6 @@
 			       BasedOn="{StaticResource VsCloseButton}">
 				<Setter Property="Width" Value="46" />
 				<Setter Property="Height" Value="33" />
-				<Setter Property="AutomationProperties.Name" Value="{Binding ToolTip,RelativeSource={RelativeSource Self}}" />
 				<Setter Property="HorizontalAlignment" Value="Right" />
 				<Setter Property="VerticalAlignment" Value="Top" />
 				<Setter Property="BorderBrush" Value="#00FFFFFF" />
@@ -217,41 +216,50 @@
 							<RowDefinition Height="*" />
 							<RowDefinition Height="*" />
 							<RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
 						</Grid.RowDefinitions>
 
 						<StackPanel Grid.Row="0" Grid.Column="0">
 							<Label>Framework</Label>
-							<ComboBox x:Name="DotNetFrameworkComboBox" SelectedValuePath="Tag" IsEditable="True" IsReadOnly="True"
-							          Margin="0,0,0,0" Padding="8,8,8,8" SelectedValue="{Binding DotNetFramework}"
-							          IsSynchronizedWithCurrentItem="True">
-                                <ComboBoxItem Tag="net462">.NET Framework 4.6.2</ComboBoxItem>
-                                <ComboBoxItem Tag="net47">.NET Framework 4.7</ComboBoxItem>
-                                <ComboBoxItem Tag="net471">.NET Framework 4.7.1</ComboBoxItem>
-                                <ComboBoxItem Tag="net472">.NET Framework 4.7.2</ComboBoxItem>
-                                <ComboBoxItem Tag="net48">.NET Framework 4.8</ComboBoxItem>
-                                <ComboBoxItem Tag="net48">.NET Framework 4.8.1</ComboBoxItem>
-								<ComboBoxItem Tag="net6.0">.NET 6.0</ComboBoxItem>
-								<ComboBoxItem Tag="net7.0">.NET 7.0</ComboBoxItem>
-								<ComboBoxItem Tag="net8.0" IsSelected="True">.NET 8.0</ComboBoxItem>
-                                <ComboBoxItem Tag="net9.0">.NET 9.0</ComboBoxItem>
-                            </ComboBox>
+							<ComboBox x:Name="DotNetFrameworkComboBox" 
+                                      IsEditable="True" 
+                                      IsReadOnly="True"
+							          Margin="0,0,0,0" 
+                                      Padding="8,8,8,8" 
+                                      ItemsSource="{Binding DotNetFrameworks}" 
+                                      DisplayMemberPath="Label"
+                                      SelectedValue="{Binding DotNetFramework}"
+							          IsSynchronizedWithCurrentItem="True" />
 						</StackPanel>
 
 						<StackPanel Grid.Row="1" Grid.Column="0">
 							<Label>Test Framework</Label>
-							<ComboBox x:Name="UnitTestFrameworkComboBox"
-							          SelectedValuePath="Tag"
-							          IsEditable="True"
-							          IsReadOnly="True"
-							          Margin="0,0,0,0"
-							          Padding="8,8,8,8"
-							          ItemsSource="{Binding TestFrameworks}"
-							          SelectedValue="{Binding UnitTestFramework}"
-							          IsSynchronizedWithCurrentItem="True"
-							          SelectionChanged="TestFramework_SelectionChanged" />
+                            <ComboBox x:Name="UnitTestFrameworkComboBox"
+                                      IsEditable="True"
+                                      IsReadOnly="True"
+                                      Margin="0,0,0,0"
+                                      Padding="8,8,8,8"
+                                      ItemsSource="{Binding UnitTestFrameworks}"
+                                      DisplayMemberPath="Label"
+                                      SelectedValue="{Binding UnitTestFramework}"
+                                      IsSynchronizedWithCurrentItem="True" />
 						</StackPanel>
 
-						<StackPanel Grid.Row="2" Grid.Column="0" Visibility="Collapsed">
+                        <StackPanel Grid.Row="2" Grid.Column="0">
+                            <Label Content="{Binding UnitTestFramework.Description, Mode=OneWay}" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                            <Label VerticalAlignment="Center" Margin="0,0,5,0">More Information:</Label>
+                            <TextBlock VerticalAlignment="Center">
+                                <Hyperlink NavigateUri="{Binding UnitTestFramework.Url}" RequestNavigate="Hyperlink_RequestNavigate">
+                                    <Run Text="{Binding UnitTestFramework.Url, Mode=OneWay}"/>
+                                </Hyperlink>
+                            </TextBlock>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="4" Grid.Column="0" Visibility="Collapsed">
 							<CheckBox x:Name="FluentAssertionsCheckBox" Content="Add FluentAssertions library"
 							          IsChecked="{Binding FluentAssertionsIncluded}" />
 						</StackPanel>

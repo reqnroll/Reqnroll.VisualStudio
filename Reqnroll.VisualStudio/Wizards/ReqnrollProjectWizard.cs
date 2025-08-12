@@ -1,7 +1,5 @@
-using System;
-using System.Globalization;
-using System.Linq;
 using Reqnroll.VisualStudio.Wizards.Infrastructure;
+using System.Globalization;
 
 namespace Reqnroll.VisualStudio.Wizards;
 
@@ -10,31 +8,63 @@ public class ReqnrollProjectWizard : IDeveroomWizard
 {
     private readonly IDeveroomWindowManager _deveroomWindowManager;
     private readonly IMonitoringService _monitoringService;
+    private readonly INewProjectMetaDataProvider _newProjectMetaDataProvider;
 
     [ImportingConstructor]
-    public ReqnrollProjectWizard(IDeveroomWindowManager deveroomWindowManager, IMonitoringService monitoringService)
+    public ReqnrollProjectWizard(IDeveroomWindowManager deveroomWindowManager, IMonitoringService monitoringService, INewProjectMetaDataProvider newProjectMetaDataProvider)
     {
         _deveroomWindowManager = deveroomWindowManager;
         _monitoringService = monitoringService;
+        _newProjectMetaDataProvider = newProjectMetaDataProvider;
     }
 
     public bool RunStarted(WizardRunParameters wizardRunParameters)
     {
         _monitoringService.MonitorProjectTemplateWizardStarted();
 
-        var viewModel = new AddNewReqnrollProjectViewModel();
+        var viewModel = new AddNewReqnrollProjectViewModel(_newProjectMetaDataProvider);
         var dialogResult = _deveroomWindowManager.ShowDialog(viewModel);
         if (!dialogResult.HasValue || !dialogResult.Value) return false;
 
-        _monitoringService.MonitorProjectTemplateWizardCompleted(viewModel.DotNetFramework, viewModel.UnitTestFramework,
+        _monitoringService.MonitorProjectTemplateWizardCompleted(viewModel.DotNetFramework.Tag, viewModel.UnitTestFramework.Tag,
             viewModel.FluentAssertionsIncluded);
 
-        // Add custom parameters.
-        wizardRunParameters.ReplacementsDictionary.Add("$dotnetframework$", viewModel.DotNetFramework);
-        wizardRunParameters.ReplacementsDictionary.Add("$unittestframework$", viewModel.UnitTestFramework);
+        // insert set of replacement variables for the SDK package
+        AddPackageToReplacementDictionary(wizardRunParameters, "Microsoft.NET.Test.Sdk", "17.10.0");
+
+        var dependencies = _newProjectMetaDataProvider.DependenciesOf(viewModel.UnitTestFramework.Tag);
+
+        foreach (var package in dependencies)
+        {
+            var name = package.name;
+            var version = package.version;
+            AddPackageToReplacementDictionary(wizardRunParameters, name, version);
+        }
+
+        if (viewModel.FluentAssertionsIncluded)
+            AddPackageToReplacementDictionary(wizardRunParameters, "FluentAssertions", "6.12.0");
+
+        wizardRunParameters.ReplacementsDictionary.Add("$dotnetframework$", viewModel.DotNetFramework.Tag);
         wizardRunParameters.ReplacementsDictionary.Add("$fluentassertionsincluded$",
             viewModel.FluentAssertionsIncluded.ToString(CultureInfo.InvariantCulture));
 
         return true;
+
+        static void AddPackageToReplacementDictionary(WizardRunParameters wizardRunParameters, string name, string version)
+        {
+            var refText = $"<PackageReference Include=\"{name}\" Version=\"{version}\" />";
+            const string key = "$nugetpackagereferences$";
+            if (wizardRunParameters.ReplacementsDictionary.TryGetValue(key, out string existingValue))
+            {
+                wizardRunParameters.ReplacementsDictionary[key] =
+                    existingValue +
+                    "\r\n    " +
+                    refText;
+            }
+            else
+            {
+                wizardRunParameters.ReplacementsDictionary.Add(key, refText);
+            }
+        }
     }
 }
