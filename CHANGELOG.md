@@ -6,8 +6,9 @@
 
 ## Bug fixes:
 
-* Fix: Ambiguous steps reported wehn definition matches via more than one tag (#95)
-* Fix incorrect binding language detection for Visual Studio extension (#104)
+* Fix: Ambiguous steps reported when definition matches via more than one tag (#95)
+* Fix: incorrect binding language detection for Visual Studio extension (#104)
+* Fix: New Project Wizard allows Project Name that results in invalid namespace for generated codebehind (#110)
 
 *Contributors of this release (in alphabetical order):* @304NotModified, @clrudolphi
 
