@@ -227,8 +227,8 @@
                                 <ComboBoxItem Tag="net462">.NET Framework 4.6.2</ComboBoxItem>
                                 <ComboBoxItem Tag="net472">.NET Framework 4.7.2</ComboBoxItem>
                                 <ComboBoxItem Tag="net48">.NET Framework 4.8.1</ComboBoxItem>
-								<ComboBoxItem Tag="net8.0">.NET 8.0</ComboBoxItem>
-                                <ComboBoxItem Tag="net9.0" IsSelected="True">.NET 9.0</ComboBoxItem>
+                                <ComboBoxItem Tag="net8.0" IsSelected="True">.NET 8.0</ComboBoxItem>
+                                <ComboBoxItem Tag="net9.0">.NET 9.0</ComboBoxItem>
                             </ComboBox>
 						</StackPanel>
 
