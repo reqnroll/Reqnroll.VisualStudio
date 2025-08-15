@@ -225,8 +225,11 @@
 							          Margin="0,0,0,0" Padding="8,8,8,8" SelectedValue="{Binding DotNetFramework}"
 							          IsSynchronizedWithCurrentItem="True">
                                 <ComboBoxItem Tag="net462">.NET Framework 4.6.2</ComboBoxItem>
+                                <ComboBoxItem Tag="net47">.NET Framework 4.7</ComboBoxItem>
+                                <ComboBoxItem Tag="net471">.NET Framework 4.7.1</ComboBoxItem>
                                 <ComboBoxItem Tag="net472">.NET Framework 4.7.2</ComboBoxItem>
-                                <ComboBoxItem Tag="net48">.NET Framework 4.8.1</ComboBoxItem>
+                                <ComboBoxItem Tag="net48">.NET Framework 4.8</ComboBoxItem>
+                                <ComboBoxItem Tag="net481">.NET Framework 4.8.1</ComboBoxItem>
                                 <ComboBoxItem Tag="net8.0" IsSelected="True">.NET 8.0</ComboBoxItem>
                                 <ComboBoxItem Tag="net9.0">.NET 9.0</ComboBoxItem>
                             </ComboBox>
