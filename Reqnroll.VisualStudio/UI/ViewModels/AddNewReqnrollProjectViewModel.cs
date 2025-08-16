@@ -15,7 +15,7 @@ public class AddNewReqnrollProjectViewModel : INotifyPropertyChanged
         FluentAssertionsIncluded = false
     };
 #endif
-    private string _dotNetFramework = Net9;
+    private string _dotNetFramework = Net8;
 
     public string DotNetFramework
     {
