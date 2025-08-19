@@ -34,15 +34,20 @@ public class ReqnrollProjectWizard : IDeveroomWizard
         // 1. split by '.'
         // 2. Call ToIdentifier on each part
         var projectNameParts = wizardRunParameters.ReplacementsDictionary["$projectname$"].Split('.');
-        var cleanedProjectName = projectNameParts.Select(part => CodeFormattingExtensions.ToIdentifier(part)).ToArray();
-        var cleanedProjectNameString = string.Join(".", cleanedProjectName);
+        var proposedProjectName = string.Join(".", projectNameParts);
+        var cleanedProjectName = string.Join(".", projectNameParts.Select(part => CodeFormattingExtensions.ToIdentifier(part)).ToArray());
+        var rootNamespace = "";
+        if (proposedProjectName != cleanedProjectName)
+        {
+            rootNamespace = cleanedProjectName;
+        }
 
         // Add custom parameters.
         wizardRunParameters.ReplacementsDictionary.Add("$dotnetframework$", viewModel.DotNetFramework);
         wizardRunParameters.ReplacementsDictionary.Add("$unittestframework$", viewModel.UnitTestFramework);
         wizardRunParameters.ReplacementsDictionary.Add("$fluentassertionsincluded$",
             viewModel.FluentAssertionsIncluded.ToString(CultureInfo.InvariantCulture));
-        wizardRunParameters.ReplacementsDictionary.Add("$rootnamespace$", cleanedProjectNameString);
+        wizardRunParameters.ReplacementsDictionary.Add("$rootnamespace$", rootNamespace);
 
         return true;
     }
