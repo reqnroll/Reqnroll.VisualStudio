@@ -142,10 +142,6 @@ public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEdi
         var editorConfigOptions = _editorConfigOptionsProvider.GetEditorConfigOptions(textView);
         editorConfigOptions.UpdateFromEditorConfig(csharpConfig);
 
-        // Debug: Log the configuration values
-        System.Diagnostics.Debug.WriteLine($"[DefineStepsCommand] NamespaceDeclarationStyle: '{csharpConfig.NamespaceDeclarationStyle}'");
-        System.Diagnostics.Debug.WriteLine($"[DefineStepsCommand] UseFileScopedNamespaces: {csharpConfig.UseFileScopedNamespaces}");
-
         // Build template with common structure
         var template = new StringBuilder();
         template.AppendLine("using System;");
