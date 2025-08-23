@@ -1,4 +1,5 @@
 using Reqnroll.VisualStudio.Configuration;
+using Reqnroll.VisualStudio.Editor.Services.EditorConfig;
 using Xunit;
 
 namespace Reqnroll.VisualStudio.Tests.Configuration;
@@ -78,5 +79,76 @@ public class CSharpCodeGenerationConfigurationTests
 
         // Act & Assert
         Assert.False(config.UseFileScopedNamespaces);
+    }
+
+    [Fact]
+    public void UpdateFromEditorConfig_WhenFileScopedValue_SetsCorrectValue()
+    {
+        // Arrange
+        var config = new CSharpCodeGenerationConfiguration();
+        var editorConfigOptions = new TestEditorConfigOptions("file_scoped:silent");
+
+        // Act
+        editorConfigOptions.UpdateFromEditorConfig(config);
+
+        // Assert
+        Assert.Equal("file_scoped:silent", config.NamespaceDeclarationStyle);
+        Assert.True(config.UseFileScopedNamespaces);
+    }
+
+    [Fact]
+    public void UpdateFromEditorConfig_WhenBlockScopedValue_SetsCorrectValue()
+    {
+        // Arrange
+        var config = new CSharpCodeGenerationConfiguration();
+        var editorConfigOptions = new TestEditorConfigOptions("block_scoped");
+
+        // Act
+        editorConfigOptions.UpdateFromEditorConfig(config);
+
+        // Assert
+        Assert.Equal("block_scoped", config.NamespaceDeclarationStyle);
+        Assert.False(config.UseFileScopedNamespaces);
+    }
+
+    [Fact]
+    public void UpdateFromEditorConfig_WhenNoValue_KeepsDefault()
+    {
+        // Arrange
+        var config = new CSharpCodeGenerationConfiguration();
+        var editorConfigOptions = new TestEditorConfigOptions(null);
+
+        // Act
+        editorConfigOptions.UpdateFromEditorConfig(config);
+
+        // Assert
+        Assert.Equal("block_scoped", config.NamespaceDeclarationStyle); // Should keep default
+        Assert.False(config.UseFileScopedNamespaces);
+    }
+}
+
+// Test EditorConfig options provider that simulates reading specific values
+public class TestEditorConfigOptions : IEditorConfigOptions
+{
+    private readonly string _namespaceStyle;
+    
+    public TestEditorConfigOptions(string namespaceStyle)
+    {
+        _namespaceStyle = namespaceStyle;
+    }
+
+    public TResult GetOption<TResult>(string editorConfigKey, TResult defaultValue)
+    {
+        if (editorConfigKey == "csharp_style_namespace_declarations" && _namespaceStyle != null)
+        {
+            return (TResult)(object)_namespaceStyle;
+        }
+        
+        return defaultValue;
+    }
+
+    public bool GetBoolOption(string editorConfigKey, bool defaultValue)
+    {
+        return defaultValue;
     }
 }

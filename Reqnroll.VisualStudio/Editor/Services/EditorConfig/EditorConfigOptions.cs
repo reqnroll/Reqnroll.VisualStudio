@@ -19,12 +19,20 @@ public class EditorConfigOptions : IEditorConfigOptions
 
     public TResult GetOption<TResult>(string editorConfigKey, TResult defaultValue)
     {
+        System.Diagnostics.Debug.WriteLine($"[EditorConfigOptions] GetOption: key='{editorConfigKey}', defaultValue='{defaultValue}', type={typeof(TResult).Name}");
+        
         if (_directEditorConfigValues.TryGetValue(editorConfigKey, out var simplifiedValue))
         {
+            System.Diagnostics.Debug.WriteLine($"[EditorConfigOptions] Found value: '{simplifiedValue}' for key '{editorConfigKey}'");
             if (TryConvertFromString(simplifiedValue, defaultValue, out var convertedValue))
             {
+                System.Diagnostics.Debug.WriteLine($"[EditorConfigOptions] Converted value: '{convertedValue}' for key '{editorConfigKey}'");
                 return convertedValue;
             }
+        }
+        else
+        {
+            System.Diagnostics.Debug.WriteLine($"[EditorConfigOptions] No value found for key '{editorConfigKey}', returning default: '{defaultValue}'");
         }
         return defaultValue;
     }
@@ -60,7 +68,18 @@ public class EditorConfigOptions : IEditorConfigOptions
             var dacOptionsField = optionsAnalyzerConfigOptions?.GetType()?.GetField("Options", BindingFlags.NonPublic | BindingFlags.Instance);
             var optionsCollection = dacOptionsField?.GetValue(optionsAnalyzerConfigOptions) as ImmutableDictionary<string, string>;
             if (optionsCollection != null)
+            {
                 values = new Dictionary<string, string>(optionsCollection);
+                System.Diagnostics.Debug.WriteLine($"[EditorConfigOptions] Extracted {values.Count} EditorConfig values");
+                foreach (var kvp in values)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[EditorConfigOptions] Key: '{kvp.Key}' = '{kvp.Value}'");
+                }
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("[EditorConfigOptions] No options collection found");
+            }
         }
         catch (Exception ex)
         {
