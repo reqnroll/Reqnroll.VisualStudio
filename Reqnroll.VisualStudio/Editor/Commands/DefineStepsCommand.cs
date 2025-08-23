@@ -137,13 +137,15 @@ public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEdi
         var isSpecFlow = projectTraits.HasFlag(ReqnrollProjectTraits.LegacySpecFlow) || projectTraits.HasFlag(ReqnrollProjectTraits.SpecFlowCompatibility);
         var libraryNameSpace = isSpecFlow ? "SpecFlow" : "Reqnroll";
 
-        // Get C# code generation configuration from EditorConfig
+        // Get C# code generation configuration from EditorConfig using target .cs file path
+        var targetFilePath = Path.Combine(targetFolder, className + ".cs");
         var csharpConfig = new CSharpCodeGenerationConfiguration();
-        var editorConfigOptions = _editorConfigOptionsProvider.GetEditorConfigOptions(textView);
+        var editorConfigOptions = _editorConfigOptionsProvider.GetEditorConfigOptionsByPath(targetFilePath);
         editorConfigOptions.UpdateFromEditorConfig(csharpConfig);
 
-        // Build template with common structure
-        var template = new StringBuilder();
+        // Estimate template size for StringBuilder capacity
+        var estimatedSize = 200 + fileNamespace.Length + className.Length + combinedSnippet.Length;
+        var template = new StringBuilder(estimatedSize);
         template.AppendLine("using System;");
         template.AppendLine($"using {libraryNameSpace};");
         template.AppendLine();
@@ -151,6 +153,10 @@ public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEdi
         // Determine indentation level based on namespace style
         var classIndent = csharpConfig.UseFileScopedNamespaces ? "" : indent;
         
+        // Adjust combinedSnippet indentation based on namespace style
+        var adjustedSnippet = csharpConfig.UseFileScopedNamespaces
+            ? combinedSnippet.Replace(indent + indent, indent) // Remove one level of indentation for file-scoped
+            : combinedSnippet;
         // Add namespace declaration
         if (csharpConfig.UseFileScopedNamespaces)
         {
@@ -167,7 +173,7 @@ public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEdi
         template.AppendLine($"{classIndent}[Binding]");
         template.AppendLine($"{classIndent}public class {className}");
         template.AppendLine($"{classIndent}{{");
-        template.Append(combinedSnippet);
+        template.Append(adjustedSnippet);
         template.AppendLine($"{classIndent}}}");
         
         // Close namespace if block-scoped
