@@ -155,7 +155,7 @@ public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEdi
         
         // Adjust combinedSnippet indentation based on namespace style
         var adjustedSnippet = csharpConfig.UseFileScopedNamespaces
-            ? combinedSnippet.Replace(indent + indent, indent) // Remove one level of indentation for file-scoped
+            ? AdjustIndentationForFileScopedNamespace(combinedSnippet, indent, newLine)
             : combinedSnippet;
         // Add namespace declaration
         if (csharpConfig.UseFileScopedNamespaces)
@@ -207,5 +207,32 @@ public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEdi
             .Update(bindingRegistry => bindingRegistry.ReplaceStepDefinitions(stepDefinitionFile));
 
         Finished.Set();
+    }
+
+    private static string AdjustIndentationForFileScopedNamespace(string snippet, string indent, string newLine)
+    {
+        if (string.IsNullOrEmpty(snippet))
+            return snippet;
+
+        // Split into lines and process each line
+        var lines = snippet.Split(new[] { newLine }, StringSplitOptions.None);
+        var adjustedLines = new string[lines.Length];
+
+        for (int i = 0; i < lines.Length; i++)
+        {
+            var line = lines[i];
+            
+            // If line starts with double indentation, reduce it to single indentation
+            if (line.StartsWith(indent + indent))
+            {
+                adjustedLines[i] = indent + line.Substring((indent + indent).Length);
+            }
+            else
+            {
+                adjustedLines[i] = line;
+            }
+        }
+
+        return string.Join(newLine, adjustedLines);
     }
 }
