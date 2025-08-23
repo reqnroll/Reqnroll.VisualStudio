@@ -162,7 +162,7 @@ jobs:
 
         # Calculate 'test_params'
         $gitHubActionsLoggerSettings = '"GitHubActions;summary.includePassedTests=true;summary.includeSkippedTests=true;annotations.titleFormat=[@traits.Category] @test;annotations.messageFormat=@error\n@trace"'
-        $testParams = "--no-build --verbosity normal -c $productConfig --logger trx --logger $gitHubActionsLoggerSettings -- RunConfiguration.CollectSourceInformation=true RunConfiguration.TreatNoTestsAsError=true"
+        $testParams = "--no-build --verbosity minimal -c $productConfig --logger trx --logger $gitHubActionsLoggerSettings -- RunConfiguration.CollectSourceInformation=true RunConfiguration.TreatNoTestsAsError=true"
         Write-Output "test_params=$testParams" >> $env:GITHUB_OUTPUT
         Write-Output "Test Params: $testParams"
     - name: Update Changelog
@@ -189,7 +189,7 @@ jobs:
     - name: Add MsBuild to PATH
       uses: microsoft/setup-msbuild@v1.3
     - name: Build
-      run: msbuild -restore -property:DeployExtension=false -property:Configuration=${{ steps.versions.outputs.product_configuration }} ${{ steps.build_params.outputs.main_build_params }}
+      run: msbuild -restore -property:DeployExtension=false -property:Configuration=${{ steps.versions.outputs.product_configuration }} ${{ steps.build_params.outputs.main_build_params }} 
     - name: Unit Tests
       run: dotnet test ./Tests/Reqnroll.VisualStudio.Tests/Reqnroll.VisualStudio.Tests.csproj ${{ steps.build_params.outputs.test_params }}
     - name: Review modified files

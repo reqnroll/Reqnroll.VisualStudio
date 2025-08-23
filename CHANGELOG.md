@@ -2,6 +2,7 @@
 
 ## Improvements:
 
+* New Project Wizard references the latest versions of supported test frameworks and .Net frameworks
 * Format Document will now right-align numeric values in tables. This can be overridden to left align them by setting "gherkin_table_cell_right_align_numeric_content = false" in .editorconfig file within a [*.feature] section. 
 
 ## Bug fixes:
@@ -9,7 +10,7 @@
 * Fix: Ambiguous steps reported wehn definition matches via more than one tag (#95)
 * Fix incorrect binding language detection for Visual Studio extension (#104)
 
-*Contributors of this release (in alphabetical order):* @clrudolphi
+*Contributors of this release (in alphabetical order):* @304NotModified, @clrudolphi
 
 # v2025.1.256 - 2025-03-07
 

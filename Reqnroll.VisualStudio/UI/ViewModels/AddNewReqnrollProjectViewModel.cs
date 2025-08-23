@@ -5,11 +5,12 @@ public class AddNewReqnrollProjectViewModel : INotifyPropertyChanged
 {
     private const string MsTest = "MsTest";
     private const string Net8 = "net8.0";
+    private const string Net9 = "net9.0";
 
 #if DEBUG
     public static AddNewReqnrollProjectViewModel DesignData = new()
     {
-        DotNetFramework = Net8,
+        DotNetFramework = Net9,
         UnitTestFramework = MsTest,
         FluentAssertionsIncluded = false
     };
@@ -31,7 +32,7 @@ public class AddNewReqnrollProjectViewModel : INotifyPropertyChanged
     // See https://xceed.com/fluent-assertions-faq/
     // Maybe we could consider suggesting https://github.com/shouldly/shouldly instead.
     public bool FluentAssertionsIncluded { get; set; } = false;
-    public ObservableCollection<string> TestFrameworks { get; } = new(new List<string> { "MSTest", "NUnit", "xUnit" });
+    public ObservableCollection<string> TestFrameworks { get; } = new(new List<string> { "MSTest", "NUnit", "xUnit", "xUnit.v3", "TUnit" });
 
     public event PropertyChangedEventHandler PropertyChanged;
 
