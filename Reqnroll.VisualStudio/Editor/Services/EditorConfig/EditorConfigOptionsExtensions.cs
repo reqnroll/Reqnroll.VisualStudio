@@ -26,16 +26,16 @@ public static class EditorConfigOptionsExtensions
             .Select(p => new
             {
                 PropertyInfo = p,
-                ((EditorConfigSettingAttribute) Attribute.GetCustomAttribute(p, typeof(EditorConfigSettingAttribute)))
+                EditorConfigKey = ((EditorConfigSettingAttribute) Attribute.GetCustomAttribute(p, typeof(EditorConfigSettingAttribute)))
                     ?.EditorConfigSettingName
             })
-            .Where(p => p.EditorConfigSettingName != null);
+            .Where(p => p.EditorConfigKey != null);
 
         foreach (var property in propertiesWithEditorConfig)
         {
             var currentValue = property.PropertyInfo.GetValue(config);
             var updatedValue = editorConfigOptions.GetOption(property.PropertyInfo.PropertyType,
-                property.EditorConfigSettingName, currentValue);
+                property.EditorConfigKey, currentValue);
             if (!Equals(currentValue, updatedValue))
                 property.PropertyInfo.SetValue(config, updatedValue);
         }
