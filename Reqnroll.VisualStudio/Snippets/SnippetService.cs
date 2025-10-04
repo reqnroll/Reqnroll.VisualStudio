@@ -14,9 +14,10 @@ public class SnippetService
 
     public SnippetExpressionStyle DefaultExpressionStyle =>
         _projectScope.GetDeveroomConfiguration().SnippetExpressionStyle;
+    public bool DefaultGenerateSkeletonMethodsAsAsync => _projectScope.GetDeveroomConfiguration().GenerateAsyncSkeletonMethods;
 
     public string GetStepDefinitionSkeletonSnippet(UndefinedStepDescriptor undefinedStep,
-        SnippetExpressionStyle expressionStyle, string indent = "    ", string newLine = null)
+        SnippetExpressionStyle expressionStyle, bool generateAsyncSkeletonSnippet, string indent = "    ", string newLine = null)
     {
         try
         {
@@ -28,7 +29,7 @@ public class SnippetService
             var configuration = _projectScope.GetDeveroomConfiguration();
             newLine = newLine ?? Environment.NewLine;
             var result =
-                skeletonProvider.GetStepDefinitionSkeletonSnippet(undefinedStep, indent, newLine,
+                skeletonProvider.GetStepDefinitionSkeletonSnippet(undefinedStep, indent, generateAsyncSkeletonSnippet, newLine,
                     configuration.BindingCulture);
             _logger.LogInfo(
                 $"Step definition snippet generated for step '{undefinedStep.StepText}': {Environment.NewLine}{result}");

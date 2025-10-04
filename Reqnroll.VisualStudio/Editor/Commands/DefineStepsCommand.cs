@@ -67,6 +67,7 @@ public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEdi
         var viewModel = new CreateStepDefinitionsDialogViewModel();
         viewModel.ClassName = feature.Name.ToIdentifier() + "StepDefinitions";
         viewModel.ExpressionStyle = snippetService.DefaultExpressionStyle;
+        bool generateAsyncSnippet = snippetService.DefaultGenerateSkeletonMethodsAsAsync;
 
         foreach (var undefinedStepTag in undefinedStepTags)
         {
@@ -74,7 +75,7 @@ public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEdi
             foreach (var match in matchResult.Items.Where(mi => mi.Type == MatchResultType.Undefined))
             {
                 var snippet = snippetService.GetStepDefinitionSkeletonSnippet(match.UndefinedStep,
-                    viewModel.ExpressionStyle, indent, newLine);
+                    viewModel.ExpressionStyle, generateAsyncSnippet, indent, newLine);
                 if (viewModel.Items.Any(i => i.Snippet == snippet))
                     continue;
 

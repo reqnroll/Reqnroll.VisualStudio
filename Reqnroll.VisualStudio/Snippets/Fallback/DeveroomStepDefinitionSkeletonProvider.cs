@@ -13,7 +13,7 @@ public abstract class DeveroomStepDefinitionSkeletonProvider
     }
 
     public string GetStepDefinitionSkeletonSnippet(UndefinedStepDescriptor undefinedStep,
-        string indent, string newLine, string bindingCultureName)
+        string indent, bool generateAsyncSnippet, string newLine, string bindingCultureName)
     {
         var bindingCulture = CultureInfo.GetCultureInfo(bindingCultureName);
 
@@ -23,9 +23,10 @@ public abstract class DeveroomStepDefinitionSkeletonProvider
         var methodName = GetMethodName(undefinedStep, analyzedStepText);
         var parameters = string.Join(", ", analyzedStepText.Parameters.Select(ToDeclaration));
         var stringPrefix = UseVerbatimStringForExpression ? "@" : "";
+        var returnSignature = generateAsyncSnippet ? "async Task" : "void";
 
         var method = $"[{undefinedStep.ScenarioBlock}({stringPrefix}\"{regex}\")]" + newLine +
-                     $"public void {methodName}({parameters})" + newLine +
+                     $"public {returnSignature} {methodName}{(generateAsyncSnippet ? "Async" : "")}({parameters})" + newLine +
                      "{" + newLine +
                      $"{indent}throw new PendingStepException();" + newLine +
                      "}" + newLine;
