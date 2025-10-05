@@ -4,6 +4,7 @@
 
 * New Project Wizard references the latest versions of supported test frameworks and .NET frameworks
 * Format Document will now right-align numeric values in tables. This can be overridden to left align them by setting `gherkin_table_cell_right_align_numeric_content = false` in .editorconfig file within a `[*.feature]` section. 
+* Define Steps Command now supports generating async method definitions.
 
 ## Bug fixes:
 
