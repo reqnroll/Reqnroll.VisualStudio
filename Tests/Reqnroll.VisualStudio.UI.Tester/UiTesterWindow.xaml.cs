@@ -48,7 +48,25 @@ public partial class UiTesterWindow : Window
 
     private void Test_GenerateStepDefinitions(object sender, RoutedEventArgs e)
     {
-        var viewModel = CreateStepDefinitionsDialogViewModel.DesignData;
+        var syncViewModel = CreateStepDefinitionsDialogViewModel.DesignData;
+        var viewModel = new CreateStepDefinitionsDialogViewModel() { 
+            ClassName = syncViewModel.ClassName, 
+            ExpressionStyle = syncViewModel.ExpressionStyle };
+        viewModel.IsInitializing = true;
+        foreach (var item in syncViewModel.Items)
+        {
+            viewModel.Items.Add(item);
+        }
+        viewModel.GenerateAsyncMethods = false;
+        viewModel.Generator = (m) =>
+        {
+            if (m.GenerateAsyncMethods)
+                return CreateStepDefinitionsDialogViewModel.DesignDataAsync.Items.ToList();
+            else
+                return CreateStepDefinitionsDialogViewModel.DesignData.Items.ToList();
+        };
+        viewModel.IsInitializing = false;
+
         var dialog = new CreateStepDefinitionsDialog(viewModel);
         dialog.ShowDialog();
 

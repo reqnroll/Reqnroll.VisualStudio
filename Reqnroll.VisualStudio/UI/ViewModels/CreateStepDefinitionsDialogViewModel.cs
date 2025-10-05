@@ -43,11 +43,43 @@ public void GivenThereIsASimpleReqnrollProjectForVersion(Version reqnrollVersion
             }
         }
     };
+    public static CreateStepDefinitionsDialogViewModel DesignDataAsync = new()
+    {
+        ClassName = "MyFeatureSteps",
+        ExpressionStyle = SnippetExpressionStyle.CucumberExpression,
+        Items = new ObservableCollection<StepDefinitionSnippetItemViewModel>
+        {
+            new()
+            {
+                Snippet = @"[Given(@""there is a simple Reqnroll project for (.*)"")]
+public async Task GivenThereIsASimpleReqnrollProjectForVersionAsync(Version reqnrollVersion)
+{
+    throw new PendingStepException();
+}"
+            },
+            new()
+            {
+                Snippet = @"[When(@""there is a simple Reqnroll project for (.*)"")]
+public async Task GivenThereIsASimpleReqnrollProjectForVersionAsync(Version reqnrollVersion)
+{
+    throw new PendingStepException();
+}"
+            },
+            new()
+            {
+                Snippet = @"[When(@""there is a simple Reqnroll project for (.*)"")]
+public async Task GivenThereIsASimpleReqnrollProjectForVersionAsync(Version reqnrollVersion)
+{
+    throw new PendingStepException();
+}"
+            }
+        }
+    };
 #endif
 
     public string ClassName { get; set; }
     public SnippetExpressionStyle ExpressionStyle { get; set; }
-    private bool _generateAsyncMethods;
+    private bool _generateAsyncMethods = true;
     public bool GenerateAsyncMethods
     {
         get => _generateAsyncMethods;
