@@ -47,7 +47,7 @@ Scenario: Two undefined step has the same step definition skeleton
 	And the project is built and the initial binding discovery is performed
 	When I invoke the "Define Steps" command
 	Then the define steps dialog should be opened with the following step definition skeletons
-		| type  | expression                        |
+		| type  | expression                         |
 		| Given | the operand {int} has been entered |
 
 Scenario: All steps are defined
@@ -121,11 +121,11 @@ Scenario: DefineSteps command abides by reqnroll.json configuration for regex sk
 			"trace": { "stepDefinitionSkeletonStyle": "RegexAttribute" }
 		}
 		"""
-		And the project is built and the initial binding discovery is performed
-		When I invoke the "Define Steps" command
-		Then the define steps dialog should be opened with the following step definition skeletons
-			| type  | expression                        |
-			| Given | the client added (.*) pcs to the basket |
+	And the project is built and the initial binding discovery is performed
+	When I invoke the "Define Steps" command
+	Then the define steps dialog should be opened with the following step definition skeletons
+		| type  | expression                              |
+		| Given | the client added (.*) pcs to the basket |
 
 Scenario: DefineSteps command properly escapes empty brackets when using Cucumber expressions
 	Given there is a Reqnroll project scope
@@ -139,8 +139,8 @@ Scenario: DefineSteps command properly escapes empty brackets when using Cucumbe
 	And the project is built and the initial binding discovery is performed
 	When I invoke the "Define Steps" command
 	Then the define steps dialog should be opened with the following step definition skeletons
-		| type | expression                                 |
-		| When | I use \\(parenthesis), \\{curly braces} and\\/or \\\ backslash |
+		| type | expression                                                      |
+		| When | I use \\(parenthesis), \\{curly braces} and\\/or \\\\ backslash |
 
 Scenario: DefineSteps command properly escapes empty brackets when using Regex expressions
 	Given there is a Reqnroll project scope
@@ -160,6 +160,48 @@ Scenario: DefineSteps command properly escapes empty brackets when using Regex e
 	And the project is built and the initial binding discovery is performed
 	When I invoke the "Define Steps" command
 	Then the define steps dialog should be opened with the following step definition skeletons
-		| type | expression |
-		| When | I use \\(parenthesis\), \\{curly braces}, \\\ backslash, and/or \\. period |
+		| type | expression                                                                   |
+		| When | I use \\(parenthesis\\), \\{curly braces}, \\\\ backslash, and/or \\. period |
+
+Scenario: DefineSteps command abides by reqnroll.json configuration for async method declaration
+	Given there is a Reqnroll project scope
+	And the following feature file in the editor
+		"""
+		Feature: Feature Using Regex Style
+		
+		Scenario: Client has a simple basket
+			Given the client has a basket
+		"""
+	And the reqnroll.json configuration file contains
+		"""
+		{ 
+			"trace": { "generateStepDefinitionSkeletonAsAsync": true }
+		}
+		"""
+	And the project is built and the initial binding discovery is performed
+	When I invoke the "Define Steps" command
+	Then the define steps dialog should be opened with the following step definition skeletons
+		| Method                                                   |
+		| MyProject.StepDefinitions1.GivenTheClientHasABasketAsync |
+
+Scenario: DefineSteps command abides by reqnroll.json configuration for synchronous method declaration
+	Given there is a Reqnroll project scope
+	And the following feature file in the editor
+		"""
+		Feature: Feature Using Regex Style
+		
+		Scenario: Client has a simple basket
+			Given the client has a basket
+		"""
+	And the reqnroll.json configuration file contains
+		"""
+		{ 
+			"trace": { "generateStepDefinitionSkeletonAsAsync": false }
+		}
+		"""
+	And the project is built and the initial binding discovery is performed
+	When I invoke the "Define Steps" command
+	Then the define steps dialog should be opened with the following step definition skeletons
+		| Method                                              |
+		| MyProject.StepDefinitions1.GivenTheClientHasABasket |
 
