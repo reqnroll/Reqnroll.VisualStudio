@@ -26,6 +26,12 @@ public class ReqnrollConfigDeserializer : IConfigDeserializer<DeveroomConfigurat
             if (sdSnippetStyle == "RegexAttribute")
                 config.SnippetExpressionStyle = SnippetExpressionStyle.RegularExpression;
         }
+        if (reqnrollJsonConfiguration.Trace != null &&
+            reqnrollJsonConfiguration.Trace.TryGetValue("generateStepDefinitionSkeletonAsAsync", out var generateStepDefinitionSkeletonAsAsync) &&
+            bool.TryParse(generateStepDefinitionSkeletonAsAsync, out bool generateAsyncSkeletonMethods))
+        {
+            config.GenerateAsyncSkeletonMethods = generateAsyncSkeletonMethods;
+        }
     }
 
     private class ReqnrollJsonConfiguration

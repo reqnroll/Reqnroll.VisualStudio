@@ -55,6 +55,9 @@
                     <ComboBoxItem Tag="RegularExpression">Regular Expressions</ComboBoxItem>
                     <ComboBoxItem Tag="CucumberExpression">Cucumber Expressions</ComboBoxItem>
                 </ComboBox>-->
+				<CheckBox Grid.Column="1" Grid.Row="1" Margin="0,8,0,8"
+				          Content="Use asynchronous method declarations."
+				          IsChecked="{Binding GenerateAsyncMethods, Mode=TwoWay}" />
 				<StackPanel Grid.Column="2" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right"
 				            Margin="0,3,12,6">
 					<Button Style="{StaticResource VsDialogButton}" Click="CopyToClipboard_Click">Copy to clipboard</Button>
