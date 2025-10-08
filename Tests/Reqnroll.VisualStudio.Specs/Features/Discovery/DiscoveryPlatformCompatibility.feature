@@ -9,6 +9,5 @@ Scenario Outline: Discover bindings from a Reqnroll project in different .NET Co
 	Then the discovery succeeds with several step definitions
 Examples: 
 	| framework |
-	| net6.0    |
 	| net8.0    |
 	| net9.0    |

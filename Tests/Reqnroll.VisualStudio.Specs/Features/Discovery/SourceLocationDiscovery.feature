@@ -25,6 +25,5 @@ Scenario Outline: Discover binding source location from Reqnroll project with as
 Examples:
 	| framework |
 	| net481    |
-	| net6.0    |
 	| net8.0    |
 	| net9.0    |
