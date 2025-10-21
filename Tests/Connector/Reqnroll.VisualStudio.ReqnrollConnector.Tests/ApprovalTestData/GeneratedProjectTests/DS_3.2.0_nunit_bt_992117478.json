@@ -3,7 +3,7 @@
     "FeatureFileCount": 1,
     "ScenarioPerFeatureFileCount": 1,
     "NewProjectFormat": true,
-    "TargetFramework": "net6.0",
-    "ReqnrollPackageVersion": "1.0.0"
+    "TargetFramework": "net8.0",
+    "ReqnrollPackageVersion": "3.2.0"
   }
 }
