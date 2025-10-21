@@ -2,16 +2,16 @@
 
 ## Improvements:
 
-* New Project Wizard references the latest versions of supported test frameworks and .NET frameworks (#113)
-* Format Document will now right-align numeric values in tables. This can be overridden to left align them by setting `gherkin_table_cell_right_align_numeric_content = false` in .editorconfig file within a `[*.feature]` section. (#107)
-* Add xunit.v3 as a choice of test framework in the New Project Wizard (#120)
+* The 'New Project' wizard is updated to use the latest versions of supported test frameworks and .NET frameworks (#113)
+* The 'Format Document' command is updated to right-align numeric values in tables. This can be overridden to left align them by setting `gherkin_table_cell_right_align_numeric_content = false` in .editorconfig file within a `[*.feature]` section. (#107)
+* Add xunit.v3 as a choice of test framework in the 'New Project' wizard (#120)
 
 ## Bug fixes:
 
 * Fix: Ambiguous steps reported when definition matches via more than one tag (#95)
-* Fix incorrect binding language detection for Visual Studio extension (#104)
+* Fix: Incorrect binding language detection for Visual Studio extension (#104)
 
-*Contributors of this release (in alphabetical order):* @304NotModified, @clrudolphi
+*Contributors of this release (in alphabetical order):* @304NotModified, @clrudolphi, @gasparnagy
 
 # v2025.1.256 - 2025-03-07
 
