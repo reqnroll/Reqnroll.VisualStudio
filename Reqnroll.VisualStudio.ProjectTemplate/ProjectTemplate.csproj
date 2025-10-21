@@ -3,7 +3,8 @@
   <PropertyGroup>
     <TargetFramework>$dotnetframework$</TargetFramework>
     <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
+    <ImplicitUsings>enable</ImplicitUsings>$if$ ('$rootnamespace$' != '')
+    <RootNamespace>$rootnamespace$</RootNamespace>$endif$
   </PropertyGroup>
 
   <ItemGroup>

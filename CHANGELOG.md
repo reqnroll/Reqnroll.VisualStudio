@@ -10,6 +10,7 @@
 
 * Fix: Ambiguous steps reported when definition matches via more than one tag (#95)
 * Fix: Incorrect binding language detection for Visual Studio extension (#104)
+* Fix: 'New Project' wizard allows specifying project name that results in invalid namespace for generated codebehind (#110)
 
 *Contributors of this release (in alphabetical order):* @304NotModified, @clrudolphi, @gasparnagy
 
