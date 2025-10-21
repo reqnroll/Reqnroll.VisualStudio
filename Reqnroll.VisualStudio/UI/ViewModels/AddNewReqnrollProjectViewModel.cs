@@ -32,7 +32,7 @@ public class AddNewReqnrollProjectViewModel : INotifyPropertyChanged
     // See https://xceed.com/fluent-assertions-faq/
     // Maybe we could consider suggesting https://github.com/shouldly/shouldly instead.
     public bool FluentAssertionsIncluded { get; set; } = false;
-    public ObservableCollection<string> TestFrameworks { get; } = new(new List<string> { "MSTest", "NUnit", "xUnit", "TUnit" });
+    public ObservableCollection<string> TestFrameworks { get; } = new(new List<string> { "MSTest", "NUnit", "xUnit", "xUnit.v3", "TUnit" });
 
     public event PropertyChangedEventHandler PropertyChanged;
 
