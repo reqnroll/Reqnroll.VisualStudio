@@ -1,7 +1,7 @@
 <Project>
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Packable>true</Packable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -9,11 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Reqnroll" Version="2.0.2" />
+    <PackageReference Include="Reqnroll" Version="3.2.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="bin\$(Configuration)\net6.0\$(AssemblyName).pdb" PackagePath="lib\net6.0\$(AssemblyName).pdb">
+    <Content Include="bin\$(Configuration)\net8.0\$(AssemblyName).pdb" PackagePath="lib\net8.0\$(AssemblyName).pdb">
        <PackageCopyToOutput>true</PackageCopyToOutput>
     </Content>
   </ItemGroup>  

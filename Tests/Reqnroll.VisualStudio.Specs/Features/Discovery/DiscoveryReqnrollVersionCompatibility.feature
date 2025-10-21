@@ -11,6 +11,7 @@ Examples:
 	| case    | version |
 	| line-v1 | v1.0.1  |
 	| line-v2 | v2.0.2  |
+	| line-v3 | v3.2.0  |
 
 Scenario Outline: Discover bindings from a Reqnroll project on .NET Core
 	Given there is a simple Reqnroll project for <version>
@@ -22,6 +23,7 @@ Examples:
 	| case    | version |
 	| line-v1 | v1.0.1  |
 	| line-v2 | v2.0.2  |
+	| line-v3 | v3.2.0  |
 
 Scenario Outline: Discover bindings from Reqnroll using different test runners
 	Given there is a simple Reqnroll project with test runner "<test runner tool>" for the latest version
