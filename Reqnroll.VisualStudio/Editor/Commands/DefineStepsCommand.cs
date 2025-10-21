@@ -63,24 +63,22 @@ public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEdi
         const string indent = "    ";
         string newLine = Environment.NewLine;
 
-        var feature = (Feature) featureTag.Data;
-        var viewModel = new CreateStepDefinitionsDialogViewModel();
-        viewModel.ClassName = feature.Name.ToIdentifier() + "StepDefinitions";
-        viewModel.ExpressionStyle = snippetService.DefaultExpressionStyle;
-
-        foreach (var undefinedStepTag in undefinedStepTags)
+        var feature = (Feature)featureTag.Data;
+        var viewModel = new CreateStepDefinitionsDialogViewModel
         {
-            var matchResult = (MatchResult) undefinedStepTag.Data;
-            foreach (var match in matchResult.Items.Where(mi => mi.Type == MatchResultType.Undefined))
-            {
-                var snippet = snippetService.GetStepDefinitionSkeletonSnippet(match.UndefinedStep,
-                    viewModel.ExpressionStyle, indent, newLine);
-                if (viewModel.Items.Any(i => i.Snippet == snippet))
-                    continue;
+            IsInitializing = true,
+            Generator = GenerateSnippets,
+            ClassName = feature.Name.ToIdentifier() + "StepDefinitions",
+            ExpressionStyle = snippetService.DefaultExpressionStyle,
+            GenerateAsyncMethods = snippetService.DefaultGenerateSkeletonMethodsAsAsync,
+            Indent = indent,
+            NewLine = newLine,
+            UndefinedStepTags = undefinedStepTags,
+            SnippetService = snippetService
+        };
+        viewModel.IsInitializing = false;
 
-                viewModel.Items.Add(new StepDefinitionSnippetItemViewModel {Snippet = snippet});
-            }
-        }
+        viewModel.Items = new ObservableCollection<StepDefinitionSnippetItemViewModel>(GenerateSnippets(viewModel));
 
         IdeScope.WindowManager.ShowDialog(viewModel);
 
@@ -111,6 +109,25 @@ public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEdi
         }
 
         return true;
+    }
+
+    public IEnumerable<StepDefinitionSnippetItemViewModel> GenerateSnippets(CreateStepDefinitionsDialogViewModel viewModel)
+    {
+        var result = new List<StepDefinitionSnippetItemViewModel>();
+        foreach (var undefinedStepTag in viewModel.UndefinedStepTags)
+        {
+            var matchResult = (MatchResult)undefinedStepTag.Data;
+            foreach (var match in matchResult.Items.Where(mi => mi.Type == MatchResultType.Undefined))
+            {
+                var snippet = viewModel.SnippetService.GetStepDefinitionSkeletonSnippet(match.UndefinedStep,
+                    viewModel.ExpressionStyle, viewModel.GenerateAsyncMethods, viewModel.Indent, viewModel.NewLine);
+                if (result.Any(i => i.Snippet == snippet))
+                    continue;
+
+                result.Add(new StepDefinitionSnippetItemViewModel { Snippet = snippet });
+            }
+        }
+        return result;
     }
 
     private void SaveAsStepDefinitionClass(IProjectScope projectScope, string combinedSnippet, string className,

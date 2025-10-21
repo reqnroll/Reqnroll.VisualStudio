@@ -21,7 +21,7 @@ public class DeveroomConfiguration
     public string ConfiguredBindingCulture { get; set; } = null;
     public string BindingCulture => ConfiguredBindingCulture ?? DefaultFeatureLanguage;
     public SnippetExpressionStyle SnippetExpressionStyle { get; set; } = SnippetExpressionStyle.CucumberExpression;
-
+    public bool GenerateAsyncSkeletonMethods { get; set; } = true;
 
     private void FixEmptyContainers()
     {

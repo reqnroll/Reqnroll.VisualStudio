@@ -88,7 +88,7 @@ public class GoToDefinitionCommand : DeveroomEditorCommandBase, IDeveroomFeature
         string newLine = Environment.NewLine;
 
         var snippet = snippetService.GetStepDefinitionSkeletonSnippet(match.UndefinedStep,
-            snippetService.DefaultExpressionStyle, indent, newLine);
+            snippetService.DefaultExpressionStyle, snippetService.DefaultGenerateSkeletonMethodsAsAsync, indent, newLine);
 
         IdeScope.Actions.ShowQuestion(new QuestionDescription(GoToStepDefinitionsPopupHeader,
             $"The step is undefined. Do you want to copy a step definition skeleton snippet to the clipboard?{Environment.NewLine}{Environment.NewLine}{snippet}",
