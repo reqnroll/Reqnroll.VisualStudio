@@ -232,6 +232,7 @@
                                 <ComboBoxItem Tag="net481">.NET Framework 4.8.1</ComboBoxItem>
                                 <ComboBoxItem Tag="net8.0" IsSelected="True">.NET 8.0</ComboBoxItem>
                                 <ComboBoxItem Tag="net9.0">.NET 9.0</ComboBoxItem>
+                                <ComboBoxItem Tag="net10.0">.NET 10.0</ComboBoxItem>
                             </ComboBox>
 						</StackPanel>
 

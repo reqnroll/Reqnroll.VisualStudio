@@ -2,9 +2,18 @@
 
 ## Improvements:
 
+## Bug fixes:
+
+*Contributors of this release (in alphabetical order):* 
+
+# v2025.2.359 - 2025-10-22
+
+## Improvements:
+
 * The 'New Project' wizard is updated to use the latest versions of supported test frameworks and .NET frameworks (#113)
 * The 'Format Document' command is updated to right-align numeric values in tables. This can be overridden to left align them by setting `gherkin_table_cell_right_align_numeric_content = false` in .editorconfig file within a `[*.feature]` section. (#107)
 * Add xunit.v3 as a choice of test framework in the 'New Project' wizard (#120)
+* Support for .NET 10 projects (#127)
 
 ## Bug fixes:
 
