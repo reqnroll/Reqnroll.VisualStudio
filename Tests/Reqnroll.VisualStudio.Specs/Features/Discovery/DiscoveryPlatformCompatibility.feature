@@ -11,3 +11,4 @@ Examples:
 	| framework |
 	| net8.0    |
 	| net9.0    |
+	| net10.0   |

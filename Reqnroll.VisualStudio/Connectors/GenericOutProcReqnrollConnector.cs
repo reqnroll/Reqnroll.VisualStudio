@@ -6,6 +6,7 @@ public class GenericOutProcReqnrollConnector : OutProcReqnrollConnector
     private const string ConnectorNet70 = @"Reqnroll-Generic-net7.0\reqnroll-vs.dll";
     private const string ConnectorNet80 = @"Reqnroll-Generic-net8.0\reqnroll-vs.dll";
     private const string ConnectorNet90 = @"Reqnroll-Generic-net9.0\reqnroll-vs.dll";
+    private const string ConnectorNet100 = @"Reqnroll-Generic-net10.0\reqnroll-vs.dll";
     private const string SpecFlowConnectorNet60 = @"SpecFlow-Generic-net6.0\specflow-vs.dll";
     private const string SpecFlowConnectorNet70 = @"SpecFlow-Generic-net7.0\specflow-vs.dll";
     private const string SpecFlowConnectorNet80 = @"SpecFlow-Generic-net8.0\specflow-vs.dll";
@@ -57,10 +58,16 @@ public class GenericOutProcReqnrollConnector : OutProcReqnrollConnector
         }
 
         if (_targetFrameworkMoniker.IsNetCore && _targetFrameworkMoniker.HasVersion &&
-            _targetFrameworkMoniker.Version.Major >= 9)
+            _targetFrameworkMoniker.Version.Major == 9)
         {
             connector = _projectSettings.IsSpecFlowProject ?
                 SpecFlowConnectorNet90 : ConnectorNet90;
+        }
+
+        if (_targetFrameworkMoniker.IsNetCore && _targetFrameworkMoniker.HasVersion &&
+            _targetFrameworkMoniker.Version.Major >= 10)
+        {
+            connector = ConnectorNet100;
         }
 
         var connectorsFolder = GetConnectorsFolder();
