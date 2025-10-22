@@ -85,7 +85,7 @@ public class MarkDownTextBlock : RichTextBox
     {
         var inlineRe =
             new Regex(
-                @"(\[(?<linkText>.*?)\]\((?<link>.*?)\)|(?<link>https?\:\/\/[\w\.\/-]+[\w\/])|\*\*(?<boldText>.*?)\*\*|\*(?<italicText>.*?)\*)");
+                @"(?<!`)(\[(?<linkText>.*?)\]\((?<link>.*?)\)|(?<link>https?\:\/\/[\w\.\/-]+[\w\/])|\*\*(?<boldText>.*?)\*\*|\*(?<italicText>.*?)\*)");
 
         paragraph = Regex.Replace(paragraph.Trim(), @"\s+", " ");
         var fdPara = new Paragraph();
