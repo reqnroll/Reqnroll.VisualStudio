@@ -58,9 +58,10 @@ dotnet publish -f net9.0 $buildArgs
 
 Copy-Item bin\$configuration\net9.0\publish\ $outputFolder\Reqnroll-Generic-net9.0\ -Recurse
 
-dotnet publish -f net10.0 $buildArgs
-
-Copy-Item bin\$configuration\net10.0\publish\ $outputFolder\Reqnroll-Generic-net10.0\ -Recurse
+# Build for .NET 10 once it's available on CI
+# dotnet publish -f net10.0 $buildArgs
+# Copy-Item bin\$configuration\net10.0\publish\ $outputFolder\Reqnroll-Generic-net10.0\ -Recurse
+Copy-Item ..\prebuilt\Reqnroll-Generic-net10.0\ $outputFolder\Reqnroll-Generic-net10.0\ -Recurse
 
 popd
 
