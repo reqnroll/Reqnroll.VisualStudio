@@ -6,6 +6,7 @@ public class AddNewReqnrollProjectViewModel : INotifyPropertyChanged
     private const string MsTest = "MsTest";
     private const string Net8 = "net8.0";
     private const string Net9 = "net9.0";
+    private const string Net10 = "net10.0";
 
 #if DEBUG
     public static AddNewReqnrollProjectViewModel DesignData = new()

@@ -15,6 +15,7 @@ public class TargetFrameworkMoniker
     private const string Net7ShortValuePrefix = "net7";
     private const string Net8ShortValuePrefix = "net8";
     private const string Net9ShortValuePrefix = "net9";
+    private const string Net10ShortValuePrefix = "net10";
 
     private TargetFrameworkMoniker(string value)
     {
@@ -80,6 +81,10 @@ public class TargetFrameworkMoniker
         else if (shortValue.StartsWith(Net9ShortValuePrefix))
         {
             value = $".NETCoreApp,Version=v{shortValue.Substring(Net9ShortValuePrefix.Length - 1)}";
+        }
+        else if (shortValue.StartsWith(Net10ShortValuePrefix))
+        {
+            value = $".NETCoreApp,Version=v{shortValue.Substring(Net10ShortValuePrefix.Length - 2)}";
         }
         else if (shortValue.StartsWith(NetFrameworkShortValuePrefix))
         {
