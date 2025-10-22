@@ -116,7 +116,8 @@ public class GherkinDocumentFormatter
         if (string.IsNullOrWhiteSpace(cellValue))
             return false;
         // Return true if the cell value contains any digit
-        return cellValue.Any(char.IsDigit);
+        // Regex taken from: https://github.com/cucumber/react-components/blob/main/src/components/gherkin/isNumber.ts#L3
+        return Regex.IsMatch(cellValue.Trim(), @"^(?=.*\d.*)[-+]?\d*(?:[., ](?=\d.*)\d*)*(?:\d+E[+-]?\d+)?$");
     }
 
     private bool IsTableCellContentRightAligned(string cellValue, GherkinFormatSettings formatSettings)
