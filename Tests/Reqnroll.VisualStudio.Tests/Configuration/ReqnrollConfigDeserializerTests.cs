@@ -2,6 +2,7 @@
 
 using FluentAssertions;
 using Reqnroll.VisualStudio.Configuration;
+using Reqnroll.VisualStudio.Snippets;
 using Xunit;
 
 namespace Reqnroll.VisualStudio.Tests.Configuration;
@@ -148,5 +149,38 @@ public class ReqnrollConfigDeserializerTests
         config.DefaultFeatureLanguage.Should().Be("en-US"); // Default
         config.ConfiguredBindingCulture.Should().Be("fr-FR"); // language.binding takes priority
         config.BindingCulture.Should().Be("fr-FR");
+    }
+
+    [Theory]
+    [InlineData("RegexAttribute", SnippetExpressionStyle.RegularExpression)]
+    [InlineData("CucumberExpressionAttribute", SnippetExpressionStyle.CucumberExpression)]
+    [InlineData("AsyncRegexAttribute", SnippetExpressionStyle.AsyncRegularExpression)]
+    [InlineData("AsyncCucumberExpressionAttribute", SnippetExpressionStyle.AsyncCucumberExpression)]
+    [InlineData("InvalidValue", SnippetExpressionStyle.CucumberExpression)] // Default fallback
+    [InlineData("", SnippetExpressionStyle.CucumberExpression)] // Default fallback
+    [InlineData(null, SnippetExpressionStyle.CucumberExpression)] // Default fallback
+    public void Should_set_stepDefinitionSkeletonStyle_from_reqnroll_json(string styleValue, SnippetExpressionStyle expectedStyle)
+    {
+        // Arrange
+        var deserializer = new ReqnrollConfigDeserializer();
+        var config = new DeveroomConfiguration();
+        var styleJson = styleValue != null
+            ? $@"
+            {{
+              ""trace"": {{
+                ""stepDefinitionSkeletonStyle"": ""{styleValue}""
+              }}
+            }}"
+            : @"
+            {
+              ""trace"": {
+              }
+            }";
+
+        // Act
+        deserializer.Populate(styleJson, config);
+
+        // Assert
+        config.SnippetExpressionStyle.Should().Be(expectedStyle);
     }
 }
