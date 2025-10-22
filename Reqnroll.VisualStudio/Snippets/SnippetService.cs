@@ -21,9 +21,9 @@ public class SnippetService
         try
         {
             var projectTraits = _projectScope.GetProjectSettings().ReqnrollProjectTraits;
-            var skeletonProvider = expressionStyle == SnippetExpressionStyle.CucumberExpression
-                ? (DeveroomStepDefinitionSkeletonProvider) new CucumberExpressionSkeletonProvider(projectTraits)
-                : new RegexStepDefinitionSkeletonProvider(projectTraits);
+            var skeletonProvider = expressionStyle.IsCucumber()
+                ? (DeveroomStepDefinitionSkeletonProvider) new CucumberExpressionSkeletonProvider(projectTraits, expressionStyle.IsAsync())
+                : new RegexStepDefinitionSkeletonProvider(projectTraits, expressionStyle.IsAsync());
 
             var configuration = _projectScope.GetDeveroomConfiguration();
             newLine = newLine ?? Environment.NewLine;
