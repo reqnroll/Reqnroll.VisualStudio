@@ -6,7 +6,8 @@ public class DefineStepsCommandTests : CommandTestBase<DefineStepsCommand>
 {
     public DefineStepsCommandTests(ITestOutputHelper testOutputHelper)
         : base(testOutputHelper, (ps, tp) =>
-                new DefineStepsCommand(ps.IdeScope, new StubBufferTagAggregatorFactoryService(tp), tp),
+                new DefineStepsCommand(ps.IdeScope, new StubBufferTagAggregatorFactoryService(tp), tp,
+                    new StubEditorConfigOptionsProvider()),
             "ShowProblem: User Notification: ")
     {
     }
