@@ -2,6 +2,8 @@
 
 ## Improvements:
 
+* The 'Define Steps' command honors the StepDefinitionSkeletonStyle setting in the project reqnroll.json configuration file and will generate step skeletons using 'Async' appropriately.
+
 ## Bug fixes:
 
 *Contributors of this release (in alphabetical order):* 
