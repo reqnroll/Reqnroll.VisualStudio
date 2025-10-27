@@ -26,6 +26,21 @@ public class EditorConfigOptionsProvider : IEditorConfigOptionsProvider
         return new EditorConfigOptions(options);
     }
 
+    public IEditorConfigOptions GetEditorConfigOptionsByPath(string filePath)
+    {
+        if (string.IsNullOrEmpty(filePath))
+            return NullEditorConfigOptions.Instance;
+
+        var document = CreateAdHocDocumentByPath(filePath);
+        if (document == null)
+            return NullEditorConfigOptions.Instance;
+
+        var options =
+            ThreadHelper.JoinableTaskFactory.Run(() => document.GetOptionsAsync());
+
+        return new EditorConfigOptions(options);
+    }
+
     private Document GetDocument(IWpfTextView textView) =>
         textView.TextBuffer.GetRelatedDocuments().FirstOrDefault() ??
         CreateAdHocDocument(textView);
@@ -35,10 +50,17 @@ public class EditorConfigOptionsProvider : IEditorConfigOptionsProvider
         var editorFilePath = GetPath(textView);
         if (editorFilePath == null)
             return null;
+        return CreateAdHocDocumentByPath(editorFilePath);
+    }
+
+    private Document CreateAdHocDocumentByPath(string filePath)
+    {
+        if (string.IsNullOrEmpty(filePath))
+            return null;
         var project = _visualStudioWorkspace.CurrentSolution.Projects.FirstOrDefault();
         if (project == null)
             return null;
-        return project.AddDocument(editorFilePath, string.Empty, filePath: editorFilePath);
+        return project.AddDocument(filePath, string.Empty, filePath: filePath);
     }
 
     public static string GetPath(IWpfTextView textView)
