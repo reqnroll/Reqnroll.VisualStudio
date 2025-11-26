@@ -18,7 +18,7 @@ public class WelcomeDialogViewModel : WizardViewModel
     public const string TROUBLESHOOTING_TEXT = """
         # Troubleshooting Tips
 
-        Reqnroll for Visual Studio 2022 is still new, so there might be some glitches, but **we are eager to hear about your feedback**.
+        Reqnroll for Visual Studio 2022 & 2026 is still new, so there might be some glitches, but **we are eager to hear about your feedback**.
 
         * If you are in trouble, you should first check the **Reqnroll pane of the Output Window**. 
         You can open it by choosing *View / Output* from the Visual Studio menu and switch 
