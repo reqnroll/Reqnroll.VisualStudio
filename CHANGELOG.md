@@ -4,7 +4,7 @@
 
 ## Improvements:
 
-* Update docs for .NET 10 (#138)
+* Update docs - .NET 10, TUnit, VS2026 (#138)
 
 ## Bug fixes:
 
