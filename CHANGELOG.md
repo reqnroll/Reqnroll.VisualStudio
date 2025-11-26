@@ -1,10 +1,12 @@
 # [vNext]
 
+* Renamed to Reqnroll for Visual Studio 2022 & 2026 #136
+
 ## Improvements:
 
 ## Bug fixes:
 
-*Contributors of this release (in alphabetical order):* 
+*Contributors of this release (in alphabetical order):* @304NotModified
 
 # v2025.2.359 - 2025-10-22
 
