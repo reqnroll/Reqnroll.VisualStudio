@@ -40,7 +40,7 @@ namespace Reqnroll.VisualStudio.SpecFlowExtensionDetection
             {
                 _compatibilityAlertShown = true;
                 _ideScope.Actions.ShowProblem(
-                                        $"We detected that both the 'Reqnroll for Visual Studio 2022' and the 'SpecFlow for Visual Studio 2022' extension have been installed in this Visual Studio instance.{Environment.NewLine}For the proper behavior you need to uninstall or disable one of these extensions in the 'Extensions / Manage Extensions' dialog.");
+                                        $"We detected that both the 'Reqnroll for Visual Studio' and the 'SpecFlow for Visual Studio' extension have been installed in this Visual Studio instance.{Environment.NewLine}For the proper behavior you need to uninstall or disable one of these extensions in the 'Extensions / Manage Extensions' dialog.");
 
             }
         }

@@ -10,7 +10,7 @@ Reqnroll is a .NET port of [Cucumber](https://cucumber.io/) and it is based on t
 
 The Reqnroll Visual Studio extension supports the following Visual Studio versions:
 
-* [Visual Studio 2022 (Community, Professional, Enterprise)](https://go.reqnroll.net/vs2022-extension)
+* [Visual Studio 2022 & 2026 (Community, Professional, Enterprise)](https://go.reqnroll.net/vs2022-extension)
 
 The extension can be used for the following frameworks:
 
