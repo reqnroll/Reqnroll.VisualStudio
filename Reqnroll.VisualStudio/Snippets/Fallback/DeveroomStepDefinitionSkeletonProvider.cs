@@ -6,10 +6,12 @@ public abstract class DeveroomStepDefinitionSkeletonProvider
 {
     protected ReqnrollProjectTraits ProjectTraits { get; }
     protected abstract bool UseVerbatimStringForExpression { get; }
+    protected bool UseAsync { get; }
 
-    protected DeveroomStepDefinitionSkeletonProvider(ReqnrollProjectTraits projectTraits)
+    protected DeveroomStepDefinitionSkeletonProvider(ReqnrollProjectTraits projectTraits, bool useAsync)
     {
         ProjectTraits = projectTraits;
+        UseAsync = useAsync;
     }
 
     public string GetStepDefinitionSkeletonSnippet(UndefinedStepDescriptor undefinedStep,
@@ -23,9 +25,10 @@ public abstract class DeveroomStepDefinitionSkeletonProvider
         var methodName = GetMethodName(undefinedStep, analyzedStepText);
         var parameters = string.Join(", ", analyzedStepText.Parameters.Select(ToDeclaration));
         var stringPrefix = UseVerbatimStringForExpression ? "@" : "";
+        var returnSignature = UseAsync ? "async Task" : "void";
 
         var method = $"[{undefinedStep.ScenarioBlock}({stringPrefix}\"{regex}\")]" + newLine +
-                     $"public void {methodName}({parameters})" + newLine +
+                     $"public {returnSignature} {methodName}{(UseAsync ? "Async" : "")}({parameters})" + newLine +
                      "{" + newLine +
                      $"{indent}throw new PendingStepException();" + newLine +
                      "}" + newLine;

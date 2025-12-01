@@ -163,3 +163,44 @@ Scenario: DefineSteps command properly escapes empty brackets when using Regex e
 		| type | expression |
 		| When | I use \\(parenthesis\), \\{curly braces}, \\\ backslash, and/or \\. period |
 
+Scenario: DefineSteps command abides by reqnroll.json configuration for async method declaration
+	Given there is a Reqnroll project scope
+	And the following feature file in the editor
+		"""
+		Feature: Feature Using Regex Style
+		
+		Scenario: Client has a simple basket
+			Given the client has a basket
+		"""
+	And the reqnroll.json configuration file contains
+		"""
+		{ 
+			"trace": { "stepDefinitionSkeletonStyle": "AsyncRegexAttribute" }
+		}
+		"""
+	And the project is built and the initial binding discovery is performed
+	When I invoke the "Define Steps" command
+	Then the define steps dialog should be opened with the following step definition skeletons
+		| Method                                                   |
+		| MyProject.StepDefinitions1.GivenTheClientHasABasketAsync |
+
+Scenario: DefineSteps command abides by reqnroll.json configuration for synchronous method declaration
+	Given there is a Reqnroll project scope
+	And the following feature file in the editor
+		"""
+		Feature: Feature Using Regex Style
+		
+		Scenario: Client has a simple basket
+			Given the client has a basket
+		"""
+	And the reqnroll.json configuration file contains
+		"""
+		{ 
+			"trace": { "stepDefinitionSkeletonStyle": "RegexAttribute" }
+		}
+		"""
+	And the project is built and the initial binding discovery is performed
+	When I invoke the "Define Steps" command
+	Then the define steps dialog should be opened with the following step definition skeletons
+		| Method                                              |
+		| MyProject.StepDefinitions1.GivenTheClientHasABasket |
