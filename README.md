@@ -40,6 +40,6 @@ All contributors are welcome! For more information see the [Contribution guideli
 
 Reqnroll for VisualStudio is licensed under the [BSD 3-Clause License](LICENSE).
 
-Copyright (c) 2024 Reqnroll
+Copyright (c) 2024-2025 Reqnroll
 
 The extension is built based on the [Deveroom for SpecFlow](https://github.com/specsolutions/deveroom-visualstudio) Visual Studio extension, created by Gaspar Nagy (Spec Solutions) and the [SpecFlow for Visual Studio 2022](https://github.com/SpecFlowOSS/SpecFlow.VS) extension, maintained by Tricentis.

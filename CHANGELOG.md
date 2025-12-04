@@ -1,8 +1,10 @@
 # [vNext]
 
-* Renamed to Reqnroll for Visual Studio 2022 & 2026 #136
+* Renamed to Reqnroll for Visual Studio 2022 & 2026 (#136)
 
 ## Improvements:
+
+* Update docs - .NET 10, TUnit, VS2026 (#138)
 
 ## Bug fixes:
 
