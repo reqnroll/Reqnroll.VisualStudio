@@ -7,6 +7,7 @@ body:
     label: Used Visual Studio
     options:
       - Visual Studio 2022
+      - Visual Studio 2026
   validations:
     required: true
 - type: dropdown

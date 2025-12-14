@@ -142,10 +142,13 @@ public class GherkinDocumentFormatterTests
     [Theory]
     // Header is 13 chars, so all cells will be padded to width 13
     [InlineData("| 123 |", true, "|         123 |")] // Right-align: only digits
-    [InlineData("| abc123 |", true, "|      abc123 |")] // Right-align: mixed letters and digits
-    [InlineData("| 12abc |", true, "|       12abc |")] // Right-align: digits at start
+    [InlineData("| -12.3 |", true, "|       -12.3 |")] // Right-align: fraction number
+    [InlineData("| 1,000 |", true, "|       1,000 |")] // Right-align: a thousand separator
+    [InlineData("| -1.23E8 |", true, "|     -1.23E8 |")] // Right-align: scientific notation
+    [InlineData("| abc123 |", true, "| abc123      |")] // Left-align: mixed letters and digits
+    [InlineData("| 12abc |", true, "| 12abc       |")] // Left-align: digits at start
     [InlineData("| abc |", true, "| abc         |")] // Left-align: only letters
-    [InlineData("| !@#4$% |", true, "|      !@#4$% |")] // Right-align: special chars and digit
+    [InlineData("| !@#4$% |", true, "| !@#4$%      |")] // Left-align: special chars and digit
     [InlineData("| !@#$% |", true, "| !@#$%       |")] // Left-align: only special chars
     [InlineData("| 123 |", false, "| 123         |")] // Left-align: only digits, but right-align disabled
     [InlineData("| abc123 |", false, "| abc123      |")] // Left-align: mixed, but right-align disabled

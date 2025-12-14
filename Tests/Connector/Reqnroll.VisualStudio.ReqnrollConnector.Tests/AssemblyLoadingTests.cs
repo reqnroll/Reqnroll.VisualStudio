@@ -73,7 +73,7 @@ public class AssemblyLoadingTests
 
         //act
         var loadedAssembly = loadContext.LoadFromAssemblyName(new AssemblyName("Microsoft.AspNetCore.Antiforgery")
-            {Version = new Version(6, 0)});
+            {Version = new Version(8, 0)});
 
         //assert
         loadedAssembly.GetName().Name.Should().Be("Microsoft.AspNetCore.Antiforgery");

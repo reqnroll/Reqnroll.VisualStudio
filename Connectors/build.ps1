@@ -14,11 +14,11 @@ Write-Output "ARGS: $buildArgs"
 
 Remove-Item $outputFolder -Recurse -Force -ErrorAction SilentlyContinue
 
-mkdir $outputFolder 
+mkdir $outputFolder
 
 # build Reqnroll V1 any cpu
 
-cd Reqnroll.VisualStudio.ReqnrollConnector.V1
+cd $PSScriptRoot\Reqnroll.VisualStudio.ReqnrollConnector.V1
 
 dotnet publish $buildArgs
 
@@ -57,6 +57,11 @@ Copy-Item bin\$configuration\net8.0\publish\ $outputFolder\Reqnroll-Generic-net8
 dotnet publish -f net9.0 $buildArgs
 
 Copy-Item bin\$configuration\net9.0\publish\ $outputFolder\Reqnroll-Generic-net9.0\ -Recurse
+
+# Build for .NET 10 once it's available on CI
+# dotnet publish -f net10.0 $buildArgs
+# Copy-Item bin\$configuration\net10.0\publish\ $outputFolder\Reqnroll-Generic-net10.0\ -Recurse
+Copy-Item ..\prebuilt\Reqnroll-Generic-net10.0\ $outputFolder\Reqnroll-Generic-net10.0\ -Recurse
 
 popd
 
