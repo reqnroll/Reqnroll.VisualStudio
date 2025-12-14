@@ -133,15 +133,53 @@ public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEdi
             targetFolder = stepDefinitionsFolder;
             fileNamespace = fileNamespace + ".StepDefinitions";
         }
-        var projectTraits = projectScope.GetProjectSettings().ReqnrollProjectTraits;
-        var isSpecFlow = projectTraits.HasFlag(ReqnrollProjectTraits.LegacySpecFlow) || projectTraits.HasFlag(ReqnrollProjectTraits.SpecFlowCompatibility);
-        var libraryNameSpace = isSpecFlow ? "SpecFlow" : "Reqnroll";
 
         // Get C# code generation configuration from EditorConfig using target .cs file path
         var targetFilePath = Path.Combine(targetFolder, className + ".cs");
         var csharpConfig = new CSharpCodeGenerationConfiguration();
         var editorConfigOptions = _editorConfigOptionsProvider.GetEditorConfigOptionsByPath(targetFilePath);
         editorConfigOptions.UpdateFromEditorConfig(csharpConfig);
+
+        var projectTraits = projectScope.GetProjectSettings().ReqnrollProjectTraits;
+        var generatedContent = GenerateStepDefinitionClass(
+            combinedSnippet, 
+            className, 
+            fileNamespace, 
+            projectTraits, 
+            csharpConfig, 
+            indent, 
+            newLine);
+
+        var targetFile = FileDetails
+            .FromPath(targetFolder, className + ".cs")
+            .WithCSharpContent(generatedContent);
+
+        if (IdeScope.FileSystem.File.Exists(targetFile.FullName))
+            if (IdeScope.Actions.ShowSyncQuestion("Overwrite file?",
+                    $"The selected step definition file '{targetFile}' already exists. By overwriting the existing file you might lose work. {Environment.NewLine}Do you want to overwrite the file?",
+                    defaultButton: MessageBoxResult.No) != MessageBoxResult.Yes)
+                return;
+
+        projectScope.AddFile(targetFile, generatedContent);
+        projectScope.IdeScope.Actions.NavigateTo(new SourceLocation(targetFile, 9, 1));
+        IDiscoveryService discoveryService = projectScope.GetDiscoveryService();
+
+        projectScope.IdeScope.FireAndForget(
+            () => RebuildBindingRegistry(discoveryService, targetFile), _ => { Finished.Set(); });
+    }
+
+    internal static string GenerateStepDefinitionClass(
+        string combinedSnippet,
+        string className,
+        string fileNamespace,
+        ReqnrollProjectTraits projectTraits,
+        CSharpCodeGenerationConfiguration csharpConfig,
+        string indent,
+        string newLine)
+    {
+        var isSpecFlow = projectTraits.HasFlag(ReqnrollProjectTraits.LegacySpecFlow) || 
+                         projectTraits.HasFlag(ReqnrollProjectTraits.SpecFlowCompatibility);
+        var libraryNameSpace = isSpecFlow ? "SpecFlow" : "Reqnroll";
 
         // Estimate template size for StringBuilder capacity
         var estimatedSize = 200 + fileNamespace.Length + className.Length + combinedSnippet.Length;
@@ -157,6 +195,7 @@ public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEdi
         var adjustedSnippet = csharpConfig.UseFileScopedNamespaces
             ? AdjustIndentationForFileScopedNamespace(combinedSnippet, indent, newLine)
             : combinedSnippet;
+        
         // Add namespace declaration
         if (csharpConfig.UseFileScopedNamespaces)
         {
@@ -182,22 +221,7 @@ public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEdi
             template.AppendLine("}");
         }
 
-        var targetFile = FileDetails
-            .FromPath(targetFolder, className + ".cs")
-            .WithCSharpContent(template.ToString());
-
-        if (IdeScope.FileSystem.File.Exists(targetFile.FullName))
-            if (IdeScope.Actions.ShowSyncQuestion("Overwrite file?",
-                    $"The selected step definition file '{targetFile}' already exists. By overwriting the existing file you might lose work. {Environment.NewLine}Do you want to overwrite the file?",
-                    defaultButton: MessageBoxResult.No) != MessageBoxResult.Yes)
-                return;
-
-        projectScope.AddFile(targetFile, template.ToString());
-        projectScope.IdeScope.Actions.NavigateTo(new SourceLocation(targetFile, 9, 1));
-        IDiscoveryService discoveryService = projectScope.GetDiscoveryService();
-
-        projectScope.IdeScope.FireAndForget(
-            () => RebuildBindingRegistry(discoveryService, targetFile), _ => { Finished.Set(); });
+        return template.ToString();
     }
 
     private async Task RebuildBindingRegistry(IDiscoveryService discoveryService,
