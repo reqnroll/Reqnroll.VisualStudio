@@ -5,6 +5,7 @@
 ## Improvements:
 
 * Update docs - .NET 10, TUnit, VS2026 (#138)
+* Support file_scoped namespace declarations when generating code (#140)
 
 ## Bug fixes:
 
