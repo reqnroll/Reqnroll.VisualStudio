@@ -10,4 +10,5 @@ public class Feature1StepDefinitions
     public void WhenIPressAdd()
     {
         throw new PendingStepException();
-    }}
+    }
+}

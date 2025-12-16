@@ -212,7 +212,7 @@ public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEdi
         template.AppendLine($"{classIndent}[Binding]");
         template.AppendLine($"{classIndent}public class {className}");
         template.AppendLine($"{classIndent}{{");
-        template.Append(adjustedSnippet);
+        template.AppendLine(adjustedSnippet);
         template.AppendLine($"{classIndent}}}");
         
         // Close namespace if block-scoped
