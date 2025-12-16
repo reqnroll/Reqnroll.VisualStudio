@@ -271,4 +271,3 @@ launchSettings.json
 
 /Tests/ExternalPackages/Reqnroll*.nupkg
 /.ncrunch/cache/
-.nuget/nuget.exe
