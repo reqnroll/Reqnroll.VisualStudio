@@ -10,5 +10,6 @@ namespace MyNamespace.MyProject
         public void WhenIPressAdd()
         {
             throw new PendingStepException();
-        }    }
+        }
+    }
 }
