@@ -6,7 +6,7 @@ Reqnroll is an open-source Cucumber-style BDD test automation framework for .NET
 
 Reqnroll enables writing executable specifications for BDD using Gherkin, the widely-accepted feature file specification format. With that you can define the requirements using Given-When-Then style scenarios and turn them to automated tests in order to verify their implementation.
 
-Reqnroll works on all major operating systems (Windows, Linux, macOS), on all commonly used .NET implementations (including .NET Framework 4.6.2+ and .NET 8+). For executing the automated scenarios, Reqnroll can use MsTest, NUnit, xUnit or TUnit. Reqnroll projects can be authored using Visual Studio 2022 and 2026, Visual Studio Core and Rider, but you can also use Reqnroll without any IDE.
+Reqnroll works on all major operating systems (Windows, Linux, macOS), on all commonly used .NET implementations (including .NET Framework 4.6.2+ and .NET 8+). For executing the automated scenarios, Reqnroll can use MsTest, NUnit, xUnit or TUnit. Reqnroll projects can be authored using Visual Studio 2022 and 2026, Visual Studio Code and Rider, but you can also use Reqnroll without any IDE.
 
 Since Reqnroll is based on SpecFlow, you can use your SpecFlow knowledge to work with Reqnroll and it is also very easy to port an existing SpecFlow project to Reqnroll. You can check out our [detailed migration guide](https://go.reqnroll.net/guide-migrating-from-specflow).
 
