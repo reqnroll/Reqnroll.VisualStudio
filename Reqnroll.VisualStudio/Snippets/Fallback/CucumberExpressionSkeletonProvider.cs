@@ -4,8 +4,8 @@ namespace Reqnroll.VisualStudio.Snippets.Fallback;
 
 public class CucumberExpressionSkeletonProvider : DeveroomStepDefinitionSkeletonProvider
 {
-    public CucumberExpressionSkeletonProvider(ReqnrollProjectTraits projectTraits)
-        : base(projectTraits)
+    public CucumberExpressionSkeletonProvider(ReqnrollProjectTraits projectTraits, bool useAsync)
+        : base(projectTraits, useAsync)
     {
 
     }

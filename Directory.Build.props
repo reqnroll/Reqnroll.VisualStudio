@@ -1,7 +1,7 @@
 <Project>
 
   <PropertyGroup>
-    <ReqnrollMainVersion>2025.3</ReqnrollMainVersion>
+    <ReqnrollMainVersion>2025.4</ReqnrollMainVersion>
     <ReqnrollBuildNumber>99999</ReqnrollBuildNumber> <!-- set by CI; local build numbers are always greater than ones from CI-->
     <VersionSuffix>local</VersionSuffix> <!-- set by CI -->
     <ReqnrollPackageVersion>$(ReqnrollMainVersion).$(ReqnrollBuildNumber)</ReqnrollPackageVersion>
@@ -10,7 +10,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <ReqnrollPackageDisplayName>Reqnroll for Visual Studio 2022 &amp; 2026</ReqnrollPackageDisplayName>
+    <!-- note: the VSSDK tooling does not allow passing &amp; to the package name, hence we use 'and' -->
+    <ReqnrollPackageDisplayName>Reqnroll for Visual Studio 2022 and 2026</ReqnrollPackageDisplayName>
   </PropertyGroup>
 
   <PropertyGroup>

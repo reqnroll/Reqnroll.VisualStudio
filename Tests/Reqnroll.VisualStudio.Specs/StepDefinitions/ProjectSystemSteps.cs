@@ -798,7 +798,8 @@ public class ProjectSystemSteps : Steps
             {
                 Type = sd.Type,
                 Regex = sd.Regex,
-                Expression = sd.Expression
+                Expression = sd.Expression,
+                Method = sd.Method
             }).ToArray();
     }
 
@@ -988,5 +989,6 @@ public class ProjectSystemSteps : Steps
         public string Type { get; set; }
         public string Regex { get; set; }
         public string Expression { get; set; }
+        public string Method { get; set; }
     }
 }

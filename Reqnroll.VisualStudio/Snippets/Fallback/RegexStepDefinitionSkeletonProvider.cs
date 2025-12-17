@@ -2,7 +2,7 @@ namespace Reqnroll.VisualStudio.Snippets.Fallback;
 
 public class RegexStepDefinitionSkeletonProvider : DeveroomStepDefinitionSkeletonProvider
 {
-    public RegexStepDefinitionSkeletonProvider(ReqnrollProjectTraits projectTraits) : base(projectTraits)
+    public RegexStepDefinitionSkeletonProvider(ReqnrollProjectTraits projectTraits, bool useAsync) : base(projectTraits, useAsync)
     {
     }
 

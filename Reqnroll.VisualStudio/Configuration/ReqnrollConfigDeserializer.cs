@@ -21,10 +21,14 @@ public class ReqnrollConfigDeserializer : IConfigDeserializer<DeveroomConfigurat
             config.ConfiguredBindingCulture = bindingCulture;
         if (reqnrollJsonConfiguration.Trace != null &&
             reqnrollJsonConfiguration.Trace.TryGetValue("stepDefinitionSkeletonStyle", out var sdSnippetStyle)) {
-            if (sdSnippetStyle == "CucumberExpressionAttribute")
-                config.SnippetExpressionStyle = SnippetExpressionStyle.CucumberExpression;
-            if (sdSnippetStyle == "RegexAttribute")
-                config.SnippetExpressionStyle = SnippetExpressionStyle.RegularExpression;
+            config.SnippetExpressionStyle = sdSnippetStyle switch
+            {
+                "CucumberExpressionAttribute" => SnippetExpressionStyle.CucumberExpression,
+                "RegexAttribute" => SnippetExpressionStyle.RegularExpression,
+                "AsyncCucumberExpressionAttribute" => SnippetExpressionStyle.AsyncCucumberExpression,
+                "AsyncRegexAttribute" => SnippetExpressionStyle.AsyncRegularExpression,
+                _ => SnippetExpressionStyle.CucumberExpression
+            };
         }
     }
 
