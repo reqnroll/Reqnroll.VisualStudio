@@ -2,9 +2,11 @@
 
 ## Improvements:
 
+* Support file scoped namespace declarations when generating code (#140)
+
 ## Bug fixes:
 
-*Contributors of this release (in alphabetical order):* 
+*Contributors of this release (in alphabetical order):* @304NotModified
 
 # v2025.3.395 - 2025-12-17
 
@@ -13,7 +15,6 @@
 * Renamed to Reqnroll for Visual Studio 2022 & 2026 (#136)
 * The 'Define Steps' command honors the StepDefinitionSkeletonStyle setting in the project reqnroll.json configuration file and will generate step skeletons using 'Async' appropriately. (#129)
 * Update docs - .NET 10, TUnit, VS2026 (#138)
-* Support file scoped namespace declarations when generating code (#140)
 
 *Contributors of this release (in alphabetical order):* @304NotModified, @clrudolphi
 
