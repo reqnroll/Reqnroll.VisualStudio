@@ -10,7 +10,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <ReqnrollPackageDisplayName>Reqnroll for Visual Studio 2022 &amp; 2026</ReqnrollPackageDisplayName>
+    <!-- note: the VSSDK tooling does not allow passing &amp; to the package name, hence we use 'and' -->
+    <ReqnrollPackageDisplayName>Reqnroll for Visual Studio 2022 and 2026</ReqnrollPackageDisplayName>
   </PropertyGroup>
 
   <PropertyGroup>
