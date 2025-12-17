@@ -10,7 +10,7 @@ Reqnroll is a .NET port of [Cucumber](https://cucumber.io/) and it is based on t
 
 The Reqnroll Visual Studio extension supports the following Visual Studio versions:
 
-* [Visual Studio 2022 (Community, Professional, Enterprise)](https://go.reqnroll.net/vs2022-extension)
+* [Visual Studio 2022 & 2026 (Community, Professional, Enterprise)](https://go.reqnroll.net/vs2022-extension)
 
 The extension can be used for the following frameworks:
 
@@ -40,6 +40,6 @@ All contributors are welcome! For more information see the [Contribution guideli
 
 Reqnroll for VisualStudio is licensed under the [BSD 3-Clause License](LICENSE).
 
-Copyright (c) 2024 Reqnroll
+Copyright (c) 2024-2025 Reqnroll
 
 The extension is built based on the [Deveroom for SpecFlow](https://github.com/specsolutions/deveroom-visualstudio) Visual Studio extension, created by Gaspar Nagy (Spec Solutions) and the [SpecFlow for Visual Studio 2022](https://github.com/SpecFlowOSS/SpecFlow.VS) extension, maintained by Tricentis.

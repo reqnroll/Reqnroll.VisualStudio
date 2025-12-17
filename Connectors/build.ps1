@@ -14,11 +14,11 @@ Write-Output "ARGS: $buildArgs"
 
 Remove-Item $outputFolder -Recurse -Force -ErrorAction SilentlyContinue
 
-mkdir $outputFolder 
+mkdir $outputFolder
 
 # build Reqnroll V1 any cpu
 
-cd Reqnroll.VisualStudio.ReqnrollConnector.V1
+cd $PSScriptRoot\Reqnroll.VisualStudio.ReqnrollConnector.V1
 
 dotnet publish $buildArgs
 
