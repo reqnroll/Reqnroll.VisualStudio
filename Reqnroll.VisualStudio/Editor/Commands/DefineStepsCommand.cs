@@ -101,7 +101,7 @@ public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEdi
         }
 
         var combinedSnippet = string.Join(newLine,
-            viewModel.Items.Where(i => i.IsSelected).Select(i => i.Snippet.Indent(indent + indent)));
+            viewModel.Items.Where(i => i.IsSelected).Select(i => i.Snippet.Indent(indent)));
 
         MonitoringService.MonitorCommandDefineSteps(viewModel.Result, viewModel.Items.Count(i => i.IsSelected));
 
@@ -191,11 +191,6 @@ public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEdi
         // Determine indentation level based on namespace style
         var classIndent = csharpConfig.UseFileScopedNamespaces ? "" : indent;
         
-        // Adjust combinedSnippet indentation based on namespace style
-        var adjustedSnippet = csharpConfig.UseFileScopedNamespaces
-            ? AdjustIndentationForFileScopedNamespace(combinedSnippet, indent, newLine)
-            : combinedSnippet;
-        
         // Add namespace declaration
         if (csharpConfig.UseFileScopedNamespaces)
         {
@@ -212,7 +207,17 @@ public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEdi
         template.AppendLine($"{classIndent}[Binding]");
         template.AppendLine($"{classIndent}public class {className}");
         template.AppendLine($"{classIndent}{{");
-        template.AppendLine(adjustedSnippet);
+        
+        // Add snippet with appropriate indentation based on namespace style
+        if (csharpConfig.UseFileScopedNamespaces)
+        {
+            template.AppendLine(combinedSnippet);
+        }
+        else
+        {
+            AppendLinesWithIndent(template, combinedSnippet, indent, newLine);
+        }
+        
         template.AppendLine($"{classIndent}}}");
         
         // Close namespace if block-scoped
@@ -233,30 +238,26 @@ public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEdi
         Finished.Set();
     }
 
-    private static string AdjustIndentationForFileScopedNamespace(string snippet, string indent, string newLine)
+    private static void AppendLinesWithIndent(StringBuilder builder, string content, string indent, string newLine)
     {
-        if (string.IsNullOrEmpty(snippet))
-            return snippet;
+        if (string.IsNullOrEmpty(content))
+            return;
 
-        // Split into lines and process each line
-        var lines = snippet.Split(new[] { newLine }, StringSplitOptions.None);
-        var adjustedLines = new string[lines.Length];
-
+        var lines = content.Split(new[] { newLine }, StringSplitOptions.None);
+        
         for (int i = 0; i < lines.Length; i++)
         {
             var line = lines[i];
             
-            // If line starts with double indentation, reduce it to single indentation
-            if (line.StartsWith(indent + indent))
+            // Add indentation to non-empty lines
+            if (!string.IsNullOrWhiteSpace(line))
             {
-                adjustedLines[i] = indent + line.Substring((indent + indent).Length);
+                builder.Append(indent).AppendLine(line);
             }
             else
             {
-                adjustedLines[i] = line;
+                builder.AppendLine(line);
             }
         }
-
-        return string.Join(newLine, adjustedLines);
     }
 }

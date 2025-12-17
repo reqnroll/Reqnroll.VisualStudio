@@ -79,13 +79,14 @@ public class DefineStepsCommandTests : CommandTestBase<DefineStepsCommand>
     public void GenerateStepDefinitionClass(ProjectType projectType, NamespaceStyle namespaceStyle)
     {
         // Arrange
-        // Snippet should have double indentation (8 spaces) as it would come from the command
+        // Snippet should have single indentation (4 spaces) which will be used for file-scoped namespaces
+        // and will have extra indentation added for block-scoped namespaces
         var snippet = """
-                [When(@"I press add")]
-                public void WhenIPressAdd()
-                {
-                    throw new PendingStepException();
-                }
+            [When(@"I press add")]
+            public void WhenIPressAdd()
+            {
+                throw new PendingStepException();
+            }
         """;
         const string className = "Feature1StepDefinitions";
         const string @namespace = "MyNamespace.MyProject";
