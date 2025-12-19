@@ -36,13 +36,12 @@
       Version Selection: Using version 6.0.0 to match Reqnroll.Microsoft.Extensions.DependencyInjection plugin
       requirements. Version 6.0.0 works with both .NET Framework 4.8 and is compatible with Reqnroll 1.x-3.x.
       
-      Dependencies of Microsoft.Extensions.DependencyInjection 6.0.0 for .NET Framework:
-      - Microsoft.Extensions.DependencyInjection.Abstractions 6.0.0 (PRIMARY - the one causing FileNotFoundException)
+      Transitive Dependencies: NuGet will automatically restore the following transitive dependencies:
       - Microsoft.Bcl.AsyncInterfaces 6.0.0
       - System.Runtime.CompilerServices.Unsafe 6.0.0
       - System.Threading.Tasks.Extensions 4.5.4
       
-      All dependencies are included to ensure complete plugin functionality.
+      Only the explicit packages below need to be referenced; NuGet handles the rest.
     -->
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
