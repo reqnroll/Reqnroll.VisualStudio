@@ -15,6 +15,19 @@
     <PackageReference Include="dnlib" Version="4.4.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="8.0.1" />
     <PackageReference Include="System.Collections.Immutable" Version="8.0.0" />
+    
+    <!-- 
+      Microsoft.Extensions.DependencyInjection packages for Reqnroll.Microsoft.Extensions.DependencyInjection plugin support.
+      
+      While the TestAssemblyLoadContext already has NuGet cache resolution that SHOULD find these assemblies
+      when the user's test project references the plugin, we include them explicitly to ensure they're always
+      available and to avoid any potential resolution issues.
+      
+      Version 6.0.0 is used to match the plugin's requirements and ensure compatibility with all .NET versions
+      (net6.0, net7.0, net8.0, net9.0) that this connector targets. These packages have multi-targeting support.
+    -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>
