@@ -16,6 +16,12 @@
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="8.0.1" />
     <PackageReference Include="SpecFlow.CustomPlugin" Version="3.9.40" />
     <PackageReference Include="System.Collections.Immutable" Version="8.0.0" />
+    
+    <!-- 
+      Microsoft.Extensions.DependencyInjection.Abstractions v8.0.0
+      See detailed explanation in Reqnroll.VisualStudio.ReqnrollConnector.V1.csproj
+    -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>

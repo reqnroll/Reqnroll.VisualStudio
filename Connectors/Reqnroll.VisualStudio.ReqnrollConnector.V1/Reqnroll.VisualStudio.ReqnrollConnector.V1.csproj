@@ -17,6 +17,30 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Reqnroll.CustomPlugin" Version="1.0.0" />
     <PackageReference Include="MSTest.TestFramework" Version="3.6.0" />
+    
+    <!-- 
+      Microsoft.Extensions.DependencyInjection.Abstractions v8.0.0
+      
+      INVESTIGATION FINDINGS:
+      - User projects using Reqnroll.Microsoft.Extensions.DependencyInjection plugin (v2.0+)
+        depend on Microsoft.Extensions.DependencyInjection v6.0.0
+      - This transitively requires Microsoft.Extensions.DependencyInjection.Abstractions v6.0.0
+      - When the V1 connector (net48) analyzes user projects, it needs to load this assembly
+      - The DLL was missing from VSIX, causing FileNotFoundException in production
+      
+      SOLUTION (Option A - PREFERRED):
+      - Using v8.0.0 instead of v6.0.0 for better forward compatibility
+      - v8.0.0 is backward compatible with code targeting v6.0.0 (stable API contract)
+      - Better alignment with .NET 6/7/8/9 used by Generic connector
+      - Lower risk of conflicts with VS 2022/2025 built-in components
+      - The assembly is included in VSIX via DeploymentAssets.props (copies all connector outputs)
+      
+      VERIFICATION:
+      - After build, check Connectors/bin/Release/Reqnroll-V1/ contains Microsoft.Extensions.DependencyInjection.Abstractions.dll
+      - Extract VSIX (it's a ZIP) and verify Connectors/Reqnroll-V1/ contains the DLL
+      - Version should be 8.0.0.0 (check properties or use: dumpbin /headers Microsoft.Extensions.DependencyInjection.Abstractions.dll)
+    -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>

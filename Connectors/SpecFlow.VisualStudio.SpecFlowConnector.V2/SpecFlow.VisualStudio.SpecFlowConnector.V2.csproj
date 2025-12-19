@@ -18,6 +18,12 @@
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="8.0.1" />
     <ProjectReference Include="..\SpecFlow.VisualStudio.SpecFlowConnector.Models\SpecFlow.VisualStudio.SpecFlowConnector.Models.csproj" />
     <PackageReference Include="SpecFlow.CustomPlugin" Version="3.9.40" />
+    
+    <!-- 
+      Microsoft.Extensions.DependencyInjection.Abstractions v8.0.0
+      See detailed explanation in Reqnroll.VisualStudio.ReqnrollConnector.V1.csproj
+    -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
   </ItemGroup>
 
   <Import Project="..\SpecFlow.VisualStudio.Common\SpecFlow.VisualStudio.Common.projitems" Label="Shared" />
