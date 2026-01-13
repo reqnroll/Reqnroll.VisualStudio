@@ -27,6 +27,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reqnroll.VisualStudio.ItemT
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Connectors", "Connectors", "{B9F019ED-754C-4D7E-90ED-7D54A50B38EB}"
 	ProjectSection(SolutionItems) = preProject
+		Connectors\build-prebuilt.ps1 = Connectors\build-prebuilt.ps1
 		Connectors\build.ps1 = Connectors\build.ps1
 		Connectors\DeploymentAssets.props = Connectors\DeploymentAssets.props
 	EndProjectSection
