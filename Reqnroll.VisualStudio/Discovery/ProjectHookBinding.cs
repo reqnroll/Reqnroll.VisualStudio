@@ -8,15 +8,11 @@ public class ProjectHookBinding : ProjectBinding
     public HookType HookType { get; }
     public int HookOrder { get; }
 
-    public bool IsValid => Error == null && Scope?.IsValid != false;
-    public string Error { get; }
-
     public ProjectHookBinding(ProjectBindingImplementation implementation, Scope scope, HookType hookType, int? hookOrder, string error) 
-        : base(implementation, scope)
+        : base(implementation, scope, error)
     {
         HookType = hookType;
         HookOrder = hookOrder ?? DefaultHookOrder;
-        Error = error;
     }
 
     public bool Match(Scenario scenario, IGherkinDocumentContext context)
