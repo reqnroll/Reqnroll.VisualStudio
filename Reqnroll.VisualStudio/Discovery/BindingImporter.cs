@@ -46,7 +46,7 @@ public class BindingImporter
             }
 
             return new ProjectStepDefinitionBinding(stepDefinitionType, regex, scope, implementation,
-                stepDefinition.Expression, stepDefinition.Error);
+                stepDefinition.Expression, GetBindingError(stepDefinition.Error, scope, "step definition"));
         }
         catch (Exception ex)
         {
@@ -72,13 +72,22 @@ public class BindingImporter
                 _implementations.Add(hook.Method, implementation);
             }
 
-            return new ProjectHookBinding(implementation, scope, hookType, hook.HookOrder);
+            return new ProjectHookBinding(implementation, scope, hookType, hook.HookOrder, GetBindingError(hook.Error, scope, "hook"));
         }
         catch (Exception ex)
         {
             _logger.LogWarning($"Invalid hook binding: {ex.Message}");
             return null;
         }
+    }
+
+    private string GetBindingError(string error, Scope scope, string bindingType)
+    {
+        if (!string.IsNullOrWhiteSpace(error))
+            return $"Invalid {bindingType}: {error}";
+        if (!string.IsNullOrWhiteSpace(scope?.Error))
+            return $"Invalid scope for {bindingType}: {scope.Error}";
+        return null;
     }
 
     private static Regex ParseRegex(StepDefinition stepDefinition) =>
@@ -149,13 +158,28 @@ public class BindingImporter
         if (bindingScope == null)
             return null;
 
-        return new Scope
+        try
         {
-            FeatureTitle = bindingScope.FeatureTitle,
-            ScenarioTitle = bindingScope.ScenarioTitle,
-            Tag = string.IsNullOrWhiteSpace(bindingScope.Tag)
-                ? null
-                : _tagExpressionParser.Parse(bindingScope.Tag)
-        };
+            return new Scope
+            {
+                FeatureTitle = bindingScope.FeatureTitle,
+                ScenarioTitle = bindingScope.ScenarioTitle,
+                Tag = string.IsNullOrWhiteSpace(bindingScope.Tag)
+                    ? null
+                    : _tagExpressionParser.Parse(bindingScope.Tag),
+                Error = bindingScope.Error
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogVerbose($"Invalid tag expression '{bindingScope.Tag}': {ex.Message}");
+            return new Scope
+            {
+                FeatureTitle = bindingScope.FeatureTitle,
+                ScenarioTitle = bindingScope.ScenarioTitle,
+                Tag = null,
+                Error = $"Invalid tag expression '{bindingScope.Tag}': {ex.Message}"
+            };
+        }
     }
 }

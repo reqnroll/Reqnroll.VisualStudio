@@ -6,12 +6,14 @@ public class StepScope
     public string Tag { get; set; }
     public string FeatureTitle { get; set; }
     public string ScenarioTitle { get; set; }
+    public string Error { get; set; }
 
     #region Equality
 
     protected bool Equals(StepScope other) => string.Equals(Tag, other.Tag) &&
                                               string.Equals(FeatureTitle, other.FeatureTitle) &&
-                                              string.Equals(ScenarioTitle, other.ScenarioTitle);
+                                              string.Equals(ScenarioTitle, other.ScenarioTitle) &&
+                                              string.Equals(Error, other.Error);
 
     public override bool Equals(object obj)
     {

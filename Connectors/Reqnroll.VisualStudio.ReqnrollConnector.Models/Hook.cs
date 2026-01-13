@@ -9,13 +9,15 @@ public class Hook
     //public string ParamTypes { get; set; }
     public StepScope Scope { get; set; }
 
+    public string Error { get; set; }
+
     public string SourceLocation { get; set; }
 
     #region Equality
 
     protected bool Equals(Hook other)
     {
-        return Type == other.Type && HookOrder == other.HookOrder && Method == other.Method && Equals(Scope, other.Scope) && SourceLocation == other.SourceLocation;
+        return Type == other.Type && HookOrder == other.HookOrder && Method == other.Method && Equals(Scope, other.Scope) && Error == other.Error && SourceLocation == other.SourceLocation;
     }
 
     public override bool Equals(object obj)

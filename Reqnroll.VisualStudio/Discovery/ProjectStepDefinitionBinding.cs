@@ -14,7 +14,7 @@ public class ProjectStepDefinitionBinding : ProjectBinding
         Error = error;
     }
 
-    public bool IsValid => Regex != null && Error == null;
+    public bool IsValid => Regex != null && Error == null && Scope?.IsValid != false;
     public string Error { get; }
     public ScenarioBlock StepDefinitionType { get; }
     public string SpecifiedExpression { get; }

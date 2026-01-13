@@ -34,7 +34,7 @@ public record ProjectBindingRegistry
     public HookMatchResult MatchScenarioToHooks(Scenario scenario, IGherkinDocumentContext context)
     {
         var hookMatches = Hooks
-            .Where(h => h.Match(scenario, context))
+            .Where(h => h.IsValid && h.Match(scenario, context))
             .OrderBy(h => h.HookType)
             .ThenBy(h => h.HookOrder)
             .ToArray();

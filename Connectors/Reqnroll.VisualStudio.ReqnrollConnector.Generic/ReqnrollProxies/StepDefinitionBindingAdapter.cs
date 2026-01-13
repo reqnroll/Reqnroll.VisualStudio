@@ -8,6 +8,7 @@ public interface IScopedBindingAdapter
     string? BindingScopeTag { get; }
     string? BindingScopeFeatureTitle { get; }
     string? BindingScopeScenarioTitle { get; }
+    string? BindingScopeError { get; }
 }
 
 public record StepDefinitionBindingAdapter(StepDefinitionData Adaptee) : IScopedBindingAdapter
@@ -22,6 +23,7 @@ public record StepDefinitionBindingAdapter(StepDefinitionData Adaptee) : IScoped
     public string? BindingScopeTag => Adaptee.Scope?.Tag;
     public string? BindingScopeFeatureTitle => Adaptee.Scope?.FeatureTitle;
     public string? BindingScopeScenarioTitle => Adaptee.Scope?.ScenarioTitle;
+    public string? BindingScopeError => Adaptee.Scope?.Error;
     public virtual Option<T> GetProperty<T>(string propertyName)
     {
         return Adaptee.ReflectionHasProperty(propertyName) ? Adaptee.ReflectionGetProperty<T>(propertyName) : None<T>.Value;
