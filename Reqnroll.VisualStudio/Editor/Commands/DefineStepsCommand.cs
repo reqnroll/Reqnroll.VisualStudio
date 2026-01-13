@@ -1,16 +1,23 @@
 #nullable disable
+
+using System.Text;
+
 namespace Reqnroll.VisualStudio.Editor.Commands;
 
 [Export(typeof(IDeveroomFeatureEditorCommand))]
 public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEditorCommand
 {
+    private readonly IEditorConfigOptionsProvider _editorConfigOptionsProvider;
+
     [ImportingConstructor]
     public DefineStepsCommand(
         IIdeScope ideScope,
         IBufferTagAggregatorFactoryService aggregatorFactory,
-        IDeveroomTaggerProvider taggerProvider)
+        IDeveroomTaggerProvider taggerProvider,
+        IEditorConfigOptionsProvider editorConfigOptionsProvider)
         : base(ideScope, aggregatorFactory, taggerProvider)
     {
+        _editorConfigOptionsProvider = editorConfigOptionsProvider;
     }
 
     public override DeveroomEditorCommandTargetKey[] Targets => new[]
@@ -94,14 +101,14 @@ public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEdi
         }
 
         var combinedSnippet = string.Join(newLine,
-            viewModel.Items.Where(i => i.IsSelected).Select(i => i.Snippet.Indent(indent + indent)));
+            viewModel.Items.Where(i => i.IsSelected).Select(i => i.Snippet.Indent(indent)));
 
         MonitoringService.MonitorCommandDefineSteps(viewModel.Result, viewModel.Items.Count(i => i.IsSelected));
 
         switch (viewModel.Result)
         {
             case CreateStepDefinitionsDialogResult.Create:
-                SaveAsStepDefinitionClass(projectScope, combinedSnippet, viewModel.ClassName, indent, newLine);
+                SaveAsStepDefinitionClass(projectScope, combinedSnippet, viewModel.ClassName, indent, newLine, textView);
                 break;
             case CreateStepDefinitionsDialogResult.CopyToClipboard:
                 Logger.LogVerbose($"Copy to clipboard: {combinedSnippet}");
@@ -114,7 +121,7 @@ public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEdi
     }
 
     private void SaveAsStepDefinitionClass(IProjectScope projectScope, string combinedSnippet, string className,
-        string indent, string newLine)
+        string indent, string newLine, IWpfTextView textView)
     {
         string targetFolder = projectScope.ProjectFolder;
         var projectSettings = projectScope.GetProjectSettings();
@@ -126,25 +133,26 @@ public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEdi
             targetFolder = stepDefinitionsFolder;
             fileNamespace = fileNamespace + ".StepDefinitions";
         }
-        var projectTraits = projectScope.GetProjectSettings().ReqnrollProjectTraits;
-        var isSpecFlow = projectTraits.HasFlag(ReqnrollProjectTraits.LegacySpecFlow) || projectTraits.HasFlag(ReqnrollProjectTraits.SpecFlowCompatibility);
-        var libraryNameSpace = isSpecFlow ? "SpecFlow" : "Reqnroll";
 
-        var template = "using System;" + newLine +
-                       $"using {libraryNameSpace};" + newLine +
-                       newLine +
-                       $"namespace {fileNamespace}" + newLine +
-                       "{" + newLine +
-                       $"{indent}[Binding]" + newLine +
-                       $"{indent}public class {className}" + newLine +
-                       $"{indent}{{" + newLine +
-                       combinedSnippet +
-                       $"{indent}}}" + newLine +
-                       "}" + newLine;
+        // Get C# code generation configuration from EditorConfig using target .cs file path
+        var targetFilePath = Path.Combine(targetFolder, className + ".cs");
+        var csharpConfig = new CSharpCodeGenerationConfiguration();
+        var editorConfigOptions = _editorConfigOptionsProvider.GetEditorConfigOptionsByPath(targetFilePath);
+        editorConfigOptions.UpdateFromEditorConfig(csharpConfig);
+
+        var projectTraits = projectScope.GetProjectSettings().ReqnrollProjectTraits;
+        var generatedContent = GenerateStepDefinitionClass(
+            combinedSnippet, 
+            className, 
+            fileNamespace, 
+            projectTraits, 
+            csharpConfig, 
+            indent, 
+            newLine);
 
         var targetFile = FileDetails
             .FromPath(targetFolder, className + ".cs")
-            .WithCSharpContent(template);
+            .WithCSharpContent(generatedContent);
 
         if (IdeScope.FileSystem.File.Exists(targetFile.FullName))
             if (IdeScope.Actions.ShowSyncQuestion("Overwrite file?",
@@ -152,12 +160,73 @@ public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEdi
                     defaultButton: MessageBoxResult.No) != MessageBoxResult.Yes)
                 return;
 
-        projectScope.AddFile(targetFile, template);
+        projectScope.AddFile(targetFile, generatedContent);
         projectScope.IdeScope.Actions.NavigateTo(new SourceLocation(targetFile, 9, 1));
         IDiscoveryService discoveryService = projectScope.GetDiscoveryService();
 
         projectScope.IdeScope.FireAndForget(
             () => RebuildBindingRegistry(discoveryService, targetFile), _ => { Finished.Set(); });
+    }
+
+    internal static string GenerateStepDefinitionClass(
+        string combinedSnippet,
+        string className,
+        string fileNamespace,
+        ReqnrollProjectTraits projectTraits,
+        CSharpCodeGenerationConfiguration csharpConfig,
+        string indent,
+        string newLine)
+    {
+        var isSpecFlow = projectTraits.HasFlag(ReqnrollProjectTraits.LegacySpecFlow) || 
+                         projectTraits.HasFlag(ReqnrollProjectTraits.SpecFlowCompatibility);
+        var libraryNameSpace = isSpecFlow ? "SpecFlow" : "Reqnroll";
+
+        // Estimate template size for StringBuilder capacity
+        var estimatedSize = 200 + fileNamespace.Length + className.Length + combinedSnippet.Length;
+        var template = new StringBuilder(estimatedSize);
+        template.AppendLine("using System;");
+        template.AppendLine($"using {libraryNameSpace};");
+        template.AppendLine();
+
+        // Determine indentation level based on namespace style
+        var classIndent = csharpConfig.UseFileScopedNamespaces ? "" : indent;
+        
+        // Add namespace declaration
+        if (csharpConfig.UseFileScopedNamespaces)
+        {
+            template.AppendLine($"namespace {fileNamespace};");
+            template.AppendLine();
+        }
+        else
+        {
+            template.AppendLine($"namespace {fileNamespace}");
+            template.AppendLine("{");
+        }
+
+        // Add class declaration (common structure with appropriate indentation)
+        template.AppendLine($"{classIndent}[Binding]");
+        template.AppendLine($"{classIndent}public class {className}");
+        template.AppendLine($"{classIndent}{{");
+        
+        // Add snippet with appropriate indentation based on namespace style
+        if (csharpConfig.UseFileScopedNamespaces)
+        {
+            template.AppendLine(combinedSnippet);
+        }
+        else
+        {
+            AppendLinesWithIndent(template, combinedSnippet, indent, newLine);
+        }
+        
+        template.AppendLine($"{classIndent}}}");
+        
+        // Close namespace if block-scoped
+        if (!csharpConfig.UseFileScopedNamespaces)
+        {
+            template.AppendLine("}");
+        }
+
+        return template.ToString();
     }
 
     private async Task RebuildBindingRegistry(IDiscoveryService discoveryService,
@@ -167,5 +236,28 @@ public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEdi
             .Update(bindingRegistry => bindingRegistry.ReplaceStepDefinitions(stepDefinitionFile));
 
         Finished.Set();
+    }
+
+    private static void AppendLinesWithIndent(StringBuilder builder, string content, string indent, string newLine)
+    {
+        if (string.IsNullOrEmpty(content))
+            return;
+
+        var lines = content.Split(new[] { newLine }, StringSplitOptions.None);
+        
+        for (int i = 0; i < lines.Length; i++)
+        {
+            var line = lines[i];
+            
+            // Add indentation to non-empty lines
+            if (!string.IsNullOrWhiteSpace(line))
+            {
+                builder.Append(indent).AppendLine(line);
+            }
+            else
+            {
+                builder.AppendLine(line);
+            }
+        }
     }
 }

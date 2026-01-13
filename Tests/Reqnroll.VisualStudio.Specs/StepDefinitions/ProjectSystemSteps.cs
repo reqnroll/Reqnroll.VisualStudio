@@ -478,7 +478,8 @@ public class ProjectSystemSteps : Steps
                 }
             case "Define Steps":
                 {
-                    _invokedCommand = new DefineStepsCommand(_ideScope, aggregatorFactoryService, taggerProvider);
+                    _invokedCommand = new DefineStepsCommand(_ideScope, aggregatorFactoryService, taggerProvider,
+                        new StubEditorConfigOptionsProvider());
                     _invokedCommand.PreExec(_wpfTextView, _invokedCommand.Targets.First());
                     return;
                 }

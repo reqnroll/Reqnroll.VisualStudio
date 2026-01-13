@@ -2,9 +2,11 @@
 
 ## Improvements:
 
+* Support file scoped namespace declarations when generating code (#140)
+
 ## Bug fixes:
 
-*Contributors of this release (in alphabetical order):* 
+*Contributors of this release (in alphabetical order):* @304NotModified
 
 # v2025.3.395 - 2025-12-17
 
