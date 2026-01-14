@@ -1,4 +1,4 @@
-using Reqnroll.VisualStudio.Discovery.TagExpressions;
+using Cucumber.TagExpressions;
 
 namespace Reqnroll.VisualStudio.Discovery;
 

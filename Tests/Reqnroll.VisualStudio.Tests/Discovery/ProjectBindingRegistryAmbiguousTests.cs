@@ -94,7 +94,7 @@ public class ProjectBindingRegistryAmbiguousTests : ProjectBindingRegistryTestsB
 
     private ProjectStepDefinitionBinding CreateStepDefinitionBindingWithScope(string stepRegex, string scopeText, string methodName)
     {
-        var scope = new Scope() { Tag = new TagExpressionParser().Parse(scopeText) };
+        var scope = new Scope() { Tag = new ReqnrollTagExpressionParser().Parse(scopeText) };
         return CreateStepDefinitionBinding(stepRegex, ScenarioBlock.Given, scope, null, methodName);
     }
 }

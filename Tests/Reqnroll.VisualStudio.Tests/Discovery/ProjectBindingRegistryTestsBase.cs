@@ -45,7 +45,7 @@ public abstract class ProjectBindingRegistryTestsBase
         });
     }
 
-    protected Scope CreateTagScope(string tagName) => new() {Tag = TagExpressionParser.CreateTagLiteral(tagName)};
+    protected Scope CreateTagScope(string tagName) => new() {Tag = ReqnrollTagExpressionParser.CreateTagLiteral(tagName)};
 
     private DeveroomTag CreateFeatureStructure(string[] featureTags, string[] scenarioTags,
         string[] scenarioOutlineTags = null, string[] soHeaders = null, string[][] soCells = null,

@@ -1,3 +1,4 @@
+using Cucumber.TagExpressions;
 using System.Linq;
 
 namespace Reqnroll.VisualStudio.Discovery.TagExpressions;
