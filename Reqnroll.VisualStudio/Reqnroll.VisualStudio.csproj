@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Cucumber.TagExpressions" Version="8.1.0" />
     <PackageReference Include="Gherkin" Version="29.0.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.0.1" />
     <PackageReference Include="Microsoft.VisualStudio.LanguageServices" Version="4.0.1" />

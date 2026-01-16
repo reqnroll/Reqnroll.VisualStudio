@@ -6,10 +6,10 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v10.0": {
-      "reqnroll-vs/2025.2.99999-local": {
+      "reqnroll-vs/2025.4.99999-local": {
         "dependencies": {
           "Microsoft.Extensions.DependencyModel": "8.0.1",
-          "Reqnroll.VisualStudio.ReqnrollConnector.Models": "2025.2.99999-local",
+          "Reqnroll.VisualStudio.ReqnrollConnector.Models": "2025.4.99999-local",
           "dnlib": "4.4.0"
         },
         "runtime": {
@@ -32,18 +32,18 @@
           }
         }
       },
-      "Reqnroll.VisualStudio.ReqnrollConnector.Models/2025.2.99999-local": {
+      "Reqnroll.VisualStudio.ReqnrollConnector.Models/2025.4.99999-local": {
         "runtime": {
           "Reqnroll.VisualStudio.ReqnrollConnector.Models.dll": {
-            "assemblyVersion": "2025.2.0.0",
-            "fileVersion": "2025.2.0.0"
+            "assemblyVersion": "2025.4.0.0",
+            "fileVersion": "2025.4.0.0"
           }
         }
       }
     }
   },
   "libraries": {
-    "reqnroll-vs/2025.2.99999-local": {
+    "reqnroll-vs/2025.4.99999-local": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
@@ -62,7 +62,7 @@
       "path": "microsoft.extensions.dependencymodel/8.0.1",
       "hashPath": "microsoft.extensions.dependencymodel.8.0.1.nupkg.sha512"
     },
-    "Reqnroll.VisualStudio.ReqnrollConnector.Models/2025.2.99999-local": {
+    "Reqnroll.VisualStudio.ReqnrollConnector.Models/2025.4.99999-local": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

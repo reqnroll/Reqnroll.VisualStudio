@@ -7,15 +7,15 @@ namespace Reqnroll.VisualStudio.Discovery;
 public class BindingImporter
 {
     private static readonly string[] EmptyParameterTypes = new string[0];
-    private static readonly string[] SingleStringParameterTypes = {TypeShortcuts.StringType};
-    private static readonly string[] DoubleStringParameterTypes = {TypeShortcuts.StringType, TypeShortcuts.StringType};
-    private static readonly string[] SingleIntParameterTypes = {TypeShortcuts.Int32Type};
-    private static readonly string[] SingleDataTableParameterTypes = {TypeShortcuts.ReqnrollTableType};
+    private static readonly string[] SingleStringParameterTypes = { TypeShortcuts.StringType };
+    private static readonly string[] DoubleStringParameterTypes = { TypeShortcuts.StringType, TypeShortcuts.StringType };
+    private static readonly string[] SingleIntParameterTypes = { TypeShortcuts.Int32Type };
+    private static readonly string[] SingleDataTableParameterTypes = { TypeShortcuts.ReqnrollTableType };
     private readonly Dictionary<string, ProjectBindingImplementation> _implementations = new();
 
     private readonly IDeveroomLogger _logger;
     private readonly Dictionary<string, string> _sourceFiles;
-    private readonly TagExpressionParser _tagExpressionParser = new();
+    private readonly ReqnrollTagExpressionParser _tagExpressionParser = new();
     private readonly Dictionary<string, string> _typeNames;
 
     public BindingImporter(Dictionary<string, string> sourceFiles, Dictionary<string, string> typeNames,
@@ -46,7 +46,7 @@ public class BindingImporter
             }
 
             return new ProjectStepDefinitionBinding(stepDefinitionType, regex, scope, implementation,
-                stepDefinition.Expression, stepDefinition.Error);
+                stepDefinition.Expression, GetBindingError(stepDefinition.Error, scope, "step definition"));
         }
         catch (Exception ex)
         {
@@ -72,13 +72,22 @@ public class BindingImporter
                 _implementations.Add(hook.Method, implementation);
             }
 
-            return new ProjectHookBinding(implementation, scope, hookType, hook.HookOrder);
+            return new ProjectHookBinding(implementation, scope, hookType, hook.HookOrder, GetBindingError(hook.Error, scope, "hook"));
         }
         catch (Exception ex)
         {
             _logger.LogWarning($"Invalid hook binding: {ex.Message}");
             return null;
         }
+    }
+
+    private string GetBindingError(string error, Scope scope, string bindingType)
+    {
+        if (!string.IsNullOrWhiteSpace(error))
+            return $"Invalid {bindingType}: {error}";
+        if (!string.IsNullOrWhiteSpace(scope?.Error))
+            return $"Invalid scope for {bindingType}: {scope.Error}";
+        return null;
     }
 
     private static Regex ParseRegex(StepDefinition stepDefinition) =>
@@ -149,13 +158,27 @@ public class BindingImporter
         if (bindingScope == null)
             return null;
 
+        var tagExpression = _tagExpressionParser.Parse(bindingScope.Tag);
+
+        if (tagExpression is InvalidTagExpression ite)
+        {
+            _logger.LogVerbose($"Invalid tag expression '{bindingScope.Tag}': {ite.Message}");
+            return new Scope
+            {
+                FeatureTitle = bindingScope.FeatureTitle,
+                ScenarioTitle = bindingScope.ScenarioTitle,
+                Tag = null,
+                Error = $"Invalid tag expression '{bindingScope.Tag}': {ite.Message}"
+            };
+        }
         return new Scope
         {
             FeatureTitle = bindingScope.FeatureTitle,
             ScenarioTitle = bindingScope.ScenarioTitle,
             Tag = string.IsNullOrWhiteSpace(bindingScope.Tag)
-                ? null
-                : _tagExpressionParser.Parse(bindingScope.Tag)
+                    ? null
+                    : tagExpression,
+            Error = bindingScope.Error
         };
     }
 }

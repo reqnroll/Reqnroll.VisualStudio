@@ -6,16 +6,14 @@ public class ProjectStepDefinitionBinding : ProjectBinding
 {
     public ProjectStepDefinitionBinding(ScenarioBlock stepDefinitionType, Regex regex, Scope scope,
         ProjectBindingImplementation implementation, string specifiedExpression = null, string error = null)
-    : base(implementation, scope)
+    : base(implementation, scope, error)
     {
         StepDefinitionType = stepDefinitionType;
         Regex = regex;
         SpecifiedExpression = specifiedExpression;
-        Error = error;
     }
 
-    public bool IsValid => Regex != null && Error == null;
-    public string Error { get; }
+    public override bool IsValid => Regex != null && base.IsValid;
     public ScenarioBlock StepDefinitionType { get; }
     public string SpecifiedExpression { get; }
     public Regex Regex { get; }

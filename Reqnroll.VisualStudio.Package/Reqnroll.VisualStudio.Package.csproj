@@ -91,10 +91,11 @@
   <ItemGroup>
     <AdditionalDeveroomDependencies Include="Newtonsoft.Json.dll" />
     <AdditionalDeveroomDependencies Include="Gherkin.dll" />
+    <AdditionalDeveroomDependencies Include="Cucumber.TagExpressions.dll" />
     <AdditionalDeveroomDependencies Include="System.IO.Abstractions.dll" />
     <AdditionalDeveroomDependencies Include="System.Threading.Channels.dll" />
-	<AdditionalDeveroomDependencies Include="TestableIO.System.IO.Abstractions.dll" />
-	<AdditionalDeveroomDependencies Include="TestableIO.System.IO.Abstractions.Wrappers.dll" />
+    <AdditionalDeveroomDependencies Include="TestableIO.System.IO.Abstractions.dll" />
+    <AdditionalDeveroomDependencies Include="TestableIO.System.IO.Abstractions.Wrappers.dll" />
   </ItemGroup>
 
   <Import Project="..\Connectors\DeploymentAssets.props" />

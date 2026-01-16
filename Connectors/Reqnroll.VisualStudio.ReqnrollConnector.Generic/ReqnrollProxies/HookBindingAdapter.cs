@@ -10,5 +10,7 @@ public record HookBindingAdapter(HookData Adaptee) : IScopedBindingAdapter
     public string? BindingScopeTag => Adaptee.Scope?.Tag;
     public string? BindingScopeFeatureTitle => Adaptee.Scope?.FeatureTitle;
     public string? BindingScopeScenarioTitle => Adaptee.Scope?.ScenarioTitle;
+    public string? BindingScopeError => Adaptee.Scope?.Error;
     public int? HookOrder => Adaptee.HookOrder;
+    public string? Error => Adaptee.Error;
 }

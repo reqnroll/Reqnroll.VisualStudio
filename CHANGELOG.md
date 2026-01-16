@@ -2,9 +2,11 @@
 
 ## Improvements:
 
+* Improved handling of scope tag expressions, hook and scope errors (#150)
+
 ## Bug fixes:
 
-*Contributors of this release (in alphabetical order):* 
+*Contributors of this release (in alphabetical order):* @clrudolphi, @gasparnagy
 
 # v2025.3.395 - 2025-12-17
 

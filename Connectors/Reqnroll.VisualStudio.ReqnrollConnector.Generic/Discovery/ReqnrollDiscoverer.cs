@@ -93,7 +93,8 @@ public class ReqnrollDiscoverer
             HookOrder = sdb.HookOrder,
             Method = sdb.Method.ToString(),
             Scope = GetScope(sdb), 
-            SourceLocation = sourceLocation.Reduce((string)null!)
+            SourceLocation = sourceLocation.Reduce((string)null!),
+            Error = sdb.Error
         };
 
         return stepDefinition;
@@ -137,7 +138,8 @@ public class ReqnrollDiscoverer
         {
             Tag = scopedBinding.BindingScopeTag,
             FeatureTitle = scopedBinding.BindingScopeFeatureTitle,
-            ScenarioTitle = scopedBinding.BindingScopeScenarioTitle
+            ScenarioTitle = scopedBinding.BindingScopeScenarioTitle,
+            Error = scopedBinding.BindingScopeError
         };
     }
 
