@@ -186,7 +186,6 @@ jobs:
           dotnet add ./Tests/Reqnroll.VisualStudio.Specs/Reqnroll.VisualStudio.Specs.csproj package GitHubActionsTestLogger
           dotnet add ./Tests/Reqnroll.VisualStudio.Tests/Reqnroll.VisualStudio.Tests.csproj package GitHubActionsTestLogger
           dotnet add ./Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.Tests/Reqnroll.VisualStudio.ReqnrollConnector.Tests.csproj package GitHubActionsTestLogger
-          dotnet add ./Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.V1.Tests/Reqnroll.VisualStudio.ReqnrollConnector.V1.Tests.csproj package GitHubActionsTestLogger
     - name: Add MsBuild to PATH
       uses: microsoft/setup-msbuild@v1.3
     - name: Build
@@ -211,8 +210,6 @@ jobs:
         nuget install packages.config
     - name: Connector Tests
       run: dotnet test ./Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.Tests/Reqnroll.VisualStudio.ReqnrollConnector.Tests.csproj ${{ steps.build_params.outputs.test_params }}
-    - name: Connector V1 Tests
-      run: dotnet test ./Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.V1.Tests/Reqnroll.VisualStudio.ReqnrollConnector.V1.Tests.csproj ${{ steps.build_params.outputs.test_params }}
     - name: Specs Tests
       run: >
         dotnet test ./Tests/Reqnroll.VisualStudio.Specs/Reqnroll.VisualStudio.Specs.csproj 

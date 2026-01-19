@@ -1,0 +1,238 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "specflow-vs/2025.3.395": {
+        "dependencies": {
+          "Microsoft.Extensions.DependencyModel": "8.0.1",
+          "SpecFlow.CustomPlugin": "3.9.40",
+          "SpecFlow.VisualStudio.SpecFlowConnector.Models": "2025.3.395",
+          "dnlib": "4.4.0"
+        },
+        "runtime": {
+          "specflow-vs.dll": {}
+        }
+      },
+      "BoDi/1.5.0": {
+        "runtime": {
+          "lib/netstandard2.0/BoDi.dll": {
+            "assemblyVersion": "1.5.0.0",
+            "fileVersion": "1.5.0.0"
+          }
+        }
+      },
+      "dnlib/4.4.0": {
+        "runtime": {
+          "lib/net6.0/dnlib.dll": {
+            "assemblyVersion": "4.4.0.0",
+            "fileVersion": "4.4.0.0"
+          }
+        }
+      },
+      "Gherkin/19.0.3": {
+        "runtime": {
+          "lib/netstandard2.0/Gherkin.dll": {
+            "assemblyVersion": "19.0.3.0",
+            "fileVersion": "19.0.3.0"
+          }
+        }
+      },
+      "Microsoft.Extensions.DependencyModel/8.0.1": {
+        "runtime": {
+          "lib/net8.0/Microsoft.Extensions.DependencyModel.dll": {
+            "assemblyVersion": "8.0.0.1",
+            "fileVersion": "8.0.724.31311"
+          }
+        }
+      },
+      "SpecFlow/3.9.40": {
+        "dependencies": {
+          "BoDi": "1.5.0",
+          "Gherkin": "19.0.3",
+          "Microsoft.Extensions.DependencyModel": "8.0.1",
+          "SpecFlow.Internal.Json": "1.0.8",
+          "System.Configuration.ConfigurationManager": "4.5.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/TechTalk.SpecFlow.dll": {
+            "assemblyVersion": "3.9.0.0",
+            "fileVersion": "3.9.40.46609"
+          }
+        }
+      },
+      "SpecFlow.CustomPlugin/3.9.40": {
+        "dependencies": {
+          "SpecFlow": "3.9.40",
+          "System.CodeDom": "4.4.0"
+        },
+        "runtime": {
+          "lib/net6.0/TechTalk.SpecFlow.Generator.dll": {
+            "assemblyVersion": "3.9.0.0",
+            "fileVersion": "3.9.40.46609"
+          },
+          "lib/net6.0/TechTalk.SpecFlow.Parser.dll": {
+            "assemblyVersion": "3.9.0.0",
+            "fileVersion": "3.9.40.46609"
+          },
+          "lib/net6.0/TechTalk.SpecFlow.Utils.dll": {
+            "assemblyVersion": "3.9.0.0",
+            "fileVersion": "3.9.40.46609"
+          }
+        }
+      },
+      "SpecFlow.Internal.Json/1.0.8": {
+        "runtime": {
+          "lib/netstandard2.0/SpecFlow.Internal.Json.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.8.28882"
+          }
+        }
+      },
+      "System.CodeDom/4.4.0": {
+        "runtime": {
+          "lib/netstandard2.0/System.CodeDom.dll": {
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "4.6.25519.3"
+          }
+        }
+      },
+      "System.Configuration.ConfigurationManager/4.5.0": {
+        "dependencies": {
+          "System.Security.Cryptography.ProtectedData": "4.5.0",
+          "System.Security.Permissions": "4.5.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/System.Configuration.ConfigurationManager.dll": {
+            "assemblyVersion": "4.0.1.0",
+            "fileVersion": "4.6.26515.6"
+          }
+        }
+      },
+      "System.Security.Cryptography.ProtectedData/4.5.0": {
+        "runtime": {
+          "lib/netstandard2.0/System.Security.Cryptography.ProtectedData.dll": {
+            "assemblyVersion": "4.0.3.0",
+            "fileVersion": "4.6.26515.6"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/win/lib/netstandard2.0/System.Security.Cryptography.ProtectedData.dll": {
+            "rid": "win",
+            "assetType": "runtime",
+            "assemblyVersion": "4.0.3.0",
+            "fileVersion": "4.6.26515.6"
+          }
+        }
+      },
+      "System.Security.Permissions/4.5.0": {
+        "runtime": {
+          "lib/netstandard2.0/System.Security.Permissions.dll": {
+            "assemblyVersion": "4.0.1.0",
+            "fileVersion": "4.6.26515.6"
+          }
+        }
+      },
+      "SpecFlow.VisualStudio.SpecFlowConnector.Models/2025.3.395": {
+        "runtime": {
+          "SpecFlow.VisualStudio.SpecFlowConnector.Models.dll": {
+            "assemblyVersion": "2025.3.0.0",
+            "fileVersion": "2025.3.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "specflow-vs/2025.3.395": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "BoDi/1.5.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-CzIPzdIAFSd2zuLxI+0K9s48Qv3HQDbWiApn9h96j284rHs2bSPrn/PMca3mi4q3xLSEqOp+GUJ6+mXDD9prKg==",
+      "path": "bodi/1.5.0",
+      "hashPath": "bodi.1.5.0.nupkg.sha512"
+    },
+    "dnlib/4.4.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-cKHI720q+zfEEvzklWVGt6B0TH3AibAyJbpUJl4U6KvTP13tycfnqJpkGHRZ/oQ45BTIoIxIwltHIJVDN+iCqQ==",
+      "path": "dnlib/4.4.0",
+      "hashPath": "dnlib.4.4.0.nupkg.sha512"
+    },
+    "Gherkin/19.0.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-kq9feqMojMj9aABrHb/ABEPaH2Y4dSclseSahAru6qxCeqVQNLLTgw/6vZMauzI1yBUL2fz03ub5yEd5btLfvg==",
+      "path": "gherkin/19.0.3",
+      "hashPath": "gherkin.19.0.3.nupkg.sha512"
+    },
+    "Microsoft.Extensions.DependencyModel/8.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-5Ou6varcxLBzQ+Agfm0k0pnH7vrEITYlXMDuE6s7ZHlZHz6/G8XJ3iISZDr5rfwfge6RnXJ1+Wc479mMn52vjA==",
+      "path": "microsoft.extensions.dependencymodel/8.0.1",
+      "hashPath": "microsoft.extensions.dependencymodel.8.0.1.nupkg.sha512"
+    },
+    "SpecFlow/3.9.40": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ru7twstJSKrTv3XfcxyttzrdZ/FvXOF5cYN/x/2js755wVk1zpSPUPa/ml3lSZmPNkS5OAOuSt1JLEa5hhDhdw==",
+      "path": "specflow/3.9.40",
+      "hashPath": "specflow.3.9.40.nupkg.sha512"
+    },
+    "SpecFlow.CustomPlugin/3.9.40": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-VI9Dt9zUT0vkD/FSD3ftYqDL69WYfptfAXzRwiH0pzvjD99QwTnnXBj/2+CxrFGZEArunVvMSwHk83JcZXzAaw==",
+      "path": "specflow.customplugin/3.9.40",
+      "hashPath": "specflow.customplugin.3.9.40.nupkg.sha512"
+    },
+    "SpecFlow.Internal.Json/1.0.8": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-lVCC/Rie7N5rFoc7YxPS0nneLfsWSTIMMlkndwxhaD8MxBp3Bsv1HeiVjVwXCjWaQeoqZcvIy52fF5Xit00ZLw==",
+      "path": "specflow.internal.json/1.0.8",
+      "hashPath": "specflow.internal.json.1.0.8.nupkg.sha512"
+    },
+    "System.CodeDom/4.4.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-2sCCb7doXEwtYAbqzbF/8UAeDRMNmPaQbU2q50Psg1J9KzumyVVCgKQY8s53WIPTufNT0DpSe9QRvVjOzfDWBA==",
+      "path": "system.codedom/4.4.0",
+      "hashPath": "system.codedom.4.4.0.nupkg.sha512"
+    },
+    "System.Configuration.ConfigurationManager/4.5.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-UIFvaFfuKhLr9u5tWMxmVoDPkFeD+Qv8gUuap4aZgVGYSYMdERck4OhLN/2gulAc0nYTEigWXSJNNWshrmxnng==",
+      "path": "system.configuration.configurationmanager/4.5.0",
+      "hashPath": "system.configuration.configurationmanager.4.5.0.nupkg.sha512"
+    },
+    "System.Security.Cryptography.ProtectedData/4.5.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-wLBKzFnDCxP12VL9ANydSYhk59fC4cvOr9ypYQLPnAj48NQIhqnjdD2yhP8yEKyBJEjERWS9DisKL7rX5eU25Q==",
+      "path": "system.security.cryptography.protecteddata/4.5.0",
+      "hashPath": "system.security.cryptography.protecteddata.4.5.0.nupkg.sha512"
+    },
+    "System.Security.Permissions/4.5.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-9gdyuARhUR7H+p5CjyUB/zPk7/Xut3wUSP8NJQB6iZr8L3XUXTMdoLeVAg9N4rqF8oIpE7MpdqHdDHQ7XgJe0g==",
+      "path": "system.security.permissions/4.5.0",
+      "hashPath": "system.security.permissions.4.5.0.nupkg.sha512"
+    },
+    "SpecFlow.VisualStudio.SpecFlowConnector.Models/2025.3.395": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
