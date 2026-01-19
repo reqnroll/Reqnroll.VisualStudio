@@ -19,7 +19,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Connectors\Reqnroll.VisualStudio.ReqnrollConnector.Models\Reqnroll.VisualStudio.ReqnrollConnector.Models.csproj" />
-    <ProjectReference Include="..\..\..\Connectors\Reqnroll.VisualStudio.ReqnrollConnector.V1\Reqnroll.VisualStudio.ReqnrollConnector.V1.csproj" />
   </ItemGroup>
 
 </Project>
