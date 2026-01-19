@@ -108,7 +108,9 @@
             asyncContextMenu.Complete();
             Finished.Set();
         }
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         private async Task FindUsagesInternalAsync(IProjectScope[] reqnrollTestProjects, IAsyncContextMenu asyncContextMenu,
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
             CancellationToken cancellationToken, UnusedStepDefinitionSummary summary)
         {
             foreach (var project in reqnrollTestProjects)
@@ -158,7 +160,7 @@
         {
             return $"[{stepDefinition.StepDefinitionType}(\"{stepDefinition.Expression}\")] {stepDefinition.Implementation.Method}";
         }
-        private string GetIcon() => null;
+        private string? GetIcon() => null;
 
         private ContextMenuItem CreateMenuItem(ProjectStepDefinitionBinding stepDefinition, IProjectScope project, string menuLabel, string shortDescription)
         {

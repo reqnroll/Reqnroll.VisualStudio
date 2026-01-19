@@ -58,13 +58,13 @@ namespace Reqnroll.VisualStudio.Editor.Services
 
         protected class StepFinderContext : IGherkinDocumentContext
         {
-            public StepFinderContext(object node, IGherkinDocumentContext parent = null)
+            public StepFinderContext(object node, IGherkinDocumentContext? parent = null)
             {
                 Node = node;
                 Parent = parent;
             }
 
-            public IGherkinDocumentContext Parent { get; }
+            public IGherkinDocumentContext? Parent { get; }
             public object Node { get; }
         }
     }

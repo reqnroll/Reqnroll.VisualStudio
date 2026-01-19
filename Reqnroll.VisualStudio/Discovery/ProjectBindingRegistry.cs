@@ -224,7 +224,7 @@ public record ProjectBindingRegistry
     {
         var stepDefinitionParser = new StepDefinitionFileParser();
         var projectStepDefinitionBindings = await stepDefinitionParser.Parse(stepDefinitionFile);
-        return Where(binding => binding.Implementation.SourceLocation.SourceFile != stepDefinitionFile.FullName)
+        return Where(binding => binding.Implementation.SourceLocation?.SourceFile != stepDefinitionFile.FullName)
             .WithStepDefinitions(projectStepDefinitionBindings);
     }
 }

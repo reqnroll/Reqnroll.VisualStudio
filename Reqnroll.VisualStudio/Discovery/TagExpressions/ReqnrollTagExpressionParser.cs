@@ -9,7 +9,7 @@ public class ReqnrollTagExpressionParser : IReqnrollTagExpressionParser
     public ITagExpression Parse(string tagExpression)
     {
         var tagExpressionParser = new TagExpressionParser();
-        ITagExpression result = null;
+        ITagExpression? result = null;
         try { 
             result = tagExpressionParser.Parse(tagExpression);
             result =  Rewrite(result);
