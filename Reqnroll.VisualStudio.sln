@@ -69,18 +69,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reqnroll.VisualStudio.Reqnr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reqnroll.VisualStudio.ReqnrollConnector.Tests", "Tests\Connector\Reqnroll.VisualStudio.ReqnrollConnector.Tests\Reqnroll.VisualStudio.ReqnrollConnector.Tests.csproj", "{2CB993A2-0A17-4B8F-AF3D-885913DBF170}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SpecFlow.VisualStudio.SpecFlowConnector", "Connectors\SpecFlow.VisualStudio.SpecFlowConnector\SpecFlow.VisualStudio.SpecFlowConnector.shproj", "{C619ED39-1106-4655-9BA5-EF1A668FE4DF}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpecFlow.VisualStudio.SpecFlowConnector.Models", "Connectors\SpecFlow.VisualStudio.SpecFlowConnector.Models\SpecFlow.VisualStudio.SpecFlowConnector.Models.csproj", "{CAB6C190-11DF-4CFC-B433-426CE4036533}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpecFlow.VisualStudio.SpecFlowConnector.Generic", "Connectors\SpecFlow.VisualStudio.SpecFlowConnector.Generic\SpecFlow.VisualStudio.SpecFlowConnector.Generic.csproj", "{7F0169C4-E7A0-4EFE-9DB6-38AEE59557DF}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpecFlow.VisualStudio.SpecFlowConnector.V1", "Connectors\SpecFlow.VisualStudio.SpecFlowConnector.V1\SpecFlow.VisualStudio.SpecFlowConnector.V1.csproj", "{087E047D-A460-4F8C-AE8E-5C822905BA61}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpecFlow.VisualStudio.SpecFlowConnector.V2", "Connectors\SpecFlow.VisualStudio.SpecFlowConnector.V2\SpecFlow.VisualStudio.SpecFlowConnector.V2.csproj", "{6921EE1B-E95B-4F65-90DB-B8AF053EA45D}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpecFlow.VisualStudio.SpecFlowConnector.V3", "Connectors\SpecFlow.VisualStudio.SpecFlowConnector.V3\SpecFlow.VisualStudio.SpecFlowConnector.V3.csproj", "{1206936F-0092-480C-BEA4-3EDE937CF7F3}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug_x86|Any CPU = Debug_x86|Any CPU
@@ -248,56 +236,6 @@ Global
 		{2CB993A2-0A17-4B8F-AF3D-885913DBF170}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2CB993A2-0A17-4B8F-AF3D-885913DBF170}.TestDebug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2CB993A2-0A17-4B8F-AF3D-885913DBF170}.TestDebug|Any CPU.Build.0 = Debug|Any CPU
-		{CAB6C190-11DF-4CFC-B433-426CE4036533}.Debug_x86|Any CPU.ActiveCfg = Debug|Any CPU
-		{CAB6C190-11DF-4CFC-B433-426CE4036533}.Debug_x86|Any CPU.Build.0 = Debug|Any CPU
-		{CAB6C190-11DF-4CFC-B433-426CE4036533}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CAB6C190-11DF-4CFC-B433-426CE4036533}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CAB6C190-11DF-4CFC-B433-426CE4036533}.Release_x86|Any CPU.ActiveCfg = Release|Any CPU
-		{CAB6C190-11DF-4CFC-B433-426CE4036533}.Release_x86|Any CPU.Build.0 = Release|Any CPU
-		{CAB6C190-11DF-4CFC-B433-426CE4036533}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CAB6C190-11DF-4CFC-B433-426CE4036533}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CAB6C190-11DF-4CFC-B433-426CE4036533}.TestDebug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CAB6C190-11DF-4CFC-B433-426CE4036533}.TestDebug|Any CPU.Build.0 = Debug|Any CPU
-		{7F0169C4-E7A0-4EFE-9DB6-38AEE59557DF}.Debug_x86|Any CPU.ActiveCfg = Debug|Any CPU
-		{7F0169C4-E7A0-4EFE-9DB6-38AEE59557DF}.Debug_x86|Any CPU.Build.0 = Debug|Any CPU
-		{7F0169C4-E7A0-4EFE-9DB6-38AEE59557DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7F0169C4-E7A0-4EFE-9DB6-38AEE59557DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7F0169C4-E7A0-4EFE-9DB6-38AEE59557DF}.Release_x86|Any CPU.ActiveCfg = Release|Any CPU
-		{7F0169C4-E7A0-4EFE-9DB6-38AEE59557DF}.Release_x86|Any CPU.Build.0 = Release|Any CPU
-		{7F0169C4-E7A0-4EFE-9DB6-38AEE59557DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7F0169C4-E7A0-4EFE-9DB6-38AEE59557DF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7F0169C4-E7A0-4EFE-9DB6-38AEE59557DF}.TestDebug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7F0169C4-E7A0-4EFE-9DB6-38AEE59557DF}.TestDebug|Any CPU.Build.0 = Debug|Any CPU
-		{087E047D-A460-4F8C-AE8E-5C822905BA61}.Debug_x86|Any CPU.ActiveCfg = Debug_x86|Any CPU
-		{087E047D-A460-4F8C-AE8E-5C822905BA61}.Debug_x86|Any CPU.Build.0 = Debug_x86|Any CPU
-		{087E047D-A460-4F8C-AE8E-5C822905BA61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{087E047D-A460-4F8C-AE8E-5C822905BA61}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{087E047D-A460-4F8C-AE8E-5C822905BA61}.Release_x86|Any CPU.ActiveCfg = Release_x86|Any CPU
-		{087E047D-A460-4F8C-AE8E-5C822905BA61}.Release_x86|Any CPU.Build.0 = Release_x86|Any CPU
-		{087E047D-A460-4F8C-AE8E-5C822905BA61}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{087E047D-A460-4F8C-AE8E-5C822905BA61}.Release|Any CPU.Build.0 = Release|Any CPU
-		{087E047D-A460-4F8C-AE8E-5C822905BA61}.TestDebug|Any CPU.ActiveCfg = Debug|Any CPU
-		{087E047D-A460-4F8C-AE8E-5C822905BA61}.TestDebug|Any CPU.Build.0 = Debug|Any CPU
-		{6921EE1B-E95B-4F65-90DB-B8AF053EA45D}.Debug_x86|Any CPU.ActiveCfg = Debug|Any CPU
-		{6921EE1B-E95B-4F65-90DB-B8AF053EA45D}.Debug_x86|Any CPU.Build.0 = Debug|Any CPU
-		{6921EE1B-E95B-4F65-90DB-B8AF053EA45D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6921EE1B-E95B-4F65-90DB-B8AF053EA45D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6921EE1B-E95B-4F65-90DB-B8AF053EA45D}.Release_x86|Any CPU.ActiveCfg = Release|Any CPU
-		{6921EE1B-E95B-4F65-90DB-B8AF053EA45D}.Release_x86|Any CPU.Build.0 = Release|Any CPU
-		{6921EE1B-E95B-4F65-90DB-B8AF053EA45D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6921EE1B-E95B-4F65-90DB-B8AF053EA45D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6921EE1B-E95B-4F65-90DB-B8AF053EA45D}.TestDebug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6921EE1B-E95B-4F65-90DB-B8AF053EA45D}.TestDebug|Any CPU.Build.0 = Debug|Any CPU
-		{1206936F-0092-480C-BEA4-3EDE937CF7F3}.Debug_x86|Any CPU.ActiveCfg = Debug|Any CPU
-		{1206936F-0092-480C-BEA4-3EDE937CF7F3}.Debug_x86|Any CPU.Build.0 = Debug|Any CPU
-		{1206936F-0092-480C-BEA4-3EDE937CF7F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1206936F-0092-480C-BEA4-3EDE937CF7F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1206936F-0092-480C-BEA4-3EDE937CF7F3}.Release_x86|Any CPU.ActiveCfg = Release|Any CPU
-		{1206936F-0092-480C-BEA4-3EDE937CF7F3}.Release_x86|Any CPU.Build.0 = Release|Any CPU
-		{1206936F-0092-480C-BEA4-3EDE937CF7F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1206936F-0092-480C-BEA4-3EDE937CF7F3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1206936F-0092-480C-BEA4-3EDE937CF7F3}.TestDebug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1206936F-0092-480C-BEA4-3EDE937CF7F3}.TestDebug|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -316,27 +254,14 @@ Global
 		{2A412F65-68C7-4A5D-AFCF-74E928C40C21} = {11E7849D-8059-417F-BEB2-7B576B7993F3}
 		{B1CC6338-BA6D-4268-BA34-204082046AD9} = {B9F019ED-754C-4D7E-90ED-7D54A50B38EB}
 		{2CB993A2-0A17-4B8F-AF3D-885913DBF170} = {3710808B-7098-4236-9053-FDB52CBB51E0}
-		{C619ED39-1106-4655-9BA5-EF1A668FE4DF} = {B9F019ED-754C-4D7E-90ED-7D54A50B38EB}
-		{CAB6C190-11DF-4CFC-B433-426CE4036533} = {B9F019ED-754C-4D7E-90ED-7D54A50B38EB}
-		{7F0169C4-E7A0-4EFE-9DB6-38AEE59557DF} = {B9F019ED-754C-4D7E-90ED-7D54A50B38EB}
-		{087E047D-A460-4F8C-AE8E-5C822905BA61} = {B9F019ED-754C-4D7E-90ED-7D54A50B38EB}
-		{6921EE1B-E95B-4F65-90DB-B8AF053EA45D} = {B9F019ED-754C-4D7E-90ED-7D54A50B38EB}
-		{1206936F-0092-480C-BEA4-3EDE937CF7F3} = {B9F019ED-754C-4D7E-90ED-7D54A50B38EB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2F4914B0-F8E8-4745-979B-5F36DFA8013A}
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		Connectors\SpecFlow.VisualStudio.Common\SpecFlow.VisualStudio.Common.projitems*{087e047d-a460-4f8c-ae8e-5c822905ba61}*SharedItemsImports = 5
-		Connectors\SpecFlow.VisualStudio.SpecFlowConnector\SpecFlow.VisualStudio.SpecFlowConnector.projitems*{087e047d-a460-4f8c-ae8e-5c822905ba61}*SharedItemsImports = 5
 		Reqnroll.VisualStudio.Common\Reqnroll.VisualStudio.Common.projitems*{0ca5992a-e95e-472f-90cf-36be75a6cede}*SharedItemsImports = 13
-		Connectors\SpecFlow.VisualStudio.Common\SpecFlow.VisualStudio.Common.projitems*{1206936f-0092-480c-bea4-3ede937cf7f3}*SharedItemsImports = 5
-		Connectors\SpecFlow.VisualStudio.SpecFlowConnector\SpecFlow.VisualStudio.SpecFlowConnector.projitems*{1206936f-0092-480c-bea4-3ede937cf7f3}*SharedItemsImports = 5
-		Connectors\SpecFlow.VisualStudio.Common\SpecFlow.VisualStudio.Common.projitems*{6921ee1b-e95b-4f65-90db-b8af053ea45d}*SharedItemsImports = 5
-		Connectors\SpecFlow.VisualStudio.SpecFlowConnector\SpecFlow.VisualStudio.SpecFlowConnector.projitems*{6921ee1b-e95b-4f65-90db-b8af053ea45d}*SharedItemsImports = 5
 		Connectors\Reqnroll.VisualStudio.ReqnrollConnector\Reqnroll.VisualStudio.ReqnrollConnector.projitems*{b1d4f570-499e-4550-8d29-40510954fd05}*SharedItemsImports = 5
 		Reqnroll.VisualStudio.Common\Reqnroll.VisualStudio.Common.projitems*{b1d4f570-499e-4550-8d29-40510954fd05}*SharedItemsImports = 5
-		Connectors\SpecFlow.VisualStudio.SpecFlowConnector\SpecFlow.VisualStudio.SpecFlowConnector.projitems*{c619ed39-1106-4655-9ba5-ef1a668fe4df}*SharedItemsImports = 13
 		Connectors\Reqnroll.VisualStudio.ReqnrollConnector\Reqnroll.VisualStudio.ReqnrollConnector.projitems*{e0b508c5-c71f-43b2-a564-e2bb0cd92f7c}*SharedItemsImports = 13
 		Reqnroll.VisualStudio.Common\Reqnroll.VisualStudio.Common.projitems*{e687a5fa-a35f-4190-bffb-3ac245cb2ad5}*SharedItemsImports = 5
 	EndGlobalSection
