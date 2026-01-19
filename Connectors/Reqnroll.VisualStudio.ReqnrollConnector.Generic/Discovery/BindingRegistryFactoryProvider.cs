@@ -20,11 +20,10 @@ public class BindingRegistryFactoryProvider
     {
         var reqnrollVersion = GetReqnrollVersion();
 
-        if (reqnrollVersion is Some<FileVersionInfo> some)
+        if (reqnrollVersion != null)
         {
-            var fileVersionInfo = some.Content;
-            AddAnalyticsProperties(fileVersionInfo);
-            var versionNumber = ToVersionNumber(fileVersionInfo);
+            AddAnalyticsProperties(reqnrollVersion);
+            var versionNumber = ToVersionNumber(reqnrollVersion);
             var factory = GetFactory(versionNumber);
             _log.Info($"Chosen {factory.GetType().Name} for {versionNumber}");
             return factory;
@@ -42,24 +41,24 @@ public class BindingRegistryFactoryProvider
             _ => new BindingRegistryFactoryVLatest(_log),
         };
 
-    private Option<FileVersionInfo> GetReqnrollVersion()
+    private FileVersionInfo? GetReqnrollVersion()
     {
         var reqnrollAssemblyPath =
             Path.Combine(Path.GetDirectoryName(_testAssembly.Location) ?? ".", "Reqnroll.dll");
         if (File.Exists(reqnrollAssemblyPath))
-            return GetReqnrollVersion(reqnrollAssemblyPath);
+            return GetReqnrollVersionInfo(reqnrollAssemblyPath);
 
         foreach (var otherReqnrollFile in Directory.EnumerateFiles(
                      Path.GetDirectoryName(reqnrollAssemblyPath)!, "Reqnroll*.dll"))
         {
-            return GetReqnrollVersion(otherReqnrollFile);
+            return GetReqnrollVersionInfo(otherReqnrollFile);
         }
 
         _log.Info($"Not found {reqnrollAssemblyPath}");
-        return None.Value;
+        return null;
     }
 
-    private FileVersionInfo GetReqnrollVersion(string reqnrollAssemblyPath)
+    private FileVersionInfo GetReqnrollVersionInfo(string reqnrollAssemblyPath)
     {
         var reqnrollVersion = FileVersionInfo.GetVersionInfo(reqnrollAssemblyPath);
         _log.Info($"Found V{reqnrollVersion.FileVersion} at {reqnrollAssemblyPath}");

@@ -84,26 +84,26 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
     {
         _log.Info($"Loading {assemblyName}");
         
-        var runtimeLibraryOption = FindRuntimeLibrary(assemblyName);
-        if (runtimeLibraryOption is Some<CompilationLibrary> someRuntimeLibrary)
+        var runtimeLibrary = FindRuntimeLibrary(assemblyName);
+        if (runtimeLibrary != null)
         {
-            var assembly = LoadFromAssembly(someRuntimeLibrary.Content);
-            if (assembly is Some<Assembly> someAssembly)
+            var assembly = LoadFromAssembly(runtimeLibrary);
+            if (assembly != null)
             {
-                _log.Info($"Found runtime library:{someAssembly.Content}");
-                return someAssembly.Content;
+                _log.Info($"Found runtime library:{assembly}");
+                return assembly;
             }
         }
 
         if (assemblyName.Version == null)
             assemblyName.Version = new Version(0, 0);
 
-        var requestedLibraryOption = GetRequestedLibrary(assemblyName);
-        var requestedAssembly = LoadFromAssembly(requestedLibraryOption);
-        if (requestedAssembly is Some<Assembly> someRequestedAssembly)
+        var requestedLibrary = GetRequestedLibrary(assemblyName);
+        var requestedAssembly = LoadFromAssembly(requestedLibrary);
+        if (requestedAssembly != null)
         {
-            _log.Info($"Found requested library:{someRequestedAssembly.Content}");
-            return someRequestedAssembly.Content;
+            _log.Info($"Found requested library:{requestedAssembly}");
+            return requestedAssembly;
         }
 
         if (assemblyName.Name != null &&
@@ -118,20 +118,20 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
         foreach (var compileLibrary in compilationLibraries)
         {
             var compilationAssembly = LoadFromAssembly(compileLibrary);
-            if (compilationAssembly is Some<Assembly> someCompilationAssembly)
+            if (compilationAssembly != null)
             {
-                _log.Info($"Found compilation library:{someCompilationAssembly.Content}");
-                return someCompilationAssembly.Content;
+                _log.Info($"Found compilation library:{compilationAssembly}");
+                return compilationAssembly;
             }
         }
 
         return null!;
     }
 
-    private Option<CompilationLibrary> FindRuntimeLibrary(AssemblyName assemblyName)
+    private CompilationLibrary? FindRuntimeLibrary(AssemblyName assemblyName)
     {
         if (assemblyName.Name == null)
-            return None.Value;
+            return null;
 
         var filteredLibraries = _dependencyContext.RuntimeLibraries
             .Select(runtimeLibrary =>
@@ -157,7 +157,7 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
             return compilationLibrary;
         }
 
-        return None.Value;
+        return null;
     }
 
     private IEnumerable<string> SelectAssets(IReadOnlyList<RuntimeAssetGroup> runtimeAssetGroups)
@@ -188,31 +188,31 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
             string.Empty);
     }
 
-    private Option<Assembly> LoadFromAssembly(CompilationLibrary library)
+    private Assembly? LoadFromAssembly(CompilationLibrary library)
     {
         try
         {
             var assemblyPath = ResolveAssemblyPath(library);
-            if (assemblyPath is Some<string> somePath)
+            if (assemblyPath != null)
             {
-                var assembly = LoadFromAssemblyPath(somePath.Content);
+                var assembly = LoadFromAssemblyPath(assemblyPath);
                 return assembly;
             }
-            return None.Value;
+            return null;
         }
         catch (Exception)
         {
-            return None.Value;
+            return null;
         }
     }
 
-    private Option<string> ResolveAssemblyPath(CompilationLibrary library)
+    private string? ResolveAssemblyPath(CompilationLibrary library)
     {
         var assemblies = new List<string>();
         _assemblyResolver.TryResolveAssemblyPaths(library, assemblies);
         var resolveAssemblyPath = assemblies.FirstOrDefault(a => !IsRefsPath(a));
         if (!File.Exists(resolveAssemblyPath))
-            return None.Value;
+            return null;
         return resolveAssemblyPath;
     }
 

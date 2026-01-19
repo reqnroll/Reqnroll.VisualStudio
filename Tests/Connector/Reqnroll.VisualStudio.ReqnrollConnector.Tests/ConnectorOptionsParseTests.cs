@@ -59,8 +59,10 @@ public class ConnectorOptionsParseTests
         //assert
         _testOutputHelper.WriteLine("---------------------------result- ----------------------------------");
         _testOutputHelper.WriteLine(resultAsString);
-        resultAsString = resultAsString.Replace(FileDetails.FromPath("this").DirectoryName.Reduce("?"), "<<connectorPath>>");
-        resultAsString = resultAsString.Replace(FileDetails.FromPath("../this").DirectoryName.Reduce("?"), "<<targetPath>>");
+        var connectorPath = FileDetails.FromPath("this").DirectoryName ?? "?";
+        var targetPath = FileDetails.FromPath("../this").DirectoryName ?? "?";
+        resultAsString = resultAsString.Replace(connectorPath, "<<connectorPath>>");
+        resultAsString = resultAsString.Replace(targetPath, "<<targetPath>>");
         _testOutputHelper.WriteLine("--------------------------scrubbed-----------------------------------");
         _testOutputHelper.WriteLine(resultAsString);
         _testOutputHelper.WriteLine("--------------------------expected-----------------------------------");

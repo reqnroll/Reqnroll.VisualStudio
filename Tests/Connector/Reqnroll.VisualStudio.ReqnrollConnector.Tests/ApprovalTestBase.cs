@@ -17,11 +17,16 @@ public class ApprovalTestBase
         var connectorFile = typeof(DiscoveryCommand).Assembly.GetLocation();
         var outputFolder = Path.GetDirectoryName(targetAssemblyFile)!;
 
-        Option<FileDetails> configFile = configFileName?.Map(s => FileDetails.FromPath(outputFolder, s)) ??
-                                         None<FileDetails>.Value;
+        FileDetails? configFile = null;
+        if (configFileName != null)
+        {
+            configFile = FileDetails.FromPath(outputFolder, configFileName);
+        }
+
+        var directoryName = targetAssemblyFile.DirectoryName ?? "Unknown directory";
 
         var psiEx = new ProcessStartInfoEx(
-            targetAssemblyFile.DirectoryName.Reduce("Unknown directory"),
+            directoryName,
             connectorFile,
             string.Empty
         );
@@ -32,10 +37,12 @@ public class ApprovalTestBase
             Arguments = $"{connectorFile} "
         };
 #endif
+        var configFileArg = configFile?.FullName ?? string.Empty;
+
         psiEx = psiEx with
         {
             Arguments = psiEx.Arguments +
-                        $"{DiscoveryCommand.CommandName} {targetAssemblyFile} {configFile.Map(cf => cf.FullName).Reduce(string.Empty)}"
+                        $"{DiscoveryCommand.CommandName} {targetAssemblyFile} {configFileArg}"
         };
 
         _testOutputHelper.WriteLine($"{psiEx.ExecutablePath} {psiEx.Arguments}");
@@ -82,20 +89,23 @@ public class ApprovalTestBase
 
     protected void Assert(ProcessResult result, string targetFolder, Func<string, string> scrubber)
     {
-        _testOutputHelper.ApprovalsVerify(new StringBuilder().Append((string?) $"stdout:{result.StdOutput}")
-                .AppendLine((string?) $"stderr:{result.StdError}")
-                .AppendLine($"resultCode:{result.ExitCode}")
-                .Append($"time:{result.ExecutionTime}"),
-            rawContent => rawContent
-                .Map(r => TargetFolderScrubber(r, targetFolder))
-                .Map(r => r.Replace(typeof(DiscoveryCommand).Assembly.ToString(), "<connector>"))
-                .Map(r => Regex.Replace(r, "errorMessage\": \".+\"", "errorMessage\": \"<errorMessage>\""))
-                .Map(r => Regex.Replace(r, "(.*\r\n)*>>>>>>>>>>\r\n", ""))
-                .Map(r => Regex.Replace(r, "<<<<<<<<<<(.*[\r\n])*.*", ""))
-                .Map(XunitExtensions.StackTraceScrubber)
-                .Map(ScrubVolatileParts)
-                .Map(scrubber)
-        );
+        var rawContent = new StringBuilder()
+            .Append((string?) $"stdout:{result.StdOutput}")
+            .AppendLine((string?) $"stderr:{result.StdError}")
+            .AppendLine($"resultCode:{result.ExitCode}")
+            .Append($"time:{result.ExecutionTime}")
+            .ToString();
+
+        var scrubbed = TargetFolderScrubber(rawContent, targetFolder);
+        scrubbed = scrubbed.Replace(typeof(DiscoveryCommand).Assembly.ToString(), "<connector>");
+        scrubbed = Regex.Replace(scrubbed, "errorMessage\": \".+\"", "errorMessage\": \"<errorMessage>\"");
+        scrubbed = Regex.Replace(scrubbed, "(.*\r\n)*>>>>>>>>>>\r\n", "");
+        scrubbed = Regex.Replace(scrubbed, "<<<<<<<<<<(.*[\r\n])*.*", "");
+        scrubbed = XunitExtensions.StackTraceScrubber(scrubbed);
+        scrubbed = ScrubVolatileParts(scrubbed);
+        scrubbed = scrubber(scrubbed);
+
+        _testOutputHelper.ApprovalsVerify(scrubbed);
     }
 
     private static string TargetFolderScrubber(string content, string targetFolder) =>
@@ -119,12 +129,18 @@ public class ApprovalTestBase
 
     private static string ScrubVolatileParts(string content)
     {
-        return content
-            .Map(r => JsonSerialization.DeserializeObject<ConnectorResult>(r)
-                .Map(dr => dr with {StepDefinitions = ImmutableArray<StepDefinition>.Empty})
-                .Map(dr => dr with {SourceFiles = ImmutableSortedDictionary<string, string>.Empty})
-                .Map(dr => dr with {TypeNames = ImmutableSortedDictionary<string, string>.Empty})
-                .Map(dr => JsonSerialization.SerializeObject(dr))
-                .Reduce($"Cannot deserialize:{r}"));
+        var deserialized = JsonSerialization.DeserializeObject<ConnectorResult>(content);
+        if (deserialized != null)
+        {
+            var modified = deserialized with 
+            { 
+                StepDefinitions = ImmutableArray<StepDefinition>.Empty,
+                SourceFiles = ImmutableSortedDictionary<string, string>.Empty,
+                TypeNames = ImmutableSortedDictionary<string, string>.Empty
+            };
+            return JsonSerialization.SerializeObject(modified);
+        }
+
+        return $"Cannot deserialize:{content}";
     }
 }

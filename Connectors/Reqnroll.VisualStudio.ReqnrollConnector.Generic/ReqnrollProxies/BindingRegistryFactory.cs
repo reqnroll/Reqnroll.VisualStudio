@@ -10,23 +10,16 @@ public abstract class BindingRegistryFactory : IBindingRegistryFactory
         Log = log;
     }
 
-    public IBindingRegistryAdapter GetBindingRegistry(AssemblyLoadContext assemblyLoadContext, Assembly testAssembly, Option<FileDetails> configFile)
+    public IBindingRegistryAdapter GetBindingRegistry(AssemblyLoadContext assemblyLoadContext, Assembly testAssembly, FileDetails? configFile)
     {
-        FileDetails? configFileDetails = null;
-        if (configFile is Some<FileDetails> someFile)
-        {
-            configFileDetails = someFile.Content;
-        }
-        
-        var configFileContent = LoadConfigFileContent(configFileDetails);
+        var configFileContent = LoadConfigFileContent(configFile);
 
         var reqnrollAssembly = assemblyLoadContext.LoadFromAssemblyName(new AssemblyName("Reqnroll"));
         var bindingProviderServiceType = reqnrollAssembly.GetType("Reqnroll.Bindings.Provider.BindingProviderService", true)!;
         var bindingJson = bindingProviderServiceType.ReflectionCallStaticMethod<string>("DiscoverBindings", new[] { typeof(Assembly), typeof(string) }, testAssembly, configFileContent);
         var bindingData = JsonSerialization.DeserializeObjectDefaultCase<BindingData>(bindingJson, Log);
-        
-        BindingData effectiveBindingData = bindingData is Some<BindingData> someData ? someData.Content : new BindingData();
-        return new BindingRegistryAdapter(effectiveBindingData);
+       
+        return new BindingRegistryAdapter(bindingData ?? new BindingData());
     }
 
     private string? LoadConfigFileContent(FileDetails? configFile)

@@ -25,7 +25,7 @@ public static class JsonSerialization
         }
     }
 
-    public static Option<TResult> DeserializeObject<TResult>(string json, ILogger? log = null)
+    public static TResult? DeserializeObject<TResult>(string json, ILogger? log = null)
     {
         try
         {
@@ -35,11 +35,11 @@ public static class JsonSerialization
         catch (Exception e)
         {
             log?.Error(e.ToString());
-            return None.Value;
+            return default;
         }
     }
 
-    public static Option<TResult> DeserializeObjectDefaultCase<TResult>(string json, ILogger? log = null)
+    public static TResult? DeserializeObjectDefaultCase<TResult>(string json, ILogger? log = null)
     {
         try
         {
@@ -49,7 +49,7 @@ public static class JsonSerialization
         catch (Exception e)
         {
             log?.Error(e.ToString());
-            return None.Value;
+            return default;
         }
     }
 

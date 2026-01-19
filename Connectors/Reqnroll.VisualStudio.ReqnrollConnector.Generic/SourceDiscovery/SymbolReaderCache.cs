@@ -5,48 +5,52 @@ namespace ReqnrollConnector.SourceDiscovery;
 public class SymbolReaderCache
 {
     private readonly ILogger _log;
-    private readonly Dictionary<Assembly, Option<DeveroomSymbolReader>> _symbolReaders = new(2);
+    private readonly Dictionary<Assembly, DeveroomSymbolReader?> _symbolReaders = new(2);
 
     public SymbolReaderCache(ILogger log)
     {
         _log = log;
     }
 
-    public Option<DeveroomSymbolReader> this[Assembly assembly] => GetOrCreateSymbolReader(assembly);
+    public DeveroomSymbolReader? this[Assembly assembly] => GetOrCreateSymbolReader(assembly);
 
-    private Option<DeveroomSymbolReader> GetOrCreateSymbolReader(Assembly assembly)
+    private DeveroomSymbolReader? GetOrCreateSymbolReader(Assembly assembly)
     {
         if (_symbolReaders.TryGetValue(assembly, out var symbolReader))
             return symbolReader;
 
-        var primaryReaderOption = CreateSymbolReader(assembly.Location);
-        if (primaryReaderOption is Some<DeveroomSymbolReader>)
+        var primaryReader = CreateSymbolReader(assembly.Location);
+        if (primaryReader != null)
         {
-            var reader = ((Some<DeveroomSymbolReader>)primaryReaderOption).Content;
-            _symbolReaders.Add(assembly, reader);
-            return reader;
+            _symbolReaders.Add(assembly, primaryReader);
+            return primaryReader;
         }
 
-        var secondaryReaderOption = CreateSymbolReader(new Uri(assembly.Location).LocalPath);
-        if (secondaryReaderOption is Some<DeveroomSymbolReader>)
+        var secondaryReader = CreateSymbolReader(new Uri(assembly.Location).LocalPath);
+        if (secondaryReader != null)
         {
-            var reader = ((Some<DeveroomSymbolReader>)secondaryReaderOption).Content;
-            _symbolReaders.Add(assembly, reader);
-            return reader;
+            _symbolReaders.Add(assembly, secondaryReader);
+            return secondaryReader;
         }
 
-        var noneValue = None<DeveroomSymbolReader>.Value;
-        _symbolReaders.Add(assembly, noneValue);
-        return noneValue;
+        _symbolReaders.Add(assembly, null);
+        return null;
     }
 
-    protected Option<DeveroomSymbolReader> CreateSymbolReader(
-        string assemblyFilePath)
+    protected DeveroomSymbolReader? CreateSymbolReader(string assemblyFilePath)
     {
         var factories = SymbolReaderFactories(assemblyFilePath);
-        var readers = factories.SelectOptional(TryCreateReader);
-        var firstReader = readers.FirstOrNone();
-        return firstReader;
+        var readerOptions = factories.Select(TryCreateReader).ToList();
+        
+        foreach (var reader in readerOptions)
+        {
+            if (reader != null)
+            {
+                return reader;
+            }
+        }
+        
+        return null;
     }
 
     private IEnumerable<Func<DeveroomSymbolReader>> SymbolReaderFactories(string path)
@@ -57,7 +61,7 @@ public class SymbolReaderCache
         };
     }
 
-    private Option<DeveroomSymbolReader> TryCreateReader(Func<DeveroomSymbolReader> factory)
+    private DeveroomSymbolReader? TryCreateReader(Func<DeveroomSymbolReader> factory)
     {
         try
         {
@@ -68,6 +72,6 @@ public class SymbolReaderCache
             _log.Error(ex.ToString());
         }
 
-        return None<DeveroomSymbolReader>.Value;
+        return null;
     }
 }

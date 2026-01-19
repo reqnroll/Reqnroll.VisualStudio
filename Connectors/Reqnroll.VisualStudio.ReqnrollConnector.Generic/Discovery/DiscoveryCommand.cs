@@ -4,12 +4,12 @@ public class DiscoveryCommand
 {
     public const string CommandName = "discovery";
     private readonly IAnalyticsContainer _analytics;
-    private readonly Option<FileDetails> _configFile;
+    private readonly FileDetails? _configFile;
     private readonly ILogger _log;
     private readonly Assembly _testAssembly;
 
     public DiscoveryCommand(
-        Option<FileDetails> configFile,
+        FileDetails? configFile,
         ILogger log,
         Assembly testAssembly,
         IAnalyticsContainer analytics)

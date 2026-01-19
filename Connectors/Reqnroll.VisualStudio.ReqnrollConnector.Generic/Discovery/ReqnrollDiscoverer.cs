@@ -20,7 +20,7 @@ public class ReqnrollDiscoverer
     public DiscoveryResult Discover(IBindingRegistryFactory bindingRegistryFactory,
         AssemblyLoadContext assemblyLoadContext,
         Assembly testAssembly,
-        Option<FileDetails> configFile)
+        FileDetails? configFile)
     {
         var typeNames = ImmutableSortedDictionary.CreateBuilder<string, string>();
         var sourcePaths = ImmutableSortedDictionary.CreateBuilder<string, string>();
@@ -66,16 +66,7 @@ public class ReqnrollDiscoverer
         Func<StepDefinitionBindingAdapter, string?> getParameterTypes, Func<string, string> getSourcePathId,
         AssemblyLoadContext assemblyLoadContext, Assembly testAssembly)
     {
-        var sourceLocation = GetSourceLocation(sdb.Method, getSourcePathId, assemblyLoadContext, testAssembly);
-        string? sourceLocationStr;
-        if (sourceLocation is Some<string> some)
-        {
-            sourceLocationStr = some.Content;
-        }
-        else
-        {
-            sourceLocationStr = null;
-        }
+        var sourceLocationStr = GetSourceLocation(sdb.Method, getSourcePathId, assemblyLoadContext, testAssembly);
 
         var stepDefinition = new StepDefinition
         (
@@ -96,16 +87,7 @@ public class ReqnrollDiscoverer
         Func<string, string> getSourcePathId,
         AssemblyLoadContext assemblyLoadContext, Assembly testAssembly)
     {
-        var sourceLocation = GetSourceLocation(sdb.Method, getSourcePathId, assemblyLoadContext, testAssembly);
-        string? sourceLocationStr;
-        if (sourceLocation is Some<string> some)
-        {
-            sourceLocationStr = some.Content;
-        }
-        else
-        {
-            sourceLocationStr = null;
-        }
+        var sourceLocationStr = GetSourceLocation(sdb.Method, getSourcePathId, assemblyLoadContext, testAssembly);
 
         var stepDefinition = new Hook
         {
@@ -179,36 +161,31 @@ public class ReqnrollDiscoverer
         return regexString;
     }
 
-    private Option<string> GetSourceLocation(BindingMethodAdapter bindingMethod, Func<string, string> getSourcePathId,
+    private string? GetSourceLocation(BindingMethodAdapter bindingMethod, Func<string, string> getSourcePathId,
         AssemblyLoadContext assemblyLoadContext, Assembly testAssembly)
     {
         if (!bindingMethod.IsProvided)
-            return None.Value;
+            return null;
 
         var methodInfo = bindingMethod;
         
         var assemblyNameStr = methodInfo.DeclaringTypeAssemblyName ?? testAssembly.FullName!;
         var assemblyNameObj = new AssemblyName(assemblyNameStr);
         var assembly = assemblyLoadContext.LoadFromAssemblyName(assemblyNameObj);
-        var readerOption = _symbolReaders[assembly];
-        DeveroomSymbolReader? reader = null;
-        if (readerOption is Some<DeveroomSymbolReader> someReader)
-        {
-            reader = someReader.Content;
-        }
-
+        var reader = _symbolReaders[assembly];
+        
         if (reader == null)
-            return None.Value;
+            return null;
 
         var sequencePoints = reader.ReadMethodSymbol(methodInfo.MetadataToken);
         
         // Find start and end sequence points
         var (startSequencePoint, endSequencePoint) = sequencePoints.Aggregate(
-            (startSequencePoint: None<MethodSymbolSequencePoint>.Value,
-             endSequencePoint: None<MethodSymbolSequencePoint>.Value),
+            (startSequencePoint: (MethodSymbolSequencePoint?)null,
+             endSequencePoint: (MethodSymbolSequencePoint?)null),
             (acc, cur) =>
             {
-                if (acc.startSequencePoint is None<MethodSymbolSequencePoint>)
+                if (acc.startSequencePoint == null)
                     return (cur, cur);
                 else
                     return (acc.startSequencePoint, cur);
@@ -216,15 +193,12 @@ public class ReqnrollDiscoverer
         );
 
         // Extract the points
-        if (startSequencePoint is Some<MethodSymbolSequencePoint> startSome &&
-            endSequencePoint is Some<MethodSymbolSequencePoint> endSome)
+        if (startSequencePoint != null && endSequencePoint != null)
         {
-            var startPoint = startSome.Content;
-            var endPoint = endSome.Content;
-            var locationStr = $"#{getSourcePathId(startPoint.SourcePath)}|{startPoint.StartLine}|{startPoint.StartColumn}|{endPoint.EndLine}|{endPoint.EndColumn}";
+            var locationStr = $"#{getSourcePathId(startSequencePoint.SourcePath)}|{startSequencePoint.StartLine}|{startSequencePoint.StartColumn}|{endSequencePoint.EndLine}|{endSequencePoint.EndColumn}";
             return locationStr;
         }
 
-        return None.Value;
+        return null;
     }
 }

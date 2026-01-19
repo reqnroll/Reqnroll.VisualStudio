@@ -20,9 +20,9 @@ public record DiscoveryOptions(
         var connectorDir = Directory(assemblyLocation);
         
         string? configFileFullName = null;
-        if (configFileOption is Some<FileDetails> someConfigFile)
+        if (configFileOption != null)
         {
-            configFileFullName = someConfigFile.Content.FullName;
+            configFileFullName = configFileOption.FullName;
         }
         
         return new DiscoveryOptions(
@@ -39,25 +39,25 @@ public record DiscoveryOptions(
 
     private static FileDetails AssemblyPath(string[] args) => FileDetails.FromPath(args[0]);
 
-    private static Option<FileDetails> ConfigPath(string[] args) =>
+    private static FileDetails? ConfigPath(string[] args) =>
         args.Length < 2 || string.IsNullOrWhiteSpace(args[1])
-            ? None.Value
+            ? null
             : FileDetails.FromPath(args[1]);
 
-    private static (FileDetails targetAssemblyFile, Option<FileDetails> configFile)
-        ValidateTargetFolder((FileDetails, Option<FileDetails> ) x)
+    private static (FileDetails targetAssemblyFile, FileDetails? configFile)
+        ValidateTargetFolder((FileDetails, FileDetails?) x)
     {
         var (targetAssemblyFile, configFile) = x;
-        if (targetAssemblyFile.Directory is Some<DirectoryInfo>) return x;
+        if (targetAssemblyFile.Directory != null) return x;
         throw new InvalidOperationException(
             $"Unable to detect target folder from test assembly path '{targetAssemblyFile}'");
     }
 
     private static DirectoryInfo Directory(FileDetails fileDetails)
     {
-        if (fileDetails.Directory is Some<DirectoryInfo> someDir)
+        if (fileDetails.Directory != null)
         {
-            return someDir.Content;
+            return fileDetails.Directory;
         }
         throw new InvalidOperationException("Unable to detect connector folder.");
     }

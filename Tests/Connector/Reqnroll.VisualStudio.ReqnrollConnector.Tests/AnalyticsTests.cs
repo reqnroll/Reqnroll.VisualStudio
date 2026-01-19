@@ -18,10 +18,9 @@ public class AnalyticsTests
         var deserialized = JsonSerialization.DeserializeObject<AnalyticsContainer>(serialized);
 
         //assert
-        deserialized.Should().BeOfType(typeof(Some<AnalyticsContainer>));
-        var containerProperties = container;
-        var deserializedProperties = (deserialized as Some<AnalyticsContainer>)?.Content;
-        deserializedProperties.Should().BeEquivalentTo(containerProperties);
+        deserialized.Should().NotBeNull();
+        var deserializedProperties = deserialized;
+        deserializedProperties.Should().BeEquivalentTo(container);
         deserializedProperties.Should().Contain(
             new KeyValuePair<string, string>("k1", "v1"),
             new KeyValuePair<string, string>("k2", "v2")
@@ -41,8 +40,8 @@ public class AnalyticsTests
         var deserialized = JsonSerialization.DeserializeObject<Dictionary<string, string>>(serialized);
 
         //assert
-        deserialized.Should().BeOfType(typeof(Some<Dictionary<string, string>>));
-        (deserialized as Some<Dictionary<string, string>>)?.Content.Should().BeEquivalentTo(
+        deserialized.Should().NotBeNull();
+        deserialized.Should().BeEquivalentTo(
             new Dictionary<string, string>
             {
                 ["k1"] = "v1", ["k2"] = "v2"

@@ -33,18 +33,14 @@ public class CommandFactory
 
     public DiscoveryCommand ToCommand(DiscoveryOptions options)
     {
-        Option<FileDetails> configFileOption;
+        FileDetails? configFile = null;
         if (options.ConfigFile != null)
         {
-            configFileOption = FileDetails.FromPath(options.ConfigFile);
-        }
-        else
-        {
-            configFileOption = None<FileDetails>.Value;
+            configFile = FileDetails.FromPath(options.ConfigFile);
         }
         
         return new(
-            configFileOption,
+            configFile,
             _log,
             _testAssembly,
             _analytics);

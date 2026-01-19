@@ -24,8 +24,12 @@ public record StepDefinitionBindingAdapter(StepDefinitionData Adaptee) : IScoped
     public string? BindingScopeFeatureTitle => Adaptee.Scope?.FeatureTitle;
     public string? BindingScopeScenarioTitle => Adaptee.Scope?.ScenarioTitle;
     public string? BindingScopeError => Adaptee.Scope?.Error;
-    public virtual Option<T> GetProperty<T>(string propertyName)
+    public virtual T? GetProperty<T>(string propertyName)
     {
-        return Adaptee.ReflectionHasProperty(propertyName) ? Adaptee.ReflectionGetProperty<T>(propertyName) : None<T>.Value;
+        if (Adaptee.ReflectionHasProperty(propertyName))
+        {
+            return Adaptee.ReflectionGetProperty<T>(propertyName);
+        }
+        return default;
     }
 }

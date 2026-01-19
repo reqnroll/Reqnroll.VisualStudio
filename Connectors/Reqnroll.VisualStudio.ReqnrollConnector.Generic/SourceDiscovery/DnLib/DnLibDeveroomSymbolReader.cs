@@ -30,10 +30,9 @@ public class DnLibDeveroomSymbolReader : DeveroomSymbolReader
 
         var stateClassType = GetStateClassType(resolvedMethod);
 
-        if (stateClassType is Some<TypeDef> someStateClass)
+        if (stateClassType != null)
         {
-            var stateClass = someStateClass.Content;
-            var stateClassSequencePoints = stateClass.Methods
+            var stateClassSequencePoints = stateClassType.Methods
                 .SelectMany(GetSequencePointsFromMethodBody)
                 .ToList();
             var methodSequencePoints = GetSequencePointsFromMethodBody(resolvedMethod).ToList();
@@ -51,7 +50,7 @@ public class DnLibDeveroomSymbolReader : DeveroomSymbolReader
         }
     }
 
-    private static Option<TypeDef> GetStateClassType(MethodDef method)
+    private static TypeDef? GetStateClassType(MethodDef method)
     {
         var stateMachineDebugInfos = method
             .CustomDebugInfos
@@ -85,7 +84,7 @@ public class DnLibDeveroomSymbolReader : DeveroomSymbolReader
             }
         }
 
-        return None<TypeDef>.Value;
+        return null;
     }
 
     private IEnumerable<MethodSymbolSequencePoint> GetSequencePointsFromMethodBody(MethodDef methodDef)
