@@ -9,17 +9,28 @@ public record DiscoveryOptions(
 {
     public static ConnectorOptions Parse(string[] args, bool debugMode)
     {
-        return args
-            .Map(ValidateParameterCount)
-            .Map(validArgs => (testAssemblyFile: AssemblyPath(validArgs), configFile: ConfigPath(validArgs)))
-            .Map(ValidateTargetFolder)
-            .Map(GetConnectorFolder)
-            .Map(parsed => new DiscoveryOptions(
-                debugMode,
-                parsed.targetAssemblyFile.FullName,
-                parsed.configFile.Map(file => file.FullName).Reduce((string?) null!),
-                parsed.connectorFolder.FullName
-            ) as ConnectorOptions);
+        var validatedArgs = ValidateParameterCount(args);
+        var testAssemblyFile = AssemblyPath(validatedArgs);
+        var configFile = ConfigPath(validatedArgs);
+        var pathTuple = (testAssemblyFile, configFile);
+        var validatedPaths = ValidateTargetFolder(pathTuple);
+        var (targetAssemblyFile, configFileOption) = validatedPaths;
+        
+        var assemblyLocation = typeof(Runner).Assembly.GetLocation();
+        var connectorDir = Directory(assemblyLocation);
+        
+        string? configFileFullName = null;
+        if (configFileOption is Some<FileDetails> someConfigFile)
+        {
+            configFileFullName = someConfigFile.Content.FullName;
+        }
+        
+        return new DiscoveryOptions(
+            debugMode,
+            targetAssemblyFile.FullName,
+            configFileFullName,
+            connectorDir.FullName
+        ) as ConnectorOptions;
     }
 
     private static string[] ValidateParameterCount(string[] args) => args.Length >= 1
@@ -40,21 +51,14 @@ public record DiscoveryOptions(
         if (targetAssemblyFile.Directory is Some<DirectoryInfo>) return x;
         throw new InvalidOperationException(
             $"Unable to detect target folder from test assembly path '{targetAssemblyFile}'");
-        ;
     }
 
-    private static 
-        (FileDetails targetAssemblyFile, Option<FileDetails> configFile, DirectoryInfo connectorFolder)
-        GetConnectorFolder((FileDetails, Option<FileDetails>) x)
+    private static DirectoryInfo Directory(FileDetails fileDetails)
     {
-        var (targetAssemblyFile, configFile) = x;
-        return typeof(Runner)
-            .Assembly
-            .GetLocation()
-            .Map(Directory)
-            .Map(connectorFolder => (targetAssemblyFile, configFile, connectorFolder));
+        if (fileDetails.Directory is Some<DirectoryInfo> someDir)
+        {
+            return someDir.Content;
+        }
+        throw new InvalidOperationException("Unable to detect connector folder.");
     }
-
-    private static DirectoryInfo Directory(FileDetails fileDetails) 
-        => fileDetails.Directory.Reduce(() => throw new InvalidOperationException("Unable to detect connector folder."));
 }

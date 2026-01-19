@@ -12,13 +12,21 @@ public abstract class BindingRegistryFactory : IBindingRegistryFactory
 
     public IBindingRegistryAdapter GetBindingRegistry(AssemblyLoadContext assemblyLoadContext, Assembly testAssembly, Option<FileDetails> configFile)
     {
-        var configFileContent = LoadConfigFileContent(configFile.Reduce((FileDetails)null!));
+        FileDetails? configFileDetails = null;
+        if (configFile is Some<FileDetails> someFile)
+        {
+            configFileDetails = someFile.Content;
+        }
+        
+        var configFileContent = LoadConfigFileContent(configFileDetails);
 
         var reqnrollAssembly = assemblyLoadContext.LoadFromAssemblyName(new AssemblyName("Reqnroll"));
         var bindingProviderServiceType = reqnrollAssembly.GetType("Reqnroll.Bindings.Provider.BindingProviderService", true)!;
         var bindingJson = bindingProviderServiceType.ReflectionCallStaticMethod<string>("DiscoverBindings", new[] { typeof(Assembly), typeof(string) }, testAssembly, configFileContent);
         var bindingData = JsonSerialization.DeserializeObjectDefaultCase<BindingData>(bindingJson, Log);
-        return new BindingRegistryAdapter(bindingData.Reduce(new BindingData()));
+        
+        BindingData effectiveBindingData = bindingData is Some<BindingData> someData ? someData.Content : new BindingData();
+        return new BindingRegistryAdapter(effectiveBindingData);
     }
 
     private string? LoadConfigFileContent(FileDetails? configFile)

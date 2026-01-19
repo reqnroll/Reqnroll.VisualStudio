@@ -22,9 +22,12 @@ public class DiscoveryCommand
 
     public DiscoveryResult Execute(AssemblyLoadContext assemblyLoadContext)
     {
-        return new BindingRegistryFactoryProvider(_log, _testAssembly, _analytics)
-            .Create()
-            .Map(bindingRegistryFactory => new ReqnrollDiscoverer(_log, _analytics)
-                .Discover(bindingRegistryFactory, assemblyLoadContext, _testAssembly, _configFile));
+        var bindingRegistryFactoryProvider = new BindingRegistryFactoryProvider(_log, _testAssembly, _analytics);
+        var bindingRegistryFactory = bindingRegistryFactoryProvider.Create();
+        
+        var discoveryResult = new ReqnrollDiscoverer(_log, _analytics)
+            .Discover(bindingRegistryFactory, assemblyLoadContext, _testAssembly, _configFile);
+        
+        return discoveryResult;
     }
 }

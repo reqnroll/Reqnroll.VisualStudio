@@ -19,10 +19,11 @@ public class CommandFactory
         _analytics = analytics;
     }
 
-    public DiscoveryCommand CreateCommand() =>
-        _options
-            .Tie(AttachDebuggerWhenRequired)
-            .Map(ToCommand);
+    public DiscoveryCommand CreateCommand()
+    {
+        AttachDebuggerWhenRequired(_options);
+        return ToCommand(_options);
+    }
 
     public static void AttachDebuggerWhenRequired(ConnectorOptions connectorOptions)
     {
@@ -30,10 +31,22 @@ public class CommandFactory
             Debugger.Launch();
     }
 
-    public DiscoveryCommand ToCommand(DiscoveryOptions options) =>
-        new(
-            options.ConfigFile?.Map(FileDetails.FromPath) ?? None<FileDetails>.Value,
+    public DiscoveryCommand ToCommand(DiscoveryOptions options)
+    {
+        Option<FileDetails> configFileOption;
+        if (options.ConfigFile != null)
+        {
+            configFileOption = FileDetails.FromPath(options.ConfigFile);
+        }
+        else
+        {
+            configFileOption = None<FileDetails>.Value;
+        }
+        
+        return new(
+            configFileOption,
             _log,
             _testAssembly,
             _analytics);
+    }
 }

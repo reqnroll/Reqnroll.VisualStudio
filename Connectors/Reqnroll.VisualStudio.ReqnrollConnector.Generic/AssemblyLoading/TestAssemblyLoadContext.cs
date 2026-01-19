@@ -83,31 +83,49 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
     protected override Assembly Load(AssemblyName assemblyName)
     {
         _log.Info($"Loading {assemblyName}");
-        return FindRuntimeLibrary(assemblyName)
-            .MapOptional(LoadFromAssembly)
-            .Tie(lib => _log.Info($"Found runtime library:{lib}"))
-            .Or(() =>
+        
+        var runtimeLibraryOption = FindRuntimeLibrary(assemblyName);
+        if (runtimeLibraryOption is Some<CompilationLibrary> someRuntimeLibrary)
+        {
+            var assembly = LoadFromAssembly(someRuntimeLibrary.Content);
+            if (assembly is Some<Assembly> someAssembly)
             {
-                if (assemblyName.Version == null)
-                    assemblyName.Version = new Version(0,0);
+                _log.Info($"Found runtime library:{someAssembly.Content}");
+                return someAssembly.Content;
+            }
+        }
 
-                return GetRequestedLibrary(assemblyName)
-                    .Map(LoadFromAssembly)
-                    .Tie(lib => _log.Info($"Found requested library:{lib}"));
-            })
-            .Or(() =>
+        if (assemblyName.Version == null)
+            assemblyName.Version = new Version(0, 0);
+
+        var requestedLibraryOption = GetRequestedLibrary(assemblyName);
+        var requestedAssembly = LoadFromAssembly(requestedLibraryOption);
+        if (requestedAssembly is Some<Assembly> someRequestedAssembly)
+        {
+            _log.Info($"Found requested library:{someRequestedAssembly.Content}");
+            return someRequestedAssembly.Content;
+        }
+
+        if (assemblyName.Name != null &&
+            assemblyName.Name.StartsWith("System.", StringComparison.InvariantCultureIgnoreCase))
+            return null!;
+
+        var compilationLibraries = _dependencyContext.CompileLibraries
+            .Where(compileLibrary =>
+                string.Equals(compileLibrary.Name, assemblyName.Name, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        foreach (var compileLibrary in compilationLibraries)
+        {
+            var compilationAssembly = LoadFromAssembly(compileLibrary);
+            if (compilationAssembly is Some<Assembly> someCompilationAssembly)
             {
-                if (assemblyName.Name != null &&
-                    assemblyName.Name.StartsWith("System.", StringComparison.InvariantCultureIgnoreCase))
-                    return None.Value;
-                return _dependencyContext.CompileLibraries.Where(
-                        compileLibrary =>
-                            string.Equals(compileLibrary.Name, assemblyName.Name, StringComparison.OrdinalIgnoreCase))
-                    .SelectOptional(LoadFromAssembly)
-                    .FirstOrNone()
-                    .Tie(lib => _log.Info($"Found compilation library:{lib}"));
-            })
-            .Reduce(() => null!);
+                _log.Info($"Found compilation library:{someCompilationAssembly.Content}");
+                return someCompilationAssembly.Content;
+            }
+        }
+
+        return null!;
     }
 
     private Option<CompilationLibrary> FindRuntimeLibrary(AssemblyName assemblyName)
@@ -115,7 +133,7 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
         if (assemblyName.Name == null)
             return None.Value;
 
-        return _dependencyContext.RuntimeLibraries
+        var filteredLibraries = _dependencyContext.RuntimeLibraries
             .Select(runtimeLibrary =>
                 (runtimeLibrary, foundAssets: SelectAssets(runtimeLibrary.RuntimeAssemblyGroups)
                     .Where(asset => asset.Contains(assemblyName.Name, StringComparison.OrdinalIgnoreCase)
@@ -123,19 +141,23 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
                                         StringComparison.OrdinalIgnoreCase)
                     ).ToList()))
             .Where(filtered => filtered.foundAssets.Any())
-            .SelectOptional(filtered =>
-            {
-                var (runtimeLibrary, foundAssets) = filtered;
-                return (Option<CompilationLibrary>) new CompilationLibrary(
-                    runtimeLibrary.Type,
-                    runtimeLibrary.Name,
-                    runtimeLibrary.Version,
-                    runtimeLibrary.Hash,
-                    foundAssets,
-                    runtimeLibrary.Dependencies,
-                    runtimeLibrary.Serviceable);
-            })
-            .FirstOrNone();
+            .ToList();
+
+        foreach (var filtered in filteredLibraries)
+        {
+            var (runtimeLibrary, foundAssets) = filtered;
+            var compilationLibrary = new CompilationLibrary(
+                runtimeLibrary.Type,
+                runtimeLibrary.Name,
+                runtimeLibrary.Version,
+                runtimeLibrary.Hash,
+                foundAssets,
+                runtimeLibrary.Dependencies,
+                runtimeLibrary.Serviceable);
+            return compilationLibrary;
+        }
+
+        return None.Value;
     }
 
     private IEnumerable<string> SelectAssets(IReadOnlyList<RuntimeAssetGroup> runtimeAssetGroups)
@@ -170,8 +192,13 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
     {
         try
         {
-            return ResolveAssemblyPath(library)
-                .Map(LoadFromAssemblyPath);
+            var assemblyPath = ResolveAssemblyPath(library);
+            if (assemblyPath is Some<string> somePath)
+            {
+                var assembly = LoadFromAssemblyPath(somePath.Content);
+                return assembly;
+            }
+            return None.Value;
         }
         catch (Exception)
         {

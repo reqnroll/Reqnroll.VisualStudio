@@ -19,20 +19,39 @@ public class SymbolReaderCache
         if (_symbolReaders.TryGetValue(assembly, out var symbolReader))
             return symbolReader;
 
-        return CreateSymbolReader(assembly.Location)
-            .Or(() => CreateSymbolReader(new Uri(assembly.Location).LocalPath))
-            .Tie(reader => _symbolReaders.Add(assembly, reader));
+        var primaryReaderOption = CreateSymbolReader(assembly.Location);
+        if (primaryReaderOption is Some<DeveroomSymbolReader>)
+        {
+            var reader = ((Some<DeveroomSymbolReader>)primaryReaderOption).Content;
+            _symbolReaders.Add(assembly, reader);
+            return reader;
+        }
+
+        var secondaryReaderOption = CreateSymbolReader(new Uri(assembly.Location).LocalPath);
+        if (secondaryReaderOption is Some<DeveroomSymbolReader>)
+        {
+            var reader = ((Some<DeveroomSymbolReader>)secondaryReaderOption).Content;
+            _symbolReaders.Add(assembly, reader);
+            return reader;
+        }
+
+        var noneValue = None<DeveroomSymbolReader>.Value;
+        _symbolReaders.Add(assembly, noneValue);
+        return noneValue;
     }
 
     protected Option<DeveroomSymbolReader> CreateSymbolReader(
-        string assemblyFilePath) =>
-        SymbolReaderFactories(assemblyFilePath)
-            .SelectOptional(TryCreateReader)
-            .FirstOrNone();
+        string assemblyFilePath)
+    {
+        var factories = SymbolReaderFactories(assemblyFilePath);
+        var readers = factories.SelectOptional(TryCreateReader);
+        var firstReader = readers.FirstOrNone();
+        return firstReader;
+    }
 
     private IEnumerable<Func<DeveroomSymbolReader>> SymbolReaderFactories(string path)
     {
-        return new Func<DeveroomSymbolReader>[]
+        return new Func<DeveroomSymbolReader> []
         {
             () => DnLibDeveroomSymbolReader.Create(_log, path)
         };

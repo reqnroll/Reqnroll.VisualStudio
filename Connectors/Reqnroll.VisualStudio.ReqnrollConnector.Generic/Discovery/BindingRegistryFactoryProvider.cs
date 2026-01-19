@@ -18,20 +18,22 @@ public class BindingRegistryFactoryProvider
 
     public IBindingRegistryFactory Create()
     {
-        return GetReqnrollVersion()
-            .Tie(AddAnalyticsProperties)
-            .Map(ToVersionNumber)
-            .Map(versionNumber =>
-            {
-                var factory = GetFactory(versionNumber);
-                _log.Info($"Chosen {factory.GetType().Name} for {versionNumber}");
-                return factory;
-            })
-            .Reduce(() =>
-            {
-                _analytics.AddAnalyticsProperty("SFFile", "Not found");
-                return new BindingRegistryFactoryVLatest(_log);
-            });
+        var reqnrollVersion = GetReqnrollVersion();
+
+        if (reqnrollVersion is Some<FileVersionInfo> some)
+        {
+            var fileVersionInfo = some.Content;
+            AddAnalyticsProperties(fileVersionInfo);
+            var versionNumber = ToVersionNumber(fileVersionInfo);
+            var factory = GetFactory(versionNumber);
+            _log.Info($"Chosen {factory.GetType().Name} for {versionNumber}");
+            return factory;
+        }
+        else
+        {
+            _analytics.AddAnalyticsProperty("SFFile", "Not found");
+            return new BindingRegistryFactoryVLatest(_log);
+        }
     }
 
     private IBindingRegistryFactory GetFactory(int versionNumber) =>

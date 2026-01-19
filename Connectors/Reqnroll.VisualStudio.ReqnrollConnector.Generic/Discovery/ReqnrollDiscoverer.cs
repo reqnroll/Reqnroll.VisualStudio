@@ -67,6 +67,16 @@ public class ReqnrollDiscoverer
         AssemblyLoadContext assemblyLoadContext, Assembly testAssembly)
     {
         var sourceLocation = GetSourceLocation(sdb.Method, getSourcePathId, assemblyLoadContext, testAssembly);
+        string? sourceLocationStr;
+        if (sourceLocation is Some<string> some)
+        {
+            sourceLocationStr = some.Content;
+        }
+        else
+        {
+            sourceLocationStr = null;
+        }
+
         var stepDefinition = new StepDefinition
         (
             sdb.StepDefinitionType,
@@ -76,7 +86,7 @@ public class ReqnrollDiscoverer
             GetScope(sdb),
             GetSourceExpression(sdb),
             sdb.Error,
-            sourceLocation.Reduce((string) null!)
+            sourceLocationStr!
         );
 
         return stepDefinition;
@@ -87,13 +97,23 @@ public class ReqnrollDiscoverer
         AssemblyLoadContext assemblyLoadContext, Assembly testAssembly)
     {
         var sourceLocation = GetSourceLocation(sdb.Method, getSourcePathId, assemblyLoadContext, testAssembly);
+        string? sourceLocationStr;
+        if (sourceLocation is Some<string> some)
+        {
+            sourceLocationStr = some.Content;
+        }
+        else
+        {
+            sourceLocationStr = null;
+        }
+
         var stepDefinition = new Hook
         {
             Type = sdb.HookType,
             HookOrder = sdb.HookOrder,
             Method = sdb.Method.ToString(),
             Scope = GetScope(sdb), 
-            SourceLocation = sourceLocation.Reduce((string)null!),
+            SourceLocation = sourceLocationStr!,
             Error = sdb.Error
         };
 
@@ -146,45 +166,65 @@ public class ReqnrollDiscoverer
     private static string? GetSourceExpression(StepDefinitionBindingAdapter sdb)
         => sdb.Expression ?? GetSpecifiedExpressionFromRegex(sdb);
 
-    private static string? GetSpecifiedExpressionFromRegex(StepDefinitionBindingAdapter sdb) =>
-        sdb.Regex?
-            .Map(regex => regex.ToString())
-            .Map(regexString =>
-            {
-                if (regexString.StartsWith("^"))
-                    regexString = regexString.Substring(1);
-                if (regexString.EndsWith("$"))
-                    regexString = regexString.Substring(0, regexString.Length - 1);
-                return regexString;
-            });
+    private static string? GetSpecifiedExpressionFromRegex(StepDefinitionBindingAdapter sdb)
+    {
+        if (sdb.Regex == null)
+            return null;
+
+        string regexString = sdb.Regex.ToString();
+        if (regexString.StartsWith("^"))
+            regexString = regexString.Substring(1);
+        if (regexString.EndsWith("$"))
+            regexString = regexString.Substring(0, regexString.Length - 1);
+        return regexString;
+    }
 
     private Option<string> GetSourceLocation(BindingMethodAdapter bindingMethod, Func<string, string> getSourcePathId,
         AssemblyLoadContext assemblyLoadContext, Assembly testAssembly)
     {
         if (!bindingMethod.IsProvided)
             return None.Value;
-        return bindingMethod
-            .Map(mi => (reader: (mi.DeclaringTypeAssemblyName??testAssembly.FullName!)
-                        .Map(assemblyName => assemblyLoadContext.LoadFromAssemblyName(new AssemblyName(assemblyName)))
-                        .Map(assembly => _symbolReaders[assembly].Reduce(() => default!)),
-                    mi.MetadataToken
-                ))
-            .Map(x => x.reader.ReadMethodSymbol(x.MetadataToken))
-            //.Reduce(ImmutableArray<MethodSymbolSequencePoint>.Empty)
-            .Map(sequencePoints => sequencePoints
-                .Aggregate(
-                    (startSequencePoint: None<MethodSymbolSequencePoint>.Value,
-                        endSequencePoint: None<MethodSymbolSequencePoint>.Value),
-                    (acc, cur) => acc.startSequencePoint is None<MethodSymbolSequencePoint>
-                        ? (cur, cur)
-                        : (acc.startSequencePoint, cur)
-                )
-                .Map(x => x.startSequencePoint is Some<MethodSymbolSequencePoint> some
-                    ? (some.Content, ((Some<MethodSymbolSequencePoint>)x.endSequencePoint).Content)
-                    : None<(MethodSymbolSequencePoint startSequencePoint, MethodSymbolSequencePoint endSequencePoint)>
-                        .Value)
-            )
-            .Map(border =>
-                $"#{getSourcePathId(border.startSequencePoint.SourcePath)}|{border.startSequencePoint.StartLine}|{border.startSequencePoint.StartColumn}|{border.endSequencePoint.EndLine}|{border.endSequencePoint.EndColumn}");
+
+        var methodInfo = bindingMethod;
+        
+        var assemblyNameStr = methodInfo.DeclaringTypeAssemblyName ?? testAssembly.FullName!;
+        var assemblyNameObj = new AssemblyName(assemblyNameStr);
+        var assembly = assemblyLoadContext.LoadFromAssemblyName(assemblyNameObj);
+        var readerOption = _symbolReaders[assembly];
+        DeveroomSymbolReader? reader = null;
+        if (readerOption is Some<DeveroomSymbolReader> someReader)
+        {
+            reader = someReader.Content;
+        }
+
+        if (reader == null)
+            return None.Value;
+
+        var sequencePoints = reader.ReadMethodSymbol(methodInfo.MetadataToken);
+        
+        // Find start and end sequence points
+        var (startSequencePoint, endSequencePoint) = sequencePoints.Aggregate(
+            (startSequencePoint: None<MethodSymbolSequencePoint>.Value,
+             endSequencePoint: None<MethodSymbolSequencePoint>.Value),
+            (acc, cur) =>
+            {
+                if (acc.startSequencePoint is None<MethodSymbolSequencePoint>)
+                    return (cur, cur);
+                else
+                    return (acc.startSequencePoint, cur);
+            }
+        );
+
+        // Extract the points
+        if (startSequencePoint is Some<MethodSymbolSequencePoint> startSome &&
+            endSequencePoint is Some<MethodSymbolSequencePoint> endSome)
+        {
+            var startPoint = startSome.Content;
+            var endPoint = endSome.Content;
+            var locationStr = $"#{getSourcePathId(startPoint.SourcePath)}|{startPoint.StartLine}|{startPoint.StartColumn}|{endPoint.EndLine}|{endPoint.EndColumn}";
+            return locationStr;
+        }
+
+        return None.Value;
     }
 }

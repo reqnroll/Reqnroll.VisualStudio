@@ -23,15 +23,16 @@ public class Runner
     {
         try
         {
-            return args
-                .Map(ConnectorOptions.Parse)
-                .Tie(DebugBreak)
-                .Tie(DumpOptions)
-                .Map(options => ExecuteDiscovery((DiscoveryOptions)options, testAssemblyFactory))
-                .Map(result => JsonSerialization.SerializeObject(result, _log))
-                .Map(JsonSerialization.MarkResult)
-                .Tie(PrintResult)
-                .Map(_=>ExecutionResult.Succeed);
+            var connectorOptions = ConnectorOptions.Parse(args);
+            DebugBreak(connectorOptions);
+            DumpOptions(connectorOptions);
+            
+            var result = ExecuteDiscovery((DiscoveryOptions)connectorOptions, testAssemblyFactory);
+            var serialized = JsonSerialization.SerializeObject(result, _log);
+            var marked = JsonSerialization.MarkResult(serialized);
+            PrintResult(marked);
+            
+            return ExecutionResult.Succeed;
         }
         catch (Exception ex)
         {
@@ -56,10 +57,9 @@ public class Runner
  
     private ExecutionResult HandleException(Exception ex)
     {
-        return ex.Tie(e => _log.Error(e.ToString()))
-            .Map(e => e is ArgumentException 
-                        ? ExecutionResult.ArgumentError 
-                        : ExecutionResult.GenericError
-            );
+        _log.Error(ex.ToString());
+        return ex is ArgumentException 
+            ? ExecutionResult.ArgumentError 
+            : ExecutionResult.GenericError;
     }
 }
