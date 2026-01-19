@@ -23,14 +23,24 @@ public class DiscoveryResultProvider : IDiscoveryResultProvider
             return RunDiscovery(testAssemblyPath, configFilePath, projectSettings, OutProcReqnrollConnectorFactory.CreateLegacy(_projectScope));
         }
 
-        DiscoveryResult genericConnectorResult = RunDiscovery(testAssemblyPath, configFilePath, projectSettings,
-                                                              OutProcReqnrollConnectorFactory.CreateGeneric(_projectScope));
+        if (projectSettings.IsReqnrollProject && projectSettings.ReqnrollVersion.Version < new Version(2, 0)) // Reqnrool v1
+        {
+            return RunDiscoveryForReqnrollV1(testAssemblyPath, configFilePath, projectSettings);
+        }
+
+        return RunDiscovery(testAssemblyPath, configFilePath, projectSettings, OutProcReqnrollConnectorFactory.CreateGeneric(_projectScope));
+    }
+
+    private DiscoveryResult RunDiscoveryForReqnrollV1(string testAssemblyPath, string configFilePath, ProjectSettings projectSettings)
+    {
+        // for Reqnroll v1 we have a special handling: first try the generic connector,
+        // and if it fails, retry with the legacy connector
+        DiscoveryResult genericConnectorResult = RunDiscovery(testAssemblyPath, configFilePath, projectSettings, OutProcReqnrollConnectorFactory.CreateGeneric(_projectScope));
 
         if (!genericConnectorResult.IsFailed)
             return genericConnectorResult;
 
-        var retryResult =
-            RunDiscovery(testAssemblyPath, configFilePath, projectSettings, OutProcReqnrollConnectorFactory.CreateLegacy(_projectScope));
+        var retryResult = RunDiscovery(testAssemblyPath, configFilePath, projectSettings, OutProcReqnrollConnectorFactory.CreateLegacy(_projectScope));
 
         if (retryResult.IsFailed)
         {
