@@ -8,7 +8,12 @@
     <AssemblyOriginatorKeyFile>..\..\reqnroll.snk</AssemblyOriginatorKeyFile>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <RootNamespace>ReqnrollConnector</RootNamespace>
-    <_OutputCopyLocation>$(SolutionDir)Connectors\bin\$(configuration)\Reqnroll-Generic-$(TargetFramework)</_OutputCopyLocation>
+    <_OutputCopyLocation>$(MSBuildThisFileDirectory)..\bin\$(configuration)\Reqnroll-Generic-$(TargetFramework)</_OutputCopyLocation>
+    <NoWarn>NETSDK1138;NETSDK1233</NoWarn>
+    <!--
+    NETSDK1138: The target framework 'netXX.0' is out of support
+    NETSDK1233: Targeting .NET 10.0 or higher in Visual Studio 2022 17.14 is not supported.
+    -->
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,7 +26,7 @@
     <ProjectReference Include="..\Reqnroll.VisualStudio.ReqnrollConnector.Models\Reqnroll.VisualStudio.ReqnrollConnector.Models.csproj" />
   </ItemGroup>
 
-  <Target Name="CustomAfterBuild" AfterTargets="Build" Condition="$(configuration)=='Debug'">
+  <Target Name="CustomAfterBuild" AfterTargets="Build" Condition="$(configuration)=='Debug' and '$(TargetFramework)'!=''">
 
     <ItemGroup>
       <_FilesToCopy Include="$(OutputPath)\*" />

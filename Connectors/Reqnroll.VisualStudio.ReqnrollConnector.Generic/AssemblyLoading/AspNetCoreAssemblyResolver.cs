@@ -2,9 +2,10 @@ namespace ReqnrollConnector.AssemblyLoading;
 
 public class AspNetCoreAssemblyResolver : ICompilationAssemblyResolver
 {
-    public bool TryResolveAssemblyPaths(CompilationLibrary library, List<string> assemblies)
+    public bool TryResolveAssemblyPaths(CompilationLibrary library, List<string>? assemblies)
     {
-        if (!library.Name.StartsWith("Microsoft.AspNetCore") || string.IsNullOrEmpty(library.Version))
+        if (assemblies == null || 
+            !library.Name.StartsWith("Microsoft.AspNetCore") || string.IsNullOrEmpty(library.Version))
             return false;
 
         var programFiles = Environment.GetEnvironmentVariable("ProgramFiles");

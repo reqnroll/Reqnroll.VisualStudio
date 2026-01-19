@@ -18,13 +18,13 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
         _log = log;
         TestAssembly = testAssemblyFactory(this, path);
         _log.Info($"{TestAssembly} loaded");
-        _dependencyContext = DependencyContext.Load(TestAssembly) ?? DependencyContext.Default;
+        _dependencyContext = DependencyContext.Load(TestAssembly) ?? DependencyContext.Default!;
         _log.Info($"{_dependencyContext} loaded");
         _rids = GetRids(GetRuntimeFallbacks()).ToArray();
 
         _assemblyResolver = new RuntimeCompositeCompilationAssemblyResolver(new ICompilationAssemblyResolver[]
         {
-            new AppBaseCompilationAssemblyResolver(Path.GetDirectoryName(TestAssembly.Location)),
+            new AppBaseCompilationAssemblyResolver(Path.GetDirectoryName(TestAssembly.Location)!),
             new ReferenceAssemblyPathResolver(),
             new PackageCompilationAssemblyResolver(),
             new AspNetCoreAssemblyResolver(),
@@ -36,14 +36,14 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
 
     private static IEnumerable<string> GetRids(RuntimeFallbacks runtimeGraph)
     {
-        return new[] {runtimeGraph.Runtime}.Concat(runtimeGraph.Fallbacks ?? Enumerable.Empty<string>());
+        return new[] {runtimeGraph.Runtime}.Concat(runtimeGraph.Fallbacks.Where(f => f!=null).OfType<string>() ?? Enumerable.Empty<string>());
     }
 
     private RuntimeFallbacks GetRuntimeFallbacks()
     {
         var ridGraph = _dependencyContext.RuntimeGraph.Any()
             ? _dependencyContext.RuntimeGraph
-            : DependencyContext.Default.RuntimeGraph;
+            : DependencyContext.Default!.RuntimeGraph;
 
         //TODO: var rid = RuntimeEnvironment.GetRuntimeIdentifier();
         var rid = Environment.OSVersion.Platform.ToString();
@@ -156,7 +156,7 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
         // deps.json file of the test assembly. E.g. Microsoft.AspNetCore.Http.Features in the Reqnroll ASP.NET MVC sample
         return new CompilationLibrary(
             "package",
-            assemblyName.Name,
+            assemblyName.Name!,
             $"{assemblyName.Version}",
             null, //hash
             new[] {assemblyName.Name + ".dll"},

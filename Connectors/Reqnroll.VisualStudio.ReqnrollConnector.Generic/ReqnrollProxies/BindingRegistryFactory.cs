@@ -12,7 +12,7 @@ public abstract class BindingRegistryFactory : IBindingRegistryFactory
 
     public IBindingRegistryAdapter GetBindingRegistry(AssemblyLoadContext assemblyLoadContext, Assembly testAssembly, Option<FileDetails> configFile)
     {
-        var configFileContent = LoadConfigFileContent(configFile.Reduce((FileDetails)null));
+        var configFileContent = LoadConfigFileContent(configFile.Reduce((FileDetails)null!));
 
         var reqnrollAssembly = assemblyLoadContext.LoadFromAssemblyName(new AssemblyName("Reqnroll"));
         var bindingProviderServiceType = reqnrollAssembly.GetType("Reqnroll.Bindings.Provider.BindingProviderService", true)!;
