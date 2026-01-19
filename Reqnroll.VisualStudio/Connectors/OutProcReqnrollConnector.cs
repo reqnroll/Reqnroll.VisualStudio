@@ -113,6 +113,9 @@ public abstract class OutProcReqnrollConnector
 
         discoveryResult.AnalyticsProperties["ProjectTargetFramework"] = _targetFrameworkMoniker;
         discoveryResult.AnalyticsProperties["ProjectReqnrollVersion"] = ReqnrollVersion;
+        if (_projectSettings.IsSpecFlowProject)             
+            discoveryResult.AnalyticsProperties["LegacySpecFlow"] = true;
+        discoveryResult.AnalyticsProperties["ConnectorType"] = discoveryResult.ConnectorType;
         discoveryResult.AnalyticsProperties["ConnectorArguments"] = result.Arguments;
         discoveryResult.AnalyticsProperties["ConnectorExitCode"] = result.ExitCode;
         if (!string.IsNullOrEmpty(discoveryResult.ReqnrollVersion))
