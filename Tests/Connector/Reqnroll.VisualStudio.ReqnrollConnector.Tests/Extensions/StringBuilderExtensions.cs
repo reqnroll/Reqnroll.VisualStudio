@@ -1,4 +1,4 @@
-namespace Reqnroll.VisualStudio.ReqnrollConnector;
+namespace Reqnroll.VisualStudio.ReqnrollConnector.Tests.Extensions;
 
 public static class StringBuilderExtensions
 {

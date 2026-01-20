@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Versioning;
 
-namespace ReqnrollConnector.NetExtensions;
+namespace ReqnrollConnector.Utils;
 
 internal static class FrameworkMonikerConverter
 {

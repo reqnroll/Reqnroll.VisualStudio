@@ -1,6 +1,4 @@
-// ReSharper disable once CheckNamespace
-
-namespace System.Reflection;
+namespace ReqnrollConnector.Utils;
 
 public static class AssemblyExtensions
 {

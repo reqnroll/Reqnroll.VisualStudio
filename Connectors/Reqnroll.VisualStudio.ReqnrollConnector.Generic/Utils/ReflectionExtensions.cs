@@ -1,4 +1,4 @@
-namespace ReqnrollConnector;
+namespace ReqnrollConnector.Utils;
 
 public static class ReflectionExtensions
 {

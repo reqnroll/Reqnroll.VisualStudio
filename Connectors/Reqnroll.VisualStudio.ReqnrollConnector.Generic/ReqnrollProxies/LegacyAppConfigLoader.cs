@@ -1,4 +1,6 @@
-﻿namespace ReqnrollConnector.ReqnrollProxies;
+﻿using ReqnrollConnector.Utils;
+
+namespace ReqnrollConnector.ReqnrollProxies;
 internal static class LegacyAppConfigLoader
 {
     class ConfigData

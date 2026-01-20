@@ -1,4 +1,5 @@
 ﻿using Reqnroll.Bindings.Provider.Data;
+using ReqnrollConnector.Utils;
 
 namespace ReqnrollConnector.ReqnrollProxies;
 public abstract class BindingRegistryFactory : IBindingRegistryFactory

@@ -1,4 +1,4 @@
-using ReqnrollConnector.NetExtensions;
+using ReqnrollConnector.Utils;
 
 namespace ReqnrollConnector.AssemblyLoading;
 
@@ -21,7 +21,7 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
         _log.Info($"{TestAssembly} loaded");
         var loadedDependencyContext = DependencyContext.Load(TestAssembly);
         _dependencyContext = loadedDependencyContext ?? DependencyContext.Default!;
-        _log.Info(loadedDependencyContext == null ? "Default dependency context used" : $"Dependency context (.deps.json) loaded");
+        _log.Info(loadedDependencyContext == null ? "Default dependency context used" : "Dependency context (.deps.json) loaded");
         _shortFrameworkName = FrameworkMonikerConverter.TryGetShortFrameworkName(_dependencyContext.Target.Framework, out string value) ? value : 
             FrameworkMonikerConverter.GetShortFrameworkName(DependencyContext.Default!.Target.Framework); // use the framework name of the connector itself as fallback
         _log.Info($"Target framework: {_dependencyContext.Target.Framework}/{_shortFrameworkName}");
@@ -42,7 +42,7 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
 
     private static IEnumerable<string> GetRids(RuntimeFallbacks runtimeGraph)
     {
-        return new[] {runtimeGraph.Runtime}.Concat(runtimeGraph.Fallbacks.Where(f => f!=null).OfType<string>() ?? Enumerable.Empty<string>());
+        return new[] {runtimeGraph.Runtime}.Concat(runtimeGraph.Fallbacks.Where(f => f!=null).OfType<string>());
     }
 
     private RuntimeFallbacks GetRuntimeFallbacks()
@@ -130,7 +130,7 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
             }
         }
 
-        _log.Info($"Could not find {assemblyName}, referting to default loading...");
+        _log.Info($"Could not find {assemblyName}, reverting to default loading...");
         return null!;
     }
 
@@ -190,6 +190,7 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
             new[] {assemblyName.Name + ".dll"},
             Array.Empty<Dependency>(),
             true,
+            //Path.Combine(assemblyName.Name!, $"{assemblyName.Version!.Major}.{assemblyName.Version!.Minor}.{assemblyName.Version!.MajorRevision}".ToString()),
             Path.Combine(assemblyName.Name!, $"{assemblyName.Version}".ToString()),
             string.Empty);
     }

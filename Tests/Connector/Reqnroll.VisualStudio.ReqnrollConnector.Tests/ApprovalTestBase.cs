@@ -1,3 +1,5 @@
+using ReqnrollConnector.Utils;
+
 namespace Reqnroll.VisualStudio.ReqnrollConnector.Tests;
 
 public class ApprovalTestBase

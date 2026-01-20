@@ -1,3 +1,5 @@
+using ReqnrollConnector.Utils;
+
 namespace ReqnrollConnector;
 
 public class CommandFactory

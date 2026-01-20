@@ -1,4 +1,5 @@
 using Reqnroll.VisualStudio.ReqnrollConnector.Models;
+using ReqnrollConnector.Utils;
 using StepDefinition = ReqnrollConnector.ReqnrollProxies.StepDefinition;
 
 namespace ReqnrollConnector.Discovery;

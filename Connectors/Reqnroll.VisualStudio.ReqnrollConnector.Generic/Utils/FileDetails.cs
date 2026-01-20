@@ -1,6 +1,4 @@
-﻿// ReSharper disable once CheckNamespace
-
-namespace System;
+﻿namespace ReqnrollConnector.Utils;
 
 public record FileDetails
 {
