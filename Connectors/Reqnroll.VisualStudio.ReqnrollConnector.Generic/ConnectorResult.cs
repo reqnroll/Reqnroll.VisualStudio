@@ -8,3 +8,11 @@ public record ConnectorResult(
     ImmutableSortedDictionary<string, string> AnalyticsProperties,
     string? ErrorMessage
 );
+public record DiscoveryConnectorResult(
+    Reqnroll.VisualStudio.ReqnrollConnector.Models.StepDefinition[] StepDefinitions,
+    Reqnroll.VisualStudio.ReqnrollConnector.Models.Hook[] Hooks,
+    IDictionary<string, string> SourceFiles,
+    IDictionary<string, string> TypeNames,
+    IDictionary<string, string> AnalyticsProperties,
+    string? ErrorMessage
+);

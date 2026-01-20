@@ -5,6 +5,7 @@
   "typeNames": {},
   "analyticsProperties": {
     "Connector": "<connector>",
+    "Hooks": "0",
     "ImageRuntimeVersion": "v4.0.30319",
     "SFFile": "Reqnroll.dll",
     "SFFileVersion": "3.0.0",

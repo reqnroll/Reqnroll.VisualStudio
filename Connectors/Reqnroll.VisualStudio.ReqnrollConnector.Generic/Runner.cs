@@ -1,3 +1,5 @@
+using ReqnrollConnector.CommandLineOptions;
+
 namespace ReqnrollConnector;
 
 public class Runner
@@ -26,10 +28,12 @@ public class Runner
             var connectorOptions = ConnectorOptions.Parse(args);
             DebugBreak(connectorOptions);
             DumpOptions(connectorOptions);
-            
-            var result = ExecuteDiscovery((DiscoveryOptions)connectorOptions, testAssemblyFactory);
-            var serialized = JsonSerialization.SerializeObject(result, _log);
-            var marked = JsonSerialization.MarkResult(serialized);
+
+            if (connectorOptions is not DiscoveryOptions discoveryOptions)
+                throw new ArgumentException($"Not supported options: {connectorOptions}");
+
+            string resultJsonText = ExecuteDiscovery(testAssemblyFactory, discoveryOptions);
+            var marked = JsonSerialization.MarkResult(resultJsonText);
             PrintResult(marked);
             
             return ExecutionResult.Succeed;
@@ -39,6 +43,16 @@ public class Runner
             return HandleException(ex);
         }
     }
+
+    private string ExecuteDiscovery(Func<AssemblyLoadContext, string, Assembly> testAssemblyFactory, DiscoveryOptions discoveryOptions)
+    {
+        var result = DiscoveryExecutor.Execute(discoveryOptions, testAssemblyFactory, _log, _analytics);
+        var serialized = JsonSerialization.SerializeObject(result, _log);
+        //var result = ReflectionExecutor.Execute(discoveryOptions, testAssemblyFactory, _log, _analytics);
+        //var serialized = JsonSerialization.SerializeObject(result, _log);
+        return serialized;
+    }
+
     public void DebugBreak(ConnectorOptions options)
     {
         if (options.DebugMode)
@@ -46,9 +60,6 @@ public class Runner
     }
 
     public void DumpOptions(ConnectorOptions options) => _log.Info(options.ToString());
-
-    public ConnectorResult ExecuteDiscovery(DiscoveryOptions options, Func<AssemblyLoadContext, string, Assembly> testAssemblyFactory)
-        => ReflectionExecutor.Execute(options, testAssemblyFactory, _log, _analytics);
 
     private void PrintResult(string result)
     {

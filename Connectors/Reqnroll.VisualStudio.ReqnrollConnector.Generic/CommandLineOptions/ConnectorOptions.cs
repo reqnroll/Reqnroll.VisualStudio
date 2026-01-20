@@ -1,4 +1,4 @@
-namespace ReqnrollConnector;
+namespace ReqnrollConnector.CommandLineOptions;
 
 public record ConnectorOptions(bool DebugMode)
 {

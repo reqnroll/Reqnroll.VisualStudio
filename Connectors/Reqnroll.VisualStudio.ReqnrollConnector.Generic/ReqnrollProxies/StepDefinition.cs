@@ -10,5 +10,5 @@ public record StepDefinition(
     StepScope? Scope,
     string? Expression,
     string? Error,
-    string SourceLocation
+    string? SourceLocation
 );

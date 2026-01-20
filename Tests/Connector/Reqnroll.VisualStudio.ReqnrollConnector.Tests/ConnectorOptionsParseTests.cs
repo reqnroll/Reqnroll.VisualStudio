@@ -1,3 +1,4 @@
+using ReqnrollConnector.CommandLineOptions;
 using ReqnrollConnector.Utils;
 
 namespace Reqnroll.VisualStudio.ReqnrollConnector.Tests;

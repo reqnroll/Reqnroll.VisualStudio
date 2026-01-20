@@ -1,6 +1,6 @@
 using ReqnrollConnector.Utils;
 
-namespace ReqnrollConnector.Discovery;
+namespace ReqnrollConnector.CommandLineOptions;
 
 public record DiscoveryOptions(
     bool DebugMode,
@@ -14,25 +14,23 @@ public record DiscoveryOptions(
         var validatedArgs = ValidateParameterCount(args);
         var testAssemblyFile = AssemblyPath(validatedArgs);
         var configFile = ConfigPath(validatedArgs);
-        var pathTuple = (testAssemblyFile, configFile);
-        var validatedPaths = ValidateTargetFolder(pathTuple);
-        var (targetAssemblyFile, configFileOption) = validatedPaths;
+        ValidateTargetFolder(testAssemblyFile, configFile);
         
         var assemblyLocation = typeof(Runner).Assembly.GetLocation();
         var connectorDir = Directory(assemblyLocation);
         
         string? configFileFullName = null;
-        if (configFileOption != null)
+        if (configFile != null)
         {
-            configFileFullName = configFileOption.FullName;
+            configFileFullName = configFile.FullName;
         }
         
         return new DiscoveryOptions(
             debugMode,
-            targetAssemblyFile.FullName,
+            testAssemblyFile.FullName,
             configFileFullName,
             connectorDir.FullName
-        ) as ConnectorOptions;
+        );
     }
 
     private static string[] ValidateParameterCount(string[] args) => args.Length >= 1
@@ -46,21 +44,17 @@ public record DiscoveryOptions(
             ? null
             : FileDetails.FromPath(args[1]);
 
-    private static (FileDetails targetAssemblyFile, FileDetails? configFile)
-        ValidateTargetFolder((FileDetails, FileDetails?) x)
+    private static void ValidateTargetFolder(FileDetails targetAssemblyFile, FileDetails? configFile)
     {
-        var (targetAssemblyFile, configFile) = x;
-        if (targetAssemblyFile.Directory != null) return x;
-        throw new InvalidOperationException(
-            $"Unable to detect target folder from test assembly path '{targetAssemblyFile}'");
+        if (targetAssemblyFile.Directory == null)
+            throw new InvalidOperationException(
+                $"Unable to detect target folder from test assembly path '{targetAssemblyFile}'");
     }
 
     private static DirectoryInfo Directory(FileDetails fileDetails)
     {
         if (fileDetails.Directory != null)
-        {
             return fileDetails.Directory;
-        }
         throw new InvalidOperationException("Unable to detect connector folder.");
     }
 }

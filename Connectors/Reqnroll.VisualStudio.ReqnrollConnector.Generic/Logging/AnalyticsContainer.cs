@@ -21,6 +21,7 @@ public class AnalyticsContainer : IDictionary<string, string>, IAnalyticsContain
     }
 
     public ImmutableSortedDictionary<string, string> ToImmutable() => this;
+    public IDictionary<string, string> ToDictionary() => this;
 
     public void Add(string key, string value)
     {

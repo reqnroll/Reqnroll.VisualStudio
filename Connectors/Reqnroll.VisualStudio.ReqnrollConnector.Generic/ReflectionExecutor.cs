@@ -1,4 +1,5 @@
 using System.Runtime.Versioning;
+using ReqnrollConnector.CommandLineOptions;
 using ReqnrollConnector.Utils;
 
 namespace ReqnrollConnector;
