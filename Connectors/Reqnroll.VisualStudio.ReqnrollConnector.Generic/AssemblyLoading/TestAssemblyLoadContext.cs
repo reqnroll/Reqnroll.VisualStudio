@@ -1,4 +1,4 @@
-//TODO: using RuntimeEnvironment = Microsoft.DotNet.PlatformAbstractions.RuntimeEnvironment;
+using ReqnrollConnector.NetExtensions;
 
 namespace ReqnrollConnector.AssemblyLoading;
 
@@ -8,6 +8,7 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
     private readonly DependencyContext _dependencyContext;
     private readonly ILogger _log;
     private readonly string[] _rids;
+    private readonly string _shortFrameworkName;
 
     public TestAssemblyLoadContext(
         string path,
@@ -18,9 +19,14 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
         _log = log;
         TestAssembly = testAssemblyFactory(this, path);
         _log.Info($"{TestAssembly} loaded");
-        _dependencyContext = DependencyContext.Load(TestAssembly) ?? DependencyContext.Default!;
-        _log.Info($"{_dependencyContext} loaded");
+        var loadedDependencyContext = DependencyContext.Load(TestAssembly);
+        _dependencyContext = loadedDependencyContext ?? DependencyContext.Default!;
+        _log.Info(loadedDependencyContext == null ? "Default dependency context used" : $"Dependency context (.deps.json) loaded");
+        _shortFrameworkName = FrameworkMonikerConverter.TryGetShortFrameworkName(_dependencyContext.Target.Framework, out string value) ? value : 
+            FrameworkMonikerConverter.GetShortFrameworkName(DependencyContext.Default!.Target.Framework); // use the framework name of the connector itself as fallback
+        _log.Info($"Target framework: {_dependencyContext.Target.Framework}/{_shortFrameworkName}");
         _rids = GetRids(GetRuntimeFallbacks()).ToArray();
+        _log.Info($"RIDs: {string.Join(",", _rids)}");
 
         _assemblyResolver = new RuntimeCompositeCompilationAssemblyResolver(new ICompilationAssemblyResolver[]
         {
@@ -45,7 +51,6 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
             ? _dependencyContext.RuntimeGraph
             : DependencyContext.Default!.RuntimeGraph;
 
-        //TODO: var rid = RuntimeEnvironment.GetRuntimeIdentifier();
         var rid = Environment.OSVersion.Platform.ToString();
 
         var fallbackRid = GetFallbackRid();
@@ -125,6 +130,7 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
             }
         }
 
+        _log.Info($"Could not find {assemblyName}, referting to default loading...");
         return null!;
     }
 
@@ -175,7 +181,7 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
     private CompilationLibrary GetRequestedLibrary(AssemblyName assemblyName)
     {
         // This reference might help finding dependencies that are otherwise not listed in the
-        // deps.json file of the test assembly. E.g. Microsoft.AspNetCore.Http.Features in the Reqnroll ASP.NET MVC sample
+        // deps.json file of the test assembly. E.g. Microsoft.AspNetCore.Hosting.Abstractions in the ReqOverflow.Specs.API project of the https://github.com/reqnroll/Sample-ReqOverflow sample
         return new CompilationLibrary(
             "package",
             assemblyName.Name!,
