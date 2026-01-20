@@ -1,6 +1,3 @@
-global using ApprovalTests;
-global using ApprovalTests.Namers;
-global using ApprovalTests.Reporters;
 global using AwesomeAssertions;
 global using ReqnrollConnector;
 global using ReqnrollConnector.Discovery;

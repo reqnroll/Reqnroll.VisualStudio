@@ -1,7 +1,5 @@
-using Reqnroll.VisualStudio.ReqnrollConnector.Models;
 using ReqnrollConnector.CommandLineOptions;
 using ReqnrollConnector.Utils;
-using DiscoveryResult = Reqnroll.VisualStudio.ReqnrollConnector.Models.DiscoveryResult;
 
 namespace Reqnroll.VisualStudio.ReqnrollConnector.Tests;
 
@@ -72,7 +70,6 @@ public class ApprovalTestBase
 
         var logger = new TestConsoleLogger();
         var consoleRunner = new Runner(logger);
-        var mockFileSystem = new FileSystem();
         var resultCode = consoleRunner.Run(
             psiEx.Arguments.Split(' '),
             (ctx, path) => testAssembly ??= ctx.LoadFromAssemblyPath(path));
@@ -86,66 +83,6 @@ public class ApprovalTestBase
             .RunProcess(psiEx);
         return result;
     }
-
-    protected void Assert(ProcessResult result, string targetFolder)
-    {
-        Assert(result, targetFolder, s => s);
-    }
-
-    protected void Assert(ProcessResult result, string targetFolder, Func<string, string> scrubber)
-    {
-        var rawContent = new StringBuilder()
-            .Append((string?) $"stdout:{result.StdOutput}")
-            .AppendLine((string?) $"stderr:{result.StdError}")
-            .AppendLine($"resultCode:{result.ExitCode}")
-            .Append($"time:{result.ExecutionTime}")
-            .ToString();
-
-        var scrubbed = TargetFolderScrubber(rawContent, targetFolder);
-        scrubbed = scrubbed.Replace(typeof(DiscoveryExecutor).Assembly.ToString(), "<connector>");
-        scrubbed = Regex.Replace(scrubbed, "errorMessage\": \".+\"", "errorMessage\": \"<errorMessage>\"");
-        scrubbed = Regex.Replace(scrubbed, "(.*\r\n)*>>>>>>>>>>\r\n", "");
-        scrubbed = Regex.Replace(scrubbed, "<<<<<<<<<<(.*[\r\n])*.*", "");
-        scrubbed = XunitExtensions.StackTraceScrubber(scrubbed);
-        scrubbed = ScrubVolatileParts(scrubbed);
-        scrubbed = scrubber(scrubbed);
-
-        _testOutputHelper.ApprovalsVerify(scrubbed);
-    }
-
-    private static string TargetFolderScrubber(string content, string targetFolder) =>
-        content
-            .Replace(targetFolder, "<<targetFolder>>")
-            .Replace(targetFolder.Replace("\\", "\\\\"), "<<targetFolder>>");
-
-    protected static T ArrangeTestData<T>(string testName)
-    {
-        var namer = new ShortenedUnitTestFrameworkNamer();
-        NamerFactory.AdditionalInformation = testName;
-        Approvals.RegisterDefaultNamerCreation(() => namer);
-
-        var testDataFile = FileDetails.FromPath(namer.SourcePath, testName + ".json");
-
-        var content = File.ReadAllText(testDataFile);
-        var testData = JsonSerializer.Deserialize<T>(content);
-        Debug.Assert(testData != null, nameof(testData) + " != null");
-        return testData;
-    }
-
-    private static string ScrubVolatileParts(string content)
-    {
-        var deserialized = DeserializeObject<DiscoveryResult>(content);
-        if (deserialized != null)
-        {
-            deserialized.StepDefinitions = Array.Empty<StepDefinition>();
-            deserialized.SourceFiles = new Dictionary<string, string>();
-            deserialized.TypeNames = new Dictionary<string, string>();
-            return JsonSerialization.SerializeObjectCamelCase(deserialized);
-        }
-
-        return $"Cannot deserialize:{content}";
-    }
-
 
     public static TResult? DeserializeObject<TResult>(string json, ILogger? log = null)
     {
