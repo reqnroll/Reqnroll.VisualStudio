@@ -196,7 +196,6 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
             new[] {assemblyName.Name + ".dll"},
             Array.Empty<Dependency>(),
             true,
-            //Path.Combine(assemblyName.Name!, $"{assemblyName.Version!.Major}.{assemblyName.Version!.Minor}.{assemblyName.Version!.MajorRevision}".ToString()),
             Path.Combine(assemblyName.Name!, $"{assemblyName.Version}".ToString()),
             string.Empty);
     }
