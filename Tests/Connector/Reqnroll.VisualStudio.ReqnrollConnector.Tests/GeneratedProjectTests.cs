@@ -2,7 +2,7 @@ using Reqnroll.VisualStudio.ReqnrollConnector.Models;
 
 namespace Reqnroll.VisualStudio.ReqnrollConnector.Tests;
 
-public class GeneratedProjectTests : ApprovalTestBase
+public class GeneratedProjectTests : TestBase
 {
     private readonly ITestOutputHelper _testOutputHelper;
 

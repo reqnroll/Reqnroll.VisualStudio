@@ -3,11 +3,11 @@ using ReqnrollConnector.Utils;
 
 namespace Reqnroll.VisualStudio.ReqnrollConnector.Tests;
 
-public class ApprovalTestBase
+public class TestBase
 {
     private readonly ITestOutputHelper _testOutputHelper;
 
-    public ApprovalTestBase(ITestOutputHelper testOutputHelper)
+    public TestBase(ITestOutputHelper testOutputHelper)
     {
         _testOutputHelper = testOutputHelper;
     }
