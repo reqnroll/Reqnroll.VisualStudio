@@ -26,6 +26,10 @@
     <ProjectReference Include="..\Reqnroll.VisualStudio.ReqnrollConnector.Models\Reqnroll.VisualStudio.ReqnrollConnector.Models.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Tests\" />
+  </ItemGroup>
+
   <Target Name="CustomAfterBuild" AfterTargets="Build" Condition="$(configuration)=='Debug' and '$(TargetFramework)'!=''">
 
     <ItemGroup>

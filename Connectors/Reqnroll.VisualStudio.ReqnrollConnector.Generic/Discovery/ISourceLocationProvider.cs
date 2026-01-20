@@ -25,6 +25,7 @@ public interface ISourceLocationProvider
     SourceLocation? GetSourceLocation(BindingSourceMethodData bindingMethod);
 }
 
+// ReSharper disable once UnusedMember.Global
 public class NullSourceLocationProvider : ISourceLocationProvider
 {
     public SourceLocation? GetSourceLocation(BindingSourceMethodData bindingMethod) => null;

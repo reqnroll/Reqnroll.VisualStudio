@@ -1,3 +1,5 @@
+using System.Reflection;
+using ReqnrollConnector.Logging;
 using ReqnrollConnector.SourceDiscovery.DnLib;
 
 namespace ReqnrollConnector.SourceDiscovery;
@@ -55,7 +57,7 @@ public class SymbolReaderCache
 
     private IEnumerable<Func<DeveroomSymbolReader>> SymbolReaderFactories(string path)
     {
-        return new Func<DeveroomSymbolReader> []
+        return new[]
         {
             () => DnLibDeveroomSymbolReader.Create(_log, path)
         };

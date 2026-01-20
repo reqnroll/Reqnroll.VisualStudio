@@ -1,4 +1,8 @@
-﻿using Reqnroll.Bindings.Provider.Data;
+﻿using System.Reflection;
+using System.Runtime.Loader;
+using Reqnroll.Bindings.Provider.Data;
+using ReqnrollConnector.Discovery;
+using ReqnrollConnector.Logging;
 
 namespace ReqnrollConnector.SourceDiscovery;
 

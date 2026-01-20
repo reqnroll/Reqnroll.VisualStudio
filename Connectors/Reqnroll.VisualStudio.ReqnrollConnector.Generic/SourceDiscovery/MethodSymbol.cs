@@ -6,6 +6,4 @@ public record MethodSymbolSequencePoint(
     int StartLine,
     int EndLine,
     int StartColumn,
-    int EndColumn)
-{
-}
+    int EndColumn);

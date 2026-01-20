@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using ReqnrollConnector.Utils;
 
 namespace Reqnroll.VisualStudio.ReqnrollConnector.Tests;
 
@@ -14,8 +15,8 @@ public class AnalyticsTests
         container.AddAnalyticsProperty("k2", "v2");
 
         //act
-        var serialized = JsonSerialization.SerializeObject(container);
-        var deserialized = JsonSerialization.DeserializeObject<AnalyticsContainer>(serialized);
+        var serialized = JsonSerialization.SerializeObjectCamelCase(container);
+        var deserialized = ApprovalTestBase.DeserializeObject<AnalyticsContainer>(serialized);
 
         //assert
         deserialized.Should().NotBeNull();
@@ -36,8 +37,8 @@ public class AnalyticsTests
         container.AddAnalyticsProperty("k2", "v2");
 
         //act
-        var serialized = JsonSerialization.SerializeObject(container);
-        var deserialized = JsonSerialization.DeserializeObject<Dictionary<string, string>>(serialized);
+        var serialized = JsonSerialization.SerializeObjectCamelCase(container);
+        var deserialized = ApprovalTestBase.DeserializeObject<Dictionary<string, string>>(serialized);
 
         //assert
         deserialized.Should().NotBeNull();

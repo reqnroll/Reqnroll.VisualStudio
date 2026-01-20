@@ -1,4 +1,4 @@
-namespace ReqnrollConnector.Tests;
+namespace Reqnroll.VisualStudio.ReqnrollConnector.Tests.Extensions;
 
 public class StringWriterLogger : Logger<StringWriter>
 {

@@ -1,3 +1,6 @@
+using Microsoft.Extensions.DependencyModel;
+using Microsoft.Extensions.DependencyModel.Resolution;
+
 namespace ReqnrollConnector.AssemblyLoading;
 
 public class AspNetCoreAssemblyResolver : ICompilationAssemblyResolver

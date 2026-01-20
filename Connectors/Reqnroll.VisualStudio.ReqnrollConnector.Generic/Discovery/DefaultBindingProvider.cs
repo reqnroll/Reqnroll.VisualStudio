@@ -1,12 +1,10 @@
-﻿using Reqnroll.Bindings.Provider.Data;
+﻿using System.Reflection;
+using Reqnroll.Bindings.Provider.Data;
+using ReqnrollConnector.AssemblyLoading;
+using ReqnrollConnector.Logging;
 using ReqnrollConnector.Utils;
 
 namespace ReqnrollConnector.Discovery;
-
-public interface IBindingProvider
-{
-    BindingData DiscoverBindings(TestAssemblyLoadContext testAssemblyContext, Assembly testAssembly, string? configFileContent, ILogger log);
-}
 
 /// <summary>
 /// The default discovery command that should work for all Reqnroll versions.

@@ -3,6 +3,5 @@ namespace ReqnrollConnector.Logging;
 public interface IAnalyticsContainer
 {
     void AddAnalyticsProperty(string key, string value);
-    ImmutableSortedDictionary<string, string> ToImmutable();
-    IDictionary<string, string> ToDictionary();
+    Dictionary<string, object> ToDictionary();
 }

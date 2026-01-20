@@ -1,15 +1,15 @@
 ﻿using Reqnroll.Bindings.Provider.Data;
 using Reqnroll.VisualStudio.ReqnrollConnector.Models;
-using StepDefinition = Reqnroll.VisualStudio.ReqnrollConnector.Models.StepDefinition;
+using ReqnrollConnector.Logging;
 
 namespace ReqnrollConnector.Discovery;
 
 /// <summary>
-/// Transforms discovery results from <see cref="BindingData"/> class to <see cref="DiscoveryResult"/>.
+/// Transforms discovery results from <see cref="BindingData"/> class to <see cref="Reqnroll.VisualStudio.ReqnrollConnector.Models.DiscoveryResult"/>.
 /// </summary>
 internal class DiscoveryResultTransformer
 {
-    public DiscoveryResult2 Transform(BindingData bindingData, ISourceLocationProvider sourceLocationProvider, IAnalyticsContainer analytics)
+    public InternalDiscoveryResult Transform(BindingData bindingData, ISourceLocationProvider sourceLocationProvider, IAnalyticsContainer analytics)
     {
         var typeNamesToKey = new Dictionary<string, string>();
         var sourceFilesToKey = new Dictionary<string, string>();
@@ -42,7 +42,7 @@ internal class DiscoveryResultTransformer
         analytics.AddAnalyticsProperty("StepDefinitions", stepDefinitions.Length.ToString());
         analytics.AddAnalyticsProperty("Hooks", hooks.Length.ToString());
 
-        return new DiscoveryResult2(
+        return new InternalDiscoveryResult(
             stepDefinitions,
             hooks,
             ReverseDictionary(sourceFilesToKey),

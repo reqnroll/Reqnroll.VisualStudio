@@ -1,3 +1,9 @@
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Runtime.Loader;
+using Microsoft.Extensions.DependencyModel;
+using Microsoft.Extensions.DependencyModel.Resolution;
+using ReqnrollConnector.Logging;
 using ReqnrollConnector.Utils;
 
 namespace ReqnrollConnector.AssemblyLoading;

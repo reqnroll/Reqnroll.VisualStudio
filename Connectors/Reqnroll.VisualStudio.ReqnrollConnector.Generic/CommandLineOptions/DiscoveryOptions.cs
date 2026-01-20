@@ -14,7 +14,7 @@ public record DiscoveryOptions(
         var validatedArgs = ValidateParameterCount(args);
         var testAssemblyFile = AssemblyPath(validatedArgs);
         var configFile = ConfigPath(validatedArgs);
-        ValidateTargetFolder(testAssemblyFile, configFile);
+        ValidateTargetFolder(testAssemblyFile);
         
         var assemblyLocation = typeof(Runner).Assembly.GetLocation();
         var connectorDir = Directory(assemblyLocation);
@@ -44,7 +44,7 @@ public record DiscoveryOptions(
             ? null
             : FileDetails.FromPath(args[1]);
 
-    private static void ValidateTargetFolder(FileDetails targetAssemblyFile, FileDetails? configFile)
+    private static void ValidateTargetFolder(FileDetails targetAssemblyFile)
     {
         if (targetAssemblyFile.Directory == null)
             throw new InvalidOperationException(

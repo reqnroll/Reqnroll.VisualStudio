@@ -1,8 +1,11 @@
-﻿using ReqnrollConnector.Utils;
+﻿using System.Xml;
+using ReqnrollConnector.Utils;
 
-namespace ReqnrollConnector.ReqnrollProxies;
+namespace ReqnrollConnector.Discovery;
+
 internal static class LegacyAppConfigLoader
 {
+    // ReSharper disable UnusedAutoPropertyAccessor.Local
     class ConfigData
     {
         public FeatureData? Feature { get; set; }
@@ -24,6 +27,7 @@ internal static class LegacyAppConfigLoader
     {
         public string? Assembly { get; set; }
     }
+    // ReSharper restore UnusedAutoPropertyAccessor.Local
 
     public static string? LoadConfiguration(FileDetails configFileDetails)
     {
@@ -83,6 +87,6 @@ internal static class LegacyAppConfigLoader
             configData.StepAssemblies = stepAssemblies.ToArray();
         }
 
-        return JsonSerialization.SerializeObject(configData);
+        return JsonSerialization.SerializeObjectCamelCase(configData);
     }
 }

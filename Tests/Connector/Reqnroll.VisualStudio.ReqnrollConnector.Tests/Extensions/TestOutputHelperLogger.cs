@@ -1,5 +1,3 @@
-using ReqnrollConnector.Tests;
-
 namespace Reqnroll.VisualStudio.ReqnrollConnector.Tests.Extensions;
 
 public class TestOutputHelperLogger : StringWriterLogger

@@ -1,4 +1,7 @@
+using Reqnroll.VisualStudio.ReqnrollConnector.Models;
+using ReqnrollConnector.CommandLineOptions;
 using ReqnrollConnector.Utils;
+using DiscoveryResult = Reqnroll.VisualStudio.ReqnrollConnector.Models.DiscoveryResult;
 
 namespace Reqnroll.VisualStudio.ReqnrollConnector.Tests;
 
@@ -16,7 +19,7 @@ public class ApprovalTestBase
         var targetAssemblyFile =
             FileDetails.FromPath(targetFolder, testAssemblyFileName);
 
-        var connectorFile = typeof(DiscoveryCommand).Assembly.GetLocation();
+        var connectorFile = typeof(DiscoveryExecutor).Assembly.GetLocation();
         var outputFolder = Path.GetDirectoryName(targetAssemblyFile)!;
 
         FileDetails? configFile = null;
@@ -44,7 +47,7 @@ public class ApprovalTestBase
         psiEx = psiEx with
         {
             Arguments = psiEx.Arguments +
-                        $"{DiscoveryCommand.CommandName} {targetAssemblyFile} {configFileArg}"
+                        $"{ConnectorOptions.DiscoveryCommandName} {targetAssemblyFile} {configFileArg}"
         };
 
         _testOutputHelper.WriteLine($"{psiEx.ExecutablePath} {psiEx.Arguments}");
@@ -99,7 +102,7 @@ public class ApprovalTestBase
             .ToString();
 
         var scrubbed = TargetFolderScrubber(rawContent, targetFolder);
-        scrubbed = scrubbed.Replace(typeof(DiscoveryCommand).Assembly.ToString(), "<connector>");
+        scrubbed = scrubbed.Replace(typeof(DiscoveryExecutor).Assembly.ToString(), "<connector>");
         scrubbed = Regex.Replace(scrubbed, "errorMessage\": \".+\"", "errorMessage\": \"<errorMessage>\"");
         scrubbed = Regex.Replace(scrubbed, "(.*\r\n)*>>>>>>>>>>\r\n", "");
         scrubbed = Regex.Replace(scrubbed, "<<<<<<<<<<(.*[\r\n])*.*", "");
@@ -131,18 +134,31 @@ public class ApprovalTestBase
 
     private static string ScrubVolatileParts(string content)
     {
-        var deserialized = JsonSerialization.DeserializeObject<ConnectorResult>(content);
+        var deserialized = DeserializeObject<DiscoveryResult>(content);
         if (deserialized != null)
         {
-            var modified = deserialized with 
-            { 
-                StepDefinitions = ImmutableArray<StepDefinition>.Empty,
-                SourceFiles = ImmutableSortedDictionary<string, string>.Empty,
-                TypeNames = ImmutableSortedDictionary<string, string>.Empty
-            };
-            return JsonSerialization.SerializeObject(modified);
+            deserialized.StepDefinitions = Array.Empty<StepDefinition>();
+            deserialized.SourceFiles = new Dictionary<string, string>();
+            deserialized.TypeNames = new Dictionary<string, string>();
+            return JsonSerialization.SerializeObjectCamelCase(deserialized);
         }
 
         return $"Cannot deserialize:{content}";
     }
+
+
+    public static TResult? DeserializeObject<TResult>(string json, ILogger? log = null)
+    {
+        try
+        {
+            var deserializeObject = JsonSerializer.Deserialize<TResult>(json, JsonSerialization.GetJsonSerializerSettingsCamelCase());
+            return deserializeObject;
+        }
+        catch (Exception e)
+        {
+            log?.Error(e.ToString());
+            return default;
+        }
+    }
+
 }

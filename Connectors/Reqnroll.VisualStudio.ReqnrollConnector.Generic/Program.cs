@@ -1,4 +1,9 @@
-﻿var log = new ConsoleLogger();
+﻿using System.Reflection;
+using System.Runtime.Loader;
+using ReqnrollConnector;
+using ReqnrollConnector.Logging;
+
+var log = new ConsoleLogger();
 
 Assembly TestAssemblyFactory(AssemblyLoadContext context, string testAssemblyPath)
 {

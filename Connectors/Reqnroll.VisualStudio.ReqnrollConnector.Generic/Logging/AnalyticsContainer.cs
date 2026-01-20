@@ -1,3 +1,7 @@
+using System.Collections;
+using System.Collections.Immutable;
+using System.Diagnostics;
+
 namespace ReqnrollConnector.Logging;
 
 [DebuggerDisplay("{_analyticsProperties}")]
@@ -20,8 +24,7 @@ public class AnalyticsContainer : IDictionary<string, string>, IAnalyticsContain
         _analyticsProperties.Add(key, value);
     }
 
-    public ImmutableSortedDictionary<string, string> ToImmutable() => this;
-    public IDictionary<string, string> ToDictionary() => this;
+    public Dictionary<string, object> ToDictionary() => this.ToDictionary(e => e.Key, e => (object)e.Value);
 
     public void Add(string key, string value)
     {

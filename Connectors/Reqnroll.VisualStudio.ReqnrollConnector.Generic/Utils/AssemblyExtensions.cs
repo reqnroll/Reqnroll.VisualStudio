@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace ReqnrollConnector.Utils;
 
 public static class AssemblyExtensions

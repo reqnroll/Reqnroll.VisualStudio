@@ -7,7 +7,6 @@ global using NSubstitute;
 global using ReqnrollConnector;
 global using ReqnrollConnector.Discovery;
 global using ReqnrollConnector.Logging;
-global using ReqnrollConnector.ReqnrollProxies;
 global using Reqnroll.SampleProjectGenerator;
 global using Reqnroll.VisualStudio.ReqnrollConnector;
 global using Reqnroll.VisualStudio.ReqnrollConnector.Tests.Extensions;

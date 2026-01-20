@@ -1,4 +1,10 @@
+using System.Diagnostics;
+using System.Reflection;
+using System.Runtime.Loader;
 using ReqnrollConnector.CommandLineOptions;
+using ReqnrollConnector.Discovery;
+using ReqnrollConnector.Logging;
+using ReqnrollConnector.Utils;
 
 namespace ReqnrollConnector;
 
@@ -47,9 +53,7 @@ public class Runner
     private string ExecuteDiscovery(Func<AssemblyLoadContext, string, Assembly> testAssemblyFactory, DiscoveryOptions discoveryOptions)
     {
         var result = DiscoveryExecutor.Execute(discoveryOptions, testAssemblyFactory, _log, _analytics);
-        var serialized = JsonSerialization.SerializeObject(result, _log);
-        //var result = ReflectionExecutor.Execute(discoveryOptions, testAssemblyFactory, _log, _analytics);
-        //var serialized = JsonSerialization.SerializeObject(result, _log);
+        var serialized = JsonSerialization.SerializeObjectCamelCase(result, _log);
         return serialized;
     }
 

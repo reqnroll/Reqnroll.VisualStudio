@@ -1,13 +1,20 @@
+using System.Diagnostics;
+using System.Reflection;
+using System.Runtime.Loader;
 using System.Runtime.Versioning;
 using Reqnroll.Bindings.Provider.Data;
+using Reqnroll.VisualStudio.ReqnrollConnector.Models;
+using ReqnrollConnector.AssemblyLoading;
 using ReqnrollConnector.CommandLineOptions;
+using ReqnrollConnector.Logging;
+using ReqnrollConnector.SourceDiscovery;
 using ReqnrollConnector.Utils;
 
 namespace ReqnrollConnector.Discovery;
 
 public class DiscoveryExecutor
 {
-    public static DiscoveryConnectorResult Execute(DiscoveryOptions options,
+    public static DiscoveryResult Execute(DiscoveryOptions options,
         Func<AssemblyLoadContext, string, Assembly> testAssemblyFactory, ILogger log, IAnalyticsContainer analytics)
     {
         log.Info($"Loading {options.AssemblyFile}");
@@ -44,13 +51,14 @@ public class DiscoveryExecutor
         var sourceLocationProvider = new SourceLocationProvider(testAssemblyContext, testAssemblyContext.TestAssembly, log);
         var discoveryResult = transformer.Transform(bindingData, sourceLocationProvider, analytics);
 
-        return new DiscoveryConnectorResult(
-            discoveryResult.StepDefinitions,
-            discoveryResult.Hooks,
-            discoveryResult.SourceFiles,
-            discoveryResult.TypeNames,
-            analytics.ToDictionary(),
-            null);
+        return new DiscoveryResult
+        {
+            StepDefinitions = discoveryResult.StepDefinitions,
+            Hooks = discoveryResult.Hooks,
+            SourceFiles = new Dictionary<string, string>(discoveryResult.SourceFiles),
+            TypeNames = new Dictionary<string, string>(discoveryResult.TypeNames),
+            AnalyticsProperties = analytics.ToDictionary()
+        };
     }
 
     private static IBindingProvider GetBindingProvider(string? targetFramework, FileVersionInfo? reqnrollVersion, ILogger log)
@@ -105,13 +113,12 @@ public class DiscoveryExecutor
     }
 
 
-    private static DiscoveryConnectorResult CreateErrorResult(IAnalyticsContainer analytics, string errorMessage, Exception? exception = null)
+    private static DiscoveryResult CreateErrorResult(IAnalyticsContainer analytics, string errorMessage, Exception? exception = null)
     {
-        return new DiscoveryConnectorResult(Array.Empty<Reqnroll.VisualStudio.ReqnrollConnector.Models.StepDefinition>(),
-            Array.Empty<Reqnroll.VisualStudio.ReqnrollConnector.Models.Hook>(),
-            new Dictionary<string, string>(),
-            new Dictionary<string, string>(),
-            analytics.ToDictionary(),
-            exception != null ? $"{errorMessage}: {exception}" : errorMessage);
+        return new DiscoveryResult
+        {
+            AnalyticsProperties = analytics.ToDictionary(),
+            ErrorMessage = exception != null ? $"{errorMessage}: {exception}" : errorMessage
+        };
     }
 }

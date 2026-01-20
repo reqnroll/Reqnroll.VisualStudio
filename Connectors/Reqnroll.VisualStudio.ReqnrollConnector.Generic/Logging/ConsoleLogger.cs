@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace ReqnrollConnector.Logging;
 
 public sealed class ConsoleLogger : Logger<TextWriter>

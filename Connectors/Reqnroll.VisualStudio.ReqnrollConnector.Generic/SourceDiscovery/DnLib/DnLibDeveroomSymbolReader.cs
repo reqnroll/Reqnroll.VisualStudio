@@ -1,6 +1,8 @@
+using System.Collections.Immutable;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 using dnlib.DotNet.Pdb;
+using ReqnrollConnector.Logging;
 using ILogger = ReqnrollConnector.Logging.ILogger;
 
 namespace ReqnrollConnector.SourceDiscovery.DnLib;
