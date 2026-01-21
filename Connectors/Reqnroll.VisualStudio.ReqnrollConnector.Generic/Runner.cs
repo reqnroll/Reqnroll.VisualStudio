@@ -25,6 +25,7 @@ public class Runner
         _log = log;
         _analytics = new AnalyticsContainer();
         _analytics.AddAnalyticsProperty("Connector", GetType().Assembly.ToString());
+        _analytics.AddAnalyticsProperty("ConnectorType", Path.GetFileName(Path.GetDirectoryName(GetType().Assembly.Location)!));
     }
 
     public ExecutionResult Run(string[] args, Func<AssemblyLoadContext, string, Assembly> testAssemblyFactory)

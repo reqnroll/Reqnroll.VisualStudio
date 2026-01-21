@@ -132,7 +132,19 @@ public class ExternalSampleTests
         var args = $"exec \"{connectorPath}\" discovery \"{assemblyPath}\" \"{configArgument}\"";
         var result = RunProcess(Path.GetDirectoryName(assemblyPath)!, "dotnet", args);
 
+        if (!string.IsNullOrEmpty(result.StdError))
+        {
+            TestOutputHelper.WriteLine("Connector error output:");
+            TestOutputHelper.WriteLine(result.StdError);
+        }
+
         var discoveryResult = ExtractDiscoveryResult(result.StdOutput);
+
+        if (discoveryResult.IsFailed)
+        {
+            TestOutputHelper.WriteLine("Connector output:");
+            TestOutputHelper.WriteLine(result.StdOutput);
+        }
 
         discoveryResult.ConnectorType.Should().NotBeEmpty();
         discoveryResult.ReqnrollVersion.Should().NotBeEmpty();

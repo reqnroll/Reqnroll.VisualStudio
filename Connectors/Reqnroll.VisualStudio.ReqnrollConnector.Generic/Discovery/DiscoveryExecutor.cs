@@ -33,7 +33,15 @@ public class DiscoveryExecutor
             analytics.AddAnalyticsProperty("SFProductVersion", reqnrollVersion.ProductVersion ?? "Unknown");
         }
 
-        var configFileContent = LoadConfigFileContent(options.ConfigFile);
+        string? configFileContent;
+        try
+        {
+            configFileContent = LoadConfigFileContent(options.ConfigFile);
+        }
+        catch (Exception ex)
+        {
+            return CreateErrorResult(analytics, $"Could not load config file: {options.ConfigFile}", ex);
+        }
 
         var bindingProvider = GetBindingProvider(targetFramework, reqnrollVersion, log);
 
@@ -47,9 +55,17 @@ public class DiscoveryExecutor
             return CreateErrorResult(analytics, $"Could discover bindings via: {bindingProvider}", ex);
         }
 
-        var transformer = new DiscoveryResultTransformer();
-        var sourceLocationProvider = new SourceLocationProvider(testAssemblyContext, testAssemblyContext.TestAssembly, log);
-        var discoveryResult = transformer.Transform(bindingData, sourceLocationProvider, analytics);
+        InternalDiscoveryResult discoveryResult;
+        try
+        {
+            var transformer = new DiscoveryResultTransformer();
+            var sourceLocationProvider = new SourceLocationProvider(testAssemblyContext, testAssemblyContext.TestAssembly, log);
+            discoveryResult = transformer.Transform(bindingData, sourceLocationProvider, analytics);
+        }
+        catch (Exception ex)
+        {
+            return CreateErrorResult(analytics, $"Could not transform discovery result.", ex);
+        }
 
         return new DiscoveryResult
         {
