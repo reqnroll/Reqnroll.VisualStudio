@@ -9,6 +9,7 @@ namespace Reqnroll.VisualStudio.ReqnrollConnector.Tests;
 public class SampleValidationTests
 {
     private const string ConnectorConfiguration = "Debug";
+    private const string TargetFrameworkToBeUsedForNet4Projects = "net10.0";
     protected readonly ITestOutputHelper TestOutputHelper;
 
     public SampleValidationTests(ITestOutputHelper testOutputHelper)
@@ -29,6 +30,14 @@ public class SampleValidationTests
     {
         ValidateProject(testCase, projectFile, repositoryDirectory);
     }
+
+    // example of running tests for a local repository (the path is relative to the solution root or absolute)
+    //[Theory]
+    //[MemberData(nameof(GetProjectsForRepository), @"..\Reqnroll.ExploratoryTestProjects\VsExtConnectorTestSamples", "")]
+    //public void LocalExploratoryTestProjects(string testCase, string projectFile, string repositoryDirectory)
+    //{
+    //    ValidateProject(testCase, projectFile, repositoryDirectory);
+    //}
 
     protected void ValidateProject(string testCase, string projectFile, string repositoryDirectory)
     {
@@ -137,15 +146,24 @@ public class SampleValidationTests
 
     internal static string PrepareRepository(string repositoryUrl)
     {
-        var repositoryName = GetRepositoryNameFromUrl(repositoryUrl);
-        var rootDirectory = Path.Combine(Path.GetTempPath(), "ReqnrollSamples");
-        Directory.CreateDirectory(rootDirectory);
+        if (!repositoryUrl.StartsWith("https://"))
+        {
+            // assume folder (absolute or relative to the solution root)
+            var localRepositoryDirectory = 
+                Path.GetFullPath(Path.Combine(GetSolutionRoot(), repositoryUrl));
+            Directory.Exists(localRepositoryDirectory).Should().BeTrue($"Repository folder not found: {localRepositoryDirectory}");
+            return localRepositoryDirectory;
+        }
 
-        var repositoryDirectory = Path.Combine(rootDirectory, repositoryName);
+        var repositoryName = GetRepositoryNameFromUrl(repositoryUrl);
+        var tempRootDirectory = Path.Combine(Path.GetTempPath(), "ReqnrollSamples");
+        Directory.CreateDirectory(tempRootDirectory);
+
+        var repositoryDirectory = Path.Combine(tempRootDirectory, repositoryName);
 
         if (!Directory.Exists(repositoryDirectory))
         {
-            RunProcessStatic(rootDirectory, "git", $"clone {repositoryUrl} \"{repositoryDirectory}\"");
+            RunProcessStatic(tempRootDirectory, "git", $"clone {repositoryUrl} \"{repositoryDirectory}\"");
         }
         else
         {
@@ -165,6 +183,11 @@ public class SampleValidationTests
 
     internal static string GetRepositoryNameFromUrl(string repositoryUrl)
     {
+        if (!repositoryUrl.StartsWith("https://"))
+        {
+            return repositoryUrl.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar).Last();
+        }
+
         var uri = new Uri(repositoryUrl);
         var lastSegment = uri.Segments.Last().Trim('/');
         if (lastSegment.EndsWith(".git", StringComparison.OrdinalIgnoreCase))
@@ -176,13 +199,18 @@ public class SampleValidationTests
     private static string GetConnectorPath(string targetFramework)
     {
         if (targetFramework.StartsWith("net4"))
-            targetFramework = "net10.0";
+            targetFramework = TargetFrameworkToBeUsedForNet4Projects;
 
+        var connectorDir = Path.Combine(GetSolutionRoot(), "Connectors", "bin", ConnectorConfiguration, $"Reqnroll-Generic-{targetFramework}");
+        return Path.Combine(connectorDir, "reqnroll-vs.dll");
+    }
+
+    private static string GetSolutionRoot()
+    {
         var assemblyLocation = Assembly.GetExecutingAssembly().Location;
         var testAssemblyDir = Path.GetDirectoryName(assemblyLocation)!;
         var solutionRoot = Path.GetFullPath(Path.Combine(testAssemblyDir, "..", "..", "..", "..", "..", ".."));
-        var connectorDir = Path.Combine(solutionRoot, "Connectors", "bin", ConnectorConfiguration, $"Reqnroll-Generic-{targetFramework}");
-        return Path.Combine(connectorDir, "reqnroll-vs.dll");
+        return solutionRoot;
     }
 
     private static DiscoveryResult ExtractDiscoveryResult(string stdOutput)
