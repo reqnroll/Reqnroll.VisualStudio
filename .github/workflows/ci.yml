@@ -151,7 +151,7 @@ jobs:
 
         # Calculate 'build_params'
         # configuration is handled in a special way during build, hence not included here
-        $buildParams = "-p:VersionSuffix=$versionSuffix -property:ReqnrollBuildNumber=$patchVersion"
+        $buildParams = "-v:quiet -p:VersionSuffix=$versionSuffix -property:ReqnrollBuildNumber=$patchVersion"
         Write-Output "build_params=$buildParams" >> $env:GITHUB_OUTPUT
         Write-Output "Build Params: $buildParams"
 
