@@ -2,53 +2,50 @@ using Reqnroll.VisualStudio.ReqnrollConnector.Models;
 
 namespace Reqnroll.VisualStudio.ReqnrollConnector.Tests;
 
-public class SampleValidationTests : TestBase
+/// <summary>
+/// This test class validates whether connector can work with various sample projects from external repositories.
+/// It clones/pulls the repository to a temp folder, builds each Reqnroll project, and runs discovery using the connector.
+/// </summary>
+public class SampleValidationTests
 {
-    private readonly ITestOutputHelper _testOutputHelper;
+    private const string ConnectorConfiguration = "Debug";
+    protected readonly ITestOutputHelper TestOutputHelper;
 
-    public SampleValidationTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+    public SampleValidationTests(ITestOutputHelper testOutputHelper)
     {
-        _testOutputHelper = testOutputHelper;
+        TestOutputHelper = testOutputHelper;
     }
 
     [Theory]
-    [InlineData("https://github.com/reqnroll/Sample-ReqOverflow", "")]
-    [InlineData("https://github.com/reqnroll/Reqnroll.ExploratoryTestProjects", "BigReqnrollProject;CleanReqnrollProject.Net481.x86;CustomPlugins.TagDecoratorGeneratorPlugin;OldProjectFileFormat;ReqnrollFormatters.CustomizedHtml;ReqnrollPlugins.Verify;SpecFlowCompatibilityProject.Net472;SpecFlowProject;VisualBasicProject.XUnitFw")]
-    public void ValidateSampleRepository(string repositoryUrl, string excludeFolders)
+    [MemberData(nameof(GetProjectsForRepository), "https://github.com/reqnroll/Sample-ReqOverflow", "")]
+    public void ReqOverflow(string testCase, string projectFile, string repositoryDirectory)
     {
-        var repositoryDirectory = PrepareRepository(repositoryUrl);
-        var excludeFoldersList = string.IsNullOrEmpty(excludeFolders) ? Array.Empty<string>() : excludeFolders.Split(';');
+        ValidateProject(testCase, projectFile, repositoryDirectory);
+    }
 
-        var projectsWithFeatures = Directory
-            .EnumerateFiles(repositoryDirectory, "*.*proj", SearchOption.AllDirectories)
-            .Where(projectFile =>
-            {
-                var projectDirectory = Path.GetDirectoryName(projectFile)!;
-                if (excludeFoldersList.Any(exclude => projectDirectory.Contains(exclude)))
-                    return false;
-                return Directory.EnumerateFiles(projectDirectory, "*.feature", SearchOption.AllDirectories).Any();
-            })
-            .ToArray();
+    [Theory]
+    [MemberData(nameof(GetProjectsForRepository), "https://github.com/reqnroll/Reqnroll.ExploratoryTestProjects", "BigReqnrollProject;SpecFlowProject;CleanReqnrollProject.Net481.x86;CustomPlugins.TagDecoratorGeneratorPlugin;OldProjectFileFormat;ReqnrollFormatters.CustomizedHtml;ReqnrollPlugins.Verify;SpecFlowCompatibilityProject.Net472;VisualBasicProject.XUnitFw")]
+    public void ExploratoryTestProjects(string testCase, string projectFile, string repositoryDirectory)
+    {
+        ValidateProject(testCase, projectFile, repositoryDirectory);
+    }
 
-        projectsWithFeatures.Should().NotBeEmpty("at least one project with .feature files is expected");
-
-        foreach (var projectFile in projectsWithFeatures)
-        {
-            BuildAndInspectProject(repositoryDirectory, projectFile);
-        }
+    protected void ValidateProject(string testCase, string projectFile, string repositoryDirectory)
+    {
+        TestOutputHelper.WriteLine("Running Test Case: " + testCase);
+        var fullProjectPath = Path.Combine(repositoryDirectory, projectFile);
+        BuildAndInspectProject(repositoryDirectory, fullProjectPath);
     }
 
     private void BuildAndInspectProject(string repositoryDirectory, string projectFile)
     {
-        _testOutputHelper.WriteLine($"Building {projectFile}");
+        TestOutputHelper.WriteLine($"Building {projectFile}");
         RunProcess(repositoryDirectory, "dotnet", $"build \"{projectFile}\"");
 
         var projectDirectory = Path.GetDirectoryName(projectFile)!;
         var projectName = Path.GetFileNameWithoutExtension(projectFile);
         var configPath = GetConfigFile(projectDirectory);
-        _testOutputHelper.WriteLine(configPath is null
-            ? "No config file found"
-            : $"Config: {configPath}");
+        TestOutputHelper.WriteLine(configPath is null ? "No config file found" : $"Config: {configPath}");
 
         var debugDirectory = Path.Combine(projectDirectory, "bin", "Debug");
         Directory.Exists(debugDirectory).Should().BeTrue($"Build output folder not found for {projectFile}");
@@ -62,73 +59,18 @@ public class SampleValidationTests : TestBase
             var assemblyPath = FindAssembly(tfmDirectory, projectName);
             assemblyPath.Should().NotBeNull($"Cannot find assembly {projectName}.dll under {tfmDirectory}");
 
-            _testOutputHelper.WriteLine($"{targetFramework}: {assemblyPath}");
-            CheckConnector(targetFramework, assemblyPath!, configPath);
+            TestOutputHelper.WriteLine($"{targetFramework}: {assemblyPath}");
+            CheckConnector(targetFramework, assemblyPath, configPath);
         }
-    }
 
-    private static string? FindAssembly(string tfmDirectory, string projectName)
-    {
-        var candidate = Path.Combine(tfmDirectory, $"{projectName}.dll");
-        if (File.Exists(candidate))
-            return candidate;
-
-        return Directory.EnumerateFiles(tfmDirectory, $"{projectName}.dll", SearchOption.AllDirectories)
-            .FirstOrDefault();
-    }
-
-    private string PrepareRepository(string repositoryUrl)
-    {
-        var repositoryName = GetRepositoryName(repositoryUrl);
-        var rootDirectory = Path.Combine(Path.GetTempPath(), "ReqnrollSamples");
-        Directory.CreateDirectory(rootDirectory);
-
-        var repositoryDirectory = Path.Combine(rootDirectory, repositoryName);
-
-        if (!Directory.Exists(repositoryDirectory))
+        static string? FindAssembly(string tfmDirectory, string projectName)
         {
-            RunProcess(rootDirectory, "git", $"clone {repositoryUrl} \"{repositoryDirectory}\"");
+            var candidate = Path.Combine(tfmDirectory, $"{projectName}.dll");
+            if (File.Exists(candidate))
+                return candidate;
+
+            return Directory.EnumerateFiles(tfmDirectory, $"{projectName}.dll", SearchOption.AllDirectories).FirstOrDefault();
         }
-        else
-        {
-            RunProcess(repositoryDirectory, "git", "reset --hard");
-            //RunProcess(repositoryDirectory, "git", "clean -fdx");
-            RunProcess(repositoryDirectory, "git", "clean -fd");
-            RunProcess(repositoryDirectory, "git", "pull");
-        }
-
-        var updateScript = Path.Combine(repositoryDirectory, "update-versions.ps1");
-        if (File.Exists(updateScript))
-        {
-            RunProcess(repositoryDirectory, "powershell", $"-ExecutionPolicy Bypass -File \"{updateScript}\" 3.3.2");
-        }
-
-        return repositoryDirectory;
-    }
-
-    private static string GetRepositoryName(string repositoryUrl)
-    {
-        var uri = new Uri(repositoryUrl);
-        var lastSegment = uri.Segments.Last().Trim('/');
-        if (lastSegment.EndsWith(".git", StringComparison.OrdinalIgnoreCase))
-            lastSegment = lastSegment[..^4];
-
-        return lastSegment;
-    }
-
-    private ProcessResult RunProcess(string workingDirectory, string executablePath, string arguments)
-    {
-        _testOutputHelper.WriteLine($"{workingDirectory}> {executablePath} {arguments}");
-        var result = new ProcessHelper().RunProcess(new ProcessStartInfoEx(workingDirectory, executablePath, arguments));
-
-        if (!string.IsNullOrWhiteSpace(result.StdOutput) && result.ExitCode != 0)
-            _testOutputHelper.WriteLine(result.StdOutput);
-
-        if (!string.IsNullOrWhiteSpace(result.StdError))
-            _testOutputHelper.WriteLine(result.StdError);
-
-        result.ExitCode.Should().Be(0, $"command failed: {executablePath} {arguments}");
-        return result;
     }
 
     private void CheckConnector(string targetFramework, string assemblyPath, string? configPath)
@@ -136,22 +78,20 @@ public class SampleValidationTests : TestBase
         var connectorPath = GetConnectorPath(targetFramework);
         File.Exists(connectorPath).Should().BeTrue($"Connector not found: {connectorPath}");
 
-
-
         var configArgument = configPath ?? string.Empty;
         var args = $"exec \"{connectorPath}\" discovery \"{assemblyPath}\" \"{configArgument}\"";
         var result = RunProcess(Path.GetDirectoryName(assemblyPath)!, "dotnet", args);
 
         var discoveryResult = ExtractDiscoveryResult(result.StdOutput);
 
+        discoveryResult.ConnectorType.Should().NotBeEmpty();
+        discoveryResult.ReqnrollVersion.Should().NotBeEmpty();
+        discoveryResult.ErrorMessage.Should().BeNullOrEmpty();
         discoveryResult.StepDefinitions.Should().NotBeEmpty();
         discoveryResult.SourceFiles.Should().NotBeEmpty();
 
         discoveryResult.AnalyticsProperties.Should().NotBeNull();
-        var analytics = discoveryResult.AnalyticsProperties!
-            .ToDictionary(kvp => kvp.Key, kvp => kvp.Value?.ToString());
-
-        analytics.Should().ContainKeys(
+        discoveryResult.AnalyticsProperties.Should().ContainKeys(
             "Connector",
             "ImageRuntimeVersion",
             "TargetFramework",
@@ -162,6 +102,75 @@ public class SampleValidationTests : TestBase
             "SourcePaths",
             "StepDefinitions",
             "Hooks");
+
+        discoveryResult.Warnings.Should().BeNullOrEmpty();
+    }
+
+    public static TheoryData<string, string, string> GetProjectsForRepository(string repositoryUrl, string excludedFolders)
+    {
+        var theoryData = new TheoryData<string, string, string>();
+        
+        var repositoryDirectory = PrepareRepository(repositoryUrl);
+        var repositoryName = GetRepositoryNameFromUrl(repositoryUrl);
+        var excludeFoldersList = string.IsNullOrEmpty(excludedFolders) ? Array.Empty<string>() : excludedFolders.Split(';');
+
+        var projectsWithFeatures = Directory
+            .EnumerateFiles(repositoryDirectory, "*.*proj", SearchOption.AllDirectories)
+            .Where(projectFile =>
+            {
+                var projectDirectory = Path.GetDirectoryName(projectFile)!;
+                if (excludeFoldersList.Any(exclude => projectDirectory.Contains(exclude)))
+                    return false;
+                return Directory.EnumerateFiles(projectDirectory, "*.feature", SearchOption.AllDirectories).Any();
+            })
+            .ToArray();
+
+        foreach (var projectFile in projectsWithFeatures)
+        {
+            var testDisplayName = $"{Path.GetFileNameWithoutExtension(projectFile)} in {repositoryName}";
+            var relativeProjectFile = Path.GetRelativePath(repositoryDirectory, projectFile);
+            theoryData.Add(testDisplayName, relativeProjectFile, repositoryDirectory);
+        }
+
+        return theoryData;
+    }
+
+    internal static string PrepareRepository(string repositoryUrl)
+    {
+        var repositoryName = GetRepositoryNameFromUrl(repositoryUrl);
+        var rootDirectory = Path.Combine(Path.GetTempPath(), "ReqnrollSamples");
+        Directory.CreateDirectory(rootDirectory);
+
+        var repositoryDirectory = Path.Combine(rootDirectory, repositoryName);
+
+        if (!Directory.Exists(repositoryDirectory))
+        {
+            RunProcessStatic(rootDirectory, "git", $"clone {repositoryUrl} \"{repositoryDirectory}\"");
+        }
+        else
+        {
+            RunProcessStatic(repositoryDirectory, "git", "reset --hard");
+            RunProcessStatic(repositoryDirectory, "git", "clean -fd");
+            RunProcessStatic(repositoryDirectory, "git", "pull");
+        }
+
+        var updateScript = Path.Combine(repositoryDirectory, "update-versions.ps1");
+        if (File.Exists(updateScript))
+        {
+            RunProcessStatic(repositoryDirectory, "powershell", $"-ExecutionPolicy Bypass -File \"{updateScript}\" 3.3.2");
+        }
+
+        return repositoryDirectory;
+    }
+
+    internal static string GetRepositoryNameFromUrl(string repositoryUrl)
+    {
+        var uri = new Uri(repositoryUrl);
+        var lastSegment = uri.Segments.Last().Trim('/');
+        if (lastSegment.EndsWith(".git", StringComparison.OrdinalIgnoreCase))
+            lastSegment = lastSegment[..^4];
+
+        return lastSegment;
     }
 
     private static string GetConnectorPath(string targetFramework)
@@ -172,16 +181,16 @@ public class SampleValidationTests : TestBase
         var assemblyLocation = Assembly.GetExecutingAssembly().Location;
         var testAssemblyDir = Path.GetDirectoryName(assemblyLocation)!;
         var solutionRoot = Path.GetFullPath(Path.Combine(testAssemblyDir, "..", "..", "..", "..", "..", ".."));
-        var connectorDir = Path.Combine(solutionRoot, "Connectors", "bin", "Debug", $"Reqnroll-Generic-{targetFramework}");
+        var connectorDir = Path.Combine(solutionRoot, "Connectors", "bin", ConnectorConfiguration, $"Reqnroll-Generic-{targetFramework}");
         return Path.Combine(connectorDir, "reqnroll-vs.dll");
     }
 
     private static DiscoveryResult ExtractDiscoveryResult(string stdOutput)
     {
         var json = ExtractJson(stdOutput);
-        var deserialized = DeserializeObject<DiscoveryResult>(json);
+        var deserialized = TestBase.DeserializeObject<DiscoveryResult>(json);
         deserialized.Should().NotBeNull($"Cannot deserialize discovery result: {json}");
-        return deserialized!;
+        return deserialized;
     }
 
     private static string ExtractJson(string stdOutput)
@@ -209,4 +218,25 @@ public class SampleValidationTests : TestBase
         var appConfig = Path.Combine(projectDirectory, "App.config");
         return File.Exists(appConfig) ? appConfig : null;
     }
+
+    private static ProcessResult RunProcessInternal(string workingDirectory, string executablePath, string arguments, Action<string> logResult)
+    {
+        logResult($"{workingDirectory}> {executablePath} {arguments}");
+        var result = new ProcessHelper().RunProcess(new ProcessStartInfoEx(workingDirectory, executablePath, arguments));
+
+        if (!string.IsNullOrWhiteSpace(result.StdOutput) && result.ExitCode != 0)
+            logResult(result.StdOutput);
+
+        if (!string.IsNullOrWhiteSpace(result.StdError))
+            logResult(result.StdError);
+
+        result.ExitCode.Should().Be(0, $"command failed: {executablePath} {arguments}");
+        return result;
+    }
+
+    private ProcessResult RunProcess(string workingDirectory, string executablePath, string arguments)
+        => RunProcessInternal(workingDirectory, executablePath, arguments, TestOutputHelper.WriteLine);
+
+    private static void RunProcessStatic(string workingDirectory, string executablePath, string arguments)
+        => RunProcessInternal(workingDirectory, executablePath, arguments, Console.WriteLine);
 }

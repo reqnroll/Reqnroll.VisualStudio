@@ -42,14 +42,14 @@ public class GeneratedProjectTests : TestBase
 
         var discoveryResult = ExtractDiscoveryResult(result.StdOutput);
 
+        discoveryResult.ConnectorType.Should().NotBeEmpty();
+        discoveryResult.ReqnrollVersion.Should().NotBeEmpty();
+        discoveryResult.ErrorMessage.Should().BeNullOrEmpty();
         discoveryResult.StepDefinitions.Should().NotBeEmpty();
         discoveryResult.SourceFiles.Should().NotBeEmpty();
 
         discoveryResult.AnalyticsProperties.Should().NotBeNull();
-        var analytics = discoveryResult.AnalyticsProperties!
-            .ToDictionary(kvp => kvp.Key, kvp => kvp.Value?.ToString());
-
-        analytics.Should().ContainKeys(
+        discoveryResult.AnalyticsProperties.Should().ContainKeys(
             "Connector",
             "ImageRuntimeVersion",
             "TargetFramework",
@@ -60,6 +60,8 @@ public class GeneratedProjectTests : TestBase
             "SourcePaths",
             "StepDefinitions",
             "Hooks");
+
+        discoveryResult.Warnings.Should().BeNullOrEmpty();
     }
 
     private static DiscoveryResult ExtractDiscoveryResult(string stdOutput)
