@@ -197,14 +197,14 @@ jobs:
         name: vsix-v${{ steps.versions.outputs.product_full_version }}
         if-no-files-found: error
         path: "Reqnroll.VisualStudio.Package/bin/${{ steps.versions.outputs.product_configuration }}/net481/*.vsix"
-    - uses: nuget/setup-nuget@v1.2
-    - name: Prepare Connector Tests
-      shell: pwsh
-      run: |
-        cd Tests/ExternalPackages
-        ./buildExternalPackages.ps1
-        cd PackagesForTests
-        nuget install packages.config
+    # - uses: nuget/setup-nuget@v1.2
+    # - name: Prepare Connector Tests
+    #   shell: pwsh
+    #   run: |
+    #     cd Tests/ExternalPackages
+    #     ./buildExternalPackages.ps1
+    #     cd PackagesForTests
+    #     nuget install packages.config
     - name: Upload Connectors
       uses: actions/upload-artifact@v4
       with:
