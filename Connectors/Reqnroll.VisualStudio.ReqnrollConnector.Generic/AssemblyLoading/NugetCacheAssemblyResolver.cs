@@ -5,6 +5,14 @@ namespace ReqnrollConnector.AssemblyLoading;
 
 public class NugetCacheAssemblyResolver : ICompilationAssemblyResolver
 {
+    private const string NetStandard20 = "netstandard2.0";
+    private readonly string _targetFramework;
+
+    public NugetCacheAssemblyResolver(string targetFramework)
+    {
+        _targetFramework = targetFramework;
+    }
+
     public bool TryResolveAssemblyPaths(CompilationLibrary library, List<string>? assemblies)
     {
         if (library.Path == null || assemblies == null)
@@ -15,14 +23,31 @@ public class NugetCacheAssemblyResolver : ICompilationAssemblyResolver
         if (!Directory.Exists(directory))
             return false;
 
-        var libs = Directory.GetDirectories(directory);
-        foreach (var lib in libs)
+        string assemblyFileName = library.Name + ".dll";
+
+        // If the target framework folder exists, use it, even if it doesn't contain the assembly.
+        // An empty folder indicates that the package is included to the target framework by default.
+        if (Directory.Exists(Path.Combine(directory, _targetFramework)))
         {
-            var assemblyFilePath = Path.Combine(lib, library.Name + ".dll");
-            assemblies.Add(assemblyFilePath);
+            assemblies.Add(Path.Combine(directory, _targetFramework, assemblyFileName));
+            return true;
         }
 
-        return libs.Any();
+        // Fallback to netstandard2.0, similarly
+        if (Directory.Exists(Path.Combine(directory, NetStandard20)))
+        {
+            assemblies.Add(Path.Combine(directory, NetStandard20, assemblyFileName));
+            return true;
+        }
+
+        // Finally, check if the assembly exists directly under lib (old .NET Framework style packages)
+        if (Directory.Exists(Path.Combine(directory, assemblyFileName)))
+        {
+            assemblies.Add(Path.Combine(directory, assemblyFileName));
+            return true;
+        }
+
+        return false;
     }
 
     private string NugetCacheExpandedPath()

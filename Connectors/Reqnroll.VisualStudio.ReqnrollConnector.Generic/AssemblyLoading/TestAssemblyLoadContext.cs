@@ -40,7 +40,7 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
             new ReferenceAssemblyPathResolver(),
             new PackageCompilationAssemblyResolver(),
             new AspNetCoreAssemblyResolver(),
-            new NugetCacheAssemblyResolver()
+            new NugetCacheAssemblyResolver(_shortFrameworkName)
         }, _log);
     }
 
