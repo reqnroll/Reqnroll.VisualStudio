@@ -1,3 +1,7 @@
+using Microsoft.Extensions.DependencyModel;
+using Microsoft.Extensions.DependencyModel.Resolution;
+using ReqnrollConnector.Logging;
+
 namespace ReqnrollConnector.AssemblyLoading;
 
 public class RuntimeCompositeCompilationAssemblyResolver : ICompilationAssemblyResolver

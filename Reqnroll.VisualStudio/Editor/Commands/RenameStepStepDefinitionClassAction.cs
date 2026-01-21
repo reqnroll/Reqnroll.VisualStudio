@@ -46,6 +46,9 @@ internal class RenameStepStepDefinitionClassAction : RenameStepAction
             return;
         }
 
+        if (ctx.StepDefinitionBinding.Implementation.SourceLocation == null)
+            return;
+
         var methodLine =
             ctx.TextBufferOfStepDefinitionClass.CurrentSnapshot.GetLineFromLineNumber(ctx.StepDefinitionBinding
                 .Implementation

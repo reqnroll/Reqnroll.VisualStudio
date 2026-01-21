@@ -1,3 +1,5 @@
+using System.Reflection;
+using ReqnrollConnector.Logging;
 using ReqnrollConnector.SourceDiscovery.DnLib;
 
 namespace ReqnrollConnector.SourceDiscovery;
@@ -5,40 +7,63 @@ namespace ReqnrollConnector.SourceDiscovery;
 public class SymbolReaderCache
 {
     private readonly ILogger _log;
-    private readonly Dictionary<Assembly, Option<DeveroomSymbolReader>> _symbolReaders = new(2);
+    private readonly Dictionary<Assembly, DeveroomSymbolReader?> _symbolReaders = new(2);
 
     public SymbolReaderCache(ILogger log)
     {
         _log = log;
     }
 
-    public Option<DeveroomSymbolReader> this[Assembly assembly] => GetOrCreateSymbolReader(assembly);
+    public DeveroomSymbolReader? this[Assembly assembly] => GetOrCreateSymbolReader(assembly);
 
-    private Option<DeveroomSymbolReader> GetOrCreateSymbolReader(Assembly assembly)
+    private DeveroomSymbolReader? GetOrCreateSymbolReader(Assembly assembly)
     {
         if (_symbolReaders.TryGetValue(assembly, out var symbolReader))
             return symbolReader;
 
-        return CreateSymbolReader(assembly.Location)
-            .Or(() => CreateSymbolReader(new Uri(assembly.Location).LocalPath))
-            .Tie(reader => _symbolReaders.Add(assembly, reader));
+        var primaryReader = CreateSymbolReader(assembly.Location);
+        if (primaryReader != null)
+        {
+            _symbolReaders.Add(assembly, primaryReader);
+            return primaryReader;
+        }
+
+        var secondaryReader = CreateSymbolReader(new Uri(assembly.Location).LocalPath);
+        if (secondaryReader != null)
+        {
+            _symbolReaders.Add(assembly, secondaryReader);
+            return secondaryReader;
+        }
+
+        _symbolReaders.Add(assembly, null);
+        return null;
     }
 
-    protected Option<DeveroomSymbolReader> CreateSymbolReader(
-        string assemblyFilePath) =>
-        SymbolReaderFactories(assemblyFilePath)
-            .SelectOptional(TryCreateReader)
-            .FirstOrNone();
+    protected DeveroomSymbolReader? CreateSymbolReader(string assemblyFilePath)
+    {
+        var factories = SymbolReaderFactories(assemblyFilePath);
+        var readerOptions = factories.Select(TryCreateReader).ToList();
+        
+        foreach (var reader in readerOptions)
+        {
+            if (reader != null)
+            {
+                return reader;
+            }
+        }
+        
+        return null;
+    }
 
     private IEnumerable<Func<DeveroomSymbolReader>> SymbolReaderFactories(string path)
     {
-        return new Func<DeveroomSymbolReader>[]
+        return new[]
         {
             () => DnLibDeveroomSymbolReader.Create(_log, path)
         };
     }
 
-    private Option<DeveroomSymbolReader> TryCreateReader(Func<DeveroomSymbolReader> factory)
+    private DeveroomSymbolReader? TryCreateReader(Func<DeveroomSymbolReader> factory)
     {
         try
         {
@@ -49,6 +74,6 @@ public class SymbolReaderCache
             _log.Error(ex.ToString());
         }
 
-        return None<DeveroomSymbolReader>.Value;
+        return null;
     }
 }

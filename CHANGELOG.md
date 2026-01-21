@@ -3,6 +3,7 @@
 ## Improvements:
 
 * Improved handling of scope tag expressions, hook and scope errors (#150)
+* Improved logging for binding discovery (#154)
 
 ## Bug fixes:
 

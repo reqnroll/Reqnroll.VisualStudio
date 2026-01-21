@@ -1,15 +1,14 @@
 using Cucumber.TagExpressions;
-using System;
 
 namespace Reqnroll.VisualStudio.Discovery.TagExpressions;
 public class InvalidTagExpression : ReqnrollTagExpression, ITagExpression
 {
     public string Message { get; }
-    public InvalidTagExpression(ITagExpression expression, string originalTagExpression, string message) : base(expression, originalTagExpression)
+    public InvalidTagExpression(ITagExpression? expression, string originalTagExpression, string message) : base(expression!, originalTagExpression)
     {
         Message = message;
     }
-    public override bool Evaluate(System.Collections.Generic.IEnumerable<string> tags)
+    public override bool Evaluate(IEnumerable<string> tags)
     {
         throw new InvalidOperationException("Cannot evaluate an invalid tag expression: " + Message);
     }

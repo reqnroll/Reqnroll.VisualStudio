@@ -1,6 +1,8 @@
+using System.Collections.Immutable;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 using dnlib.DotNet.Pdb;
+using ReqnrollConnector.Logging;
 using ILogger = ReqnrollConnector.Logging.ILogger;
 
 namespace ReqnrollConnector.SourceDiscovery.DnLib;
@@ -21,59 +23,96 @@ public class DnLibDeveroomSymbolReader : DeveroomSymbolReader
         return new DnLibDeveroomSymbolReader(moduleDefMd);
     }
 
-    public override IEnumerable<MethodSymbolSequencePoint> ReadMethodSymbol(int token) =>
-        _moduleDefMd
-            .ResolveMethod((uint) (token & 0x00FFFFFF))
-            .AsOption()
-            .Map(method => method
-                .Map(GetStateClassType)
-                .Map(stateClassType => stateClassType.Methods
-                        .SelectMany(GetSequencePointsFromMethodBody)
-                        .Union(GetSequencePointsFromMethodBody(method))
-                        .OrderBy(sp => sp.StartLine)
-                    as IEnumerable<MethodSymbolSequencePoint>
-                )
-                .Reduce(GetSequencePointsFromMethodBody(method))
-            )
-            .Reduce(ImmutableArray<MethodSymbolSequencePoint>.Empty);
+    public override IEnumerable<MethodSymbolSequencePoint> ReadMethodSymbol(int token)
+    {
+        var resolvedMethod = _moduleDefMd.ResolveMethod((uint) (token & 0x00FFFFFF));
 
-    private static Option<TypeDef> GetStateClassType(MethodDef method) =>
-        method
+        if (resolvedMethod == null)
+            return ImmutableArray<MethodSymbolSequencePoint>.Empty;
+
+        var stateClassType = GetStateClassType(resolvedMethod);
+
+        if (stateClassType != null)
+        {
+            var stateClassSequencePoints = stateClassType.Methods
+                .SelectMany(GetSequencePointsFromMethodBody)
+                .ToList();
+            var methodSequencePoints = GetSequencePointsFromMethodBody(resolvedMethod).ToList();
+
+            var allSequencePoints = stateClassSequencePoints
+                .Union(methodSequencePoints)
+                .OrderBy(sp => sp.StartLine)
+                .ToList();
+
+            return allSequencePoints;
+        }
+        else
+        {
+            return GetSequencePointsFromMethodBody(resolvedMethod);
+        }
+    }
+
+    private static TypeDef? GetStateClassType(MethodDef method)
+    {
+        var stateMachineDebugInfos = method
             .CustomDebugInfos
             .OfType<PdbStateMachineTypeNameCustomDebugInfo>()
-            .FirstOrNone()
-            .Map(stateMachineDebugInfo => stateMachineDebugInfo.Type)
-            .Or(() => method
-                .CustomAttributes
-                .FirstOrNone(ca => ca
-                    .AttributeType
-                    .FullName == "System.Runtime.CompilerServices.AsyncStateMachineAttribute")
-                .Map(stateMachineAttr => stateMachineAttr
-                    .ConstructorArguments
-                    .Select(ca => ca.Value)
-                    .OfType<TypeDefOrRefSig>()
-                    .Select(td => td.TypeDef)
-                    .FirstOrNone()
-                )
-                .Reduce(None<TypeDef>.Value)
-            );
+            .ToList();
 
-    private IEnumerable<MethodSymbolSequencePoint> GetSequencePointsFromMethodBody(MethodDef methodDef) =>
-        methodDef
-            .AsOption()
-            .MapOptional<CilBody>(md => md.MethodBody as CilBody)
-            .Map(mb => mb
-                .Instructions
-                .Where(IsRelevant)
-                .Select(i => new MethodSymbolSequencePoint(
-                    (int) i.Offset,
-                    GetSourcePath(i.SequencePoint.Document),
-                    i.SequencePoint.StartLine,
-                    i.SequencePoint.EndLine,
-                    i.SequencePoint.StartColumn,
-                    i.SequencePoint.EndColumn)
-                ))
-            .Reduce(() => ImmutableArray<MethodSymbolSequencePoint>.Empty);
+        if (stateMachineDebugInfos.Count > 0)
+        {
+            return stateMachineDebugInfos[0].Type;
+        }
+
+        var asyncAttributes = method
+            .CustomAttributes
+            .Where(ca => ca.AttributeType.FullName == "System.Runtime.CompilerServices.AsyncStateMachineAttribute")
+            .ToList();
+
+        if (asyncAttributes.Count > 0)
+        {
+            var stateMachineAttr = asyncAttributes[0];
+            var typeDefOrRefSigs = stateMachineAttr
+                .ConstructorArguments
+                .Select(ca => ca.Value)
+                .OfType<TypeDefOrRefSig>()
+                .ToList();
+
+            if (typeDefOrRefSigs.Count > 0)
+            {
+                var typeDef = typeDefOrRefSigs[0].TypeDef;
+                if (typeDef != null)
+                    return typeDef;
+            }
+        }
+
+        return null;
+    }
+
+    private IEnumerable<MethodSymbolSequencePoint> GetSequencePointsFromMethodBody(MethodDef methodDef)
+    {
+        if (methodDef == null)
+            return ImmutableArray<MethodSymbolSequencePoint>.Empty;
+
+        var cilBody = methodDef.MethodBody as CilBody;
+        if (cilBody == null)
+            return ImmutableArray<MethodSymbolSequencePoint>.Empty;
+
+        var sequencePoints = cilBody
+            .Instructions
+            .Where(IsRelevant)
+            .Select(i => new MethodSymbolSequencePoint(
+                (int) i.Offset,
+                GetSourcePath(i.SequencePoint.Document),
+                i.SequencePoint.StartLine,
+                i.SequencePoint.EndLine,
+                i.SequencePoint.StartColumn,
+                i.SequencePoint.EndColumn)
+            )
+            .ToList();
+
+        return sequencePoints;
+    }
 
     public static bool IsRelevant(Instruction instruction)
         => instruction.SequencePoint is not null &&

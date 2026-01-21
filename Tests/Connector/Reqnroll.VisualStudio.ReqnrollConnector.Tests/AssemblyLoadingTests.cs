@@ -22,10 +22,10 @@ public class AssemblyLoadingTests
             .EnumerateFiles(path, searchPattern, SearchOption.AllDirectories)
             .Select(Path.GetFullPath)
             .Select(TryLoad)
-            .Where(a => a is Some<Assembly>)
-            .SelectOptional(a => a);
+            .Where(a => a != null)
+            .Cast<Assembly>();
 
-    private static Option<Assembly> TryLoad(string path)
+    private static Assembly? TryLoad(string path)
     {
         try
         {
@@ -33,7 +33,7 @@ public class AssemblyLoadingTests
         }
         catch (Exception)
         {
-            return None.Value;
+            return null;
         }
     }
 
