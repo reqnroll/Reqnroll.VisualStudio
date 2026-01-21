@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Reqnroll.VisualStudio.ReqnrollConnector.Models;
 
 namespace Reqnroll.VisualStudio.ReqnrollConnector.Tests;
@@ -6,13 +7,13 @@ namespace Reqnroll.VisualStudio.ReqnrollConnector.Tests;
 /// This test class validates whether connector can work with various sample projects from external repositories.
 /// It clones/pulls the repository to a temp folder, builds each Reqnroll project, and runs discovery using the connector.
 /// </summary>
-public class SampleValidationTests
+public class ExternalSampleTests
 {
     private const string ConnectorConfiguration = "Debug";
     private const string TargetFrameworkToBeUsedForNet4Projects = "net10.0";
     protected readonly ITestOutputHelper TestOutputHelper;
 
-    public SampleValidationTests(ITestOutputHelper testOutputHelper)
+    public ExternalSampleTests(ITestOutputHelper testOutputHelper)
     {
         TestOutputHelper = testOutputHelper;
     }
@@ -24,8 +25,11 @@ public class SampleValidationTests
         ValidateProject(testCase, projectFile, repositoryDirectory);
     }
 
+    private const string IgnoredExploratoryTestProjects =
+        "SpecFlowCompatibilityProject.Net472;CleanReqnrollProject.Net481.x86";
+
     [Theory]
-    [MemberData(nameof(GetProjectsForRepository), "https://github.com/reqnroll/Reqnroll.ExploratoryTestProjects", "BigReqnrollProject;SpecFlowProject;CleanReqnrollProject.Net481.x86;CustomPlugins.TagDecoratorGeneratorPlugin;OldProjectFileFormat;ReqnrollFormatters.CustomizedHtml;ReqnrollPlugins.Verify;SpecFlowCompatibilityProject.Net472;VisualBasicProject.XUnitFw")]
+    [MemberData(nameof(GetProjectsForRepository), "https://github.com/reqnroll/Reqnroll.ExploratoryTestProjects", $"BigReqnrollProject;SpecFlowProject;OldProjectFileFormat.Empty;ReqnrollFormatters.CustomizedHtml;{IgnoredExploratoryTestProjects}")]
     public void ExploratoryTestProjects(string testCase, string projectFile, string repositoryDirectory)
     {
         ValidateProject(testCase, projectFile, repositoryDirectory);
@@ -48,10 +52,24 @@ public class SampleValidationTests
 
     private void BuildAndInspectProject(string repositoryDirectory, string projectFile)
     {
+        var projectDirectory = Path.GetDirectoryName(projectFile)!;
+        bool isPackagesStyleProject = File.Exists(Path.Combine(projectDirectory, "packages.config"));
+
+        if (isPackagesStyleProject)
+        {
+            TestOutputHelper.WriteLine($"Restore packages.config dependencies for {projectFile}");
+            var solutionFolder = Path.GetFullPath(Path.Combine(projectDirectory, ".."));
+            string nugetPath = Path.Combine(solutionFolder, "nuget.exe");
+            if (!File.Exists(nugetPath))
+            {
+                RunProcess(solutionFolder, "curl", "-o nuget.exe https://dist.nuget.org/win-x86-commandline/latest/nuget.exe");
+            }
+            RunProcess(solutionFolder, nugetPath, "restore");
+        }
+
         TestOutputHelper.WriteLine($"Building {projectFile}");
         RunProcess(repositoryDirectory, "dotnet", $"build \"{projectFile}\"");
 
-        var projectDirectory = Path.GetDirectoryName(projectFile)!;
         var projectName = Path.GetFileNameWithoutExtension(projectFile);
         var configPath = GetConfigFile(projectDirectory);
         TestOutputHelper.WriteLine(configPath is null ? "No config file found" : $"Config: {configPath}");
@@ -59,14 +77,35 @@ public class SampleValidationTests
         var debugDirectory = Path.Combine(projectDirectory, "bin", "Debug");
         Directory.Exists(debugDirectory).Should().BeTrue($"Build output folder not found for {projectFile}");
 
-        var targetFrameworkDirectories = Directory.EnumerateDirectories(debugDirectory).ToArray();
-        targetFrameworkDirectories.Should().NotBeEmpty($"No target frameworks found under {debugDirectory}");
+        var assembliesToCheck = isPackagesStyleProject 
+            ? GetAssembliesToCheckPackagesStyle()
+            : GetAssembliesToCheckSdkStyle();
 
-        foreach (var tfmDirectory in targetFrameworkDirectories)
+        (string targetFramework, string? assemblyPath)[] GetAssembliesToCheckSdkStyle()
         {
-            var targetFramework = Path.GetFileName(tfmDirectory);
-            var assemblyPath = FindAssembly(tfmDirectory, projectName);
-            assemblyPath.Should().NotBeNull($"Cannot find assembly {projectName}.dll under {tfmDirectory}");
+            var targetFrameworkDirectories = Directory.EnumerateDirectories(debugDirectory).ToArray();
+            targetFrameworkDirectories.Should().NotBeEmpty($"No target frameworks found under {debugDirectory}");
+            return targetFrameworkDirectories.Select(tfmDirectory =>
+            {
+                var targetFramework = Path.GetFileName(tfmDirectory);
+                var assemblyPath = FindAssembly(tfmDirectory, projectName);
+                return (targetFramework, assemblyPath);
+            }).ToArray();
+        }
+
+        (string targetFramework, string? assemblyPath)[] GetAssembliesToCheckPackagesStyle()
+        {
+            var projectFileContent = File.ReadAllText(projectFile);
+            var targetFrameworkMatch = Regex.Match(projectFileContent, "<TargetFrameworkVersion>v(?<tfm>\\d+\\.\\d+.\\d+)</TargetFrameworkVersion>");
+            targetFrameworkMatch.Success.Should().BeTrue($"Cannot determine target framework from {projectFile}");
+            var targetFramework = "net" + targetFrameworkMatch.Groups["tfm"].Value.Replace(".", string.Empty);
+            var assemblyPath = FindAssembly(debugDirectory, projectName);
+            return new[] { (targetFramework, assemblyPath) };
+        }
+
+        foreach (var (targetFramework, assemblyPath) in assembliesToCheck)
+        {
+            assemblyPath.Should().NotBeNull($"Cannot find assembly {projectName}.dll under {Path.GetDirectoryName(assemblyPath)}");
 
             TestOutputHelper.WriteLine($"{targetFramework}: {assemblyPath}");
             CheckConnector(targetFramework, assemblyPath, configPath);
@@ -121,7 +160,7 @@ public class SampleValidationTests
         
         var repositoryDirectory = PrepareRepository(repositoryUrl);
         var repositoryName = GetRepositoryNameFromUrl(repositoryUrl);
-        var excludeFoldersList = string.IsNullOrEmpty(excludedFolders) ? Array.Empty<string>() : excludedFolders.Split(';');
+        var excludeFoldersList = string.IsNullOrEmpty(excludedFolders) ? Array.Empty<string>() : excludedFolders.Split(';').Where(folder => !string.IsNullOrWhiteSpace(folder)).ToArray();
 
         var projectsWithFeatures = Directory
             .EnumerateFiles(repositoryDirectory, "*.*proj", SearchOption.AllDirectories)
@@ -139,7 +178,10 @@ public class SampleValidationTests
             var testDisplayName = $"{Path.GetFileNameWithoutExtension(projectFile)} in {repositoryName}";
             var relativeProjectFile = Path.GetRelativePath(repositoryDirectory, projectFile);
             theoryData.Add(testDisplayName, relativeProjectFile, repositoryDirectory);
+            Console.WriteLine($"  Test added: {testDisplayName} ({relativeProjectFile})");
         }
+
+        Console.WriteLine($"Total tests added: {projectsWithFeatures.Length}");
 
         return theoryData;
     }
