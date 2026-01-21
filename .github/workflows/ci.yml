@@ -61,11 +61,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    # - name: Setup .NET
-    #   uses: actions/setup-dotnet@v4
-    #   # For a full NET 10.0 build, we also need MsBuild related to .NET 10 (requires VS 2026) is also available on the image
-    #   with:
-    #     dotnet-version: 10.0.x
     - id: versions
       name: Calculate versions
       shell: pwsh
@@ -197,14 +192,6 @@ jobs:
         name: vsix-v${{ steps.versions.outputs.product_full_version }}
         if-no-files-found: error
         path: "Reqnroll.VisualStudio.Package/bin/${{ steps.versions.outputs.product_configuration }}/net481/*.vsix"
-    # - uses: nuget/setup-nuget@v1.2
-    # - name: Prepare Connector Tests
-    #   shell: pwsh
-    #   run: |
-    #     cd Tests/ExternalPackages
-    #     ./buildExternalPackages.ps1
-    #     cd PackagesForTests
-    #     nuget install packages.config
     - name: Upload Connectors
       uses: actions/upload-artifact@v4
       with:
@@ -232,12 +219,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    # - name: Setup .NET
-    #   uses: actions/setup-dotnet@v4
-    #   with:
-    #     dotnet-version: 10.0.x
-    # - name: Add MsBuild to PATH
-    #   uses: microsoft/setup-msbuild@v1.3
     - name: Download Connector Tests
       uses: actions/download-artifact@v4
       with:
@@ -264,12 +245,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    # - name: Setup .NET
-    #   uses: actions/setup-dotnet@v4
-    #   with:
-    #     dotnet-version: 10.0.x
-    # - name: Add MsBuild to PATH
-    #   uses: microsoft/setup-msbuild@v1.3
     - name: Download Specs Tests
       uses: actions/download-artifact@v4
       with:
