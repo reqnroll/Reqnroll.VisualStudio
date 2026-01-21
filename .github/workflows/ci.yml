@@ -205,6 +205,12 @@ jobs:
         ./buildExternalPackages.ps1
         cd PackagesForTests
         nuget install packages.config
+    - name: Upload Connectors
+      uses: actions/upload-artifact@v4
+      with:
+        name: Connectors
+        if-no-files-found: error
+        path: Connectors/bin/${{ steps.versions.outputs.product_configuration }}
     - name: Upload Connector Tests
       uses: actions/upload-artifact@v4
       with:
@@ -216,7 +222,9 @@ jobs:
       with:
         name: SpecsTests
         if-no-files-found: error
-        path: Tests/Reqnroll.VisualStudio.Specs/bin/
+        path: |
+          Tests/Reqnroll.VisualStudio.Specs/bin/
+          !Tests/Reqnroll.VisualStudio.Specs/bin/**/Connectors/
 
   connector-tests:
     runs-on: windows-latest
@@ -235,6 +243,11 @@ jobs:
       with:
         name: ConnectorTests
         path: Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.Tests/bin/
+    - name: Download Connectors
+      uses: actions/download-artifact@v4
+      with:
+        name: Connectors
+        path: Connectors/bin/${{ needs.build.outputs.product_configuration }}
     - name: Connector Tests
       run: dotnet test ./Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.Tests/bin/${{ needs.build.outputs.product_configuration }}/*/Reqnroll.VisualStudio.ReqnrollConnector.Tests.dll ${{ needs.build.outputs.test_params }}
     - name: Upload Test Result TRX Files
@@ -262,6 +275,11 @@ jobs:
       with:
         name: SpecsTests
         path: Tests/Reqnroll.VisualStudio.Specs/bin/
+    - name: Download Connectors
+      uses: actions/download-artifact@v4
+      with:
+        name: Connectors
+        path: Tests/Reqnroll.VisualStudio.Specs/bin/${{ needs.build.outputs.product_configuration }}/net481/Connectors
     - name: Specs Tests
       run: >
         dotnet test ./Tests/Reqnroll.VisualStudio.Specs/bin/${{ needs.build.outputs.product_configuration }}/*/Reqnroll.VisualStudio.Specs.dll 
