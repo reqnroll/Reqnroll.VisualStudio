@@ -4,13 +4,21 @@
   <PropertyGroup>
     <ConnectorOutputDir>$(MSBuildThisFileDirectory)bin\$(Configuration)</ConnectorOutputDir>
   </PropertyGroup>
-  <ItemGroup>
-    <Content Include="$(ConnectorOutputDir)\**\*.*">
-      <Link>Connectors\%(RecursiveDir)%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <Visible>False</Visible>
-      <VSIXSubPath>Connectors\%(RecursiveDir)</VSIXSubPath>
-    </Content>
-  </ItemGroup>
+
+  <Target Name="IncludeConnectorsToOutput"
+          BeforeTargets="CopyAdditionalFiles">
+
+    <ItemGroup>
+      <ConnectorFiles Include="$(ConnectorOutputDir)\**\*.*" />
+    </ItemGroup>
+    <ItemGroup>
+      <Content Include="@(ConnectorFiles)">
+        <Link>Connectors\%(RecursiveDir)%(Filename)%(Extension)</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <IncludeInVSIX>true</IncludeInVSIX>
+        <Visible>False</Visible>
+        <VSIXSubPath>Connectors\%(RecursiveDir)</VSIXSubPath>
+      </Content>
+    </ItemGroup>
+  </Target>
 </Project>
