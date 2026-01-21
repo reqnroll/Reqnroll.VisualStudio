@@ -28,7 +28,7 @@ public class ExternalSampleTests
     }
 
     private const string IgnoredExploratoryTestProjects =
-        "SpecFlowCompatibilityProject.Net472;CleanReqnrollProject.Net481.x86;VsExtConnectorTestSamples";
+        "SpecFlowCompatibilityProject.Net472;CleanReqnrollProject.Net481.x86;VsExtConnectorTestSamples.NetFwSystemDataDep";
 
     [Theory]
     [MemberData(nameof(GetProjectsForRepository), "https://github.com/reqnroll/Reqnroll.ExploratoryTestProjects", $"BigReqnrollProject;SpecFlowProject;OldProjectFileFormat.Empty;ReqnrollFormatters.CustomizedHtml;CustomPlugins.TagDecoratorGeneratorPlugin;{IgnoredExploratoryTestProjects}")]
