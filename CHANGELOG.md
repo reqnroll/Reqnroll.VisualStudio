@@ -7,6 +7,8 @@
 
 ## Bug fixes:
 
+* Fix: Binding discovery for .NET 10 projects that depend on an ASP.NET project and use the MSDI plugin (#156)
+
 *Contributors of this release (in alphabetical order):* @clrudolphi, @gasparnagy
 
 # v2025.3.395 - 2025-12-17
