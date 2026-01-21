@@ -31,7 +31,7 @@ public class ExternalSampleTests
         "SpecFlowCompatibilityProject.Net472;CleanReqnrollProject.Net481.x86;VsExtConnectorTestSamples";
 
     [Theory]
-    [MemberData(nameof(GetProjectsForRepository), "https://github.com/reqnroll/Reqnroll.ExploratoryTestProjects", $"BigReqnrollProject;SpecFlowProject;OldProjectFileFormat.Empty;ReqnrollFormatters.CustomizedHtml;{IgnoredExploratoryTestProjects}")]
+    [MemberData(nameof(GetProjectsForRepository), "https://github.com/reqnroll/Reqnroll.ExploratoryTestProjects", $"BigReqnrollProject;SpecFlowProject;OldProjectFileFormat.Empty;ReqnrollFormatters.CustomizedHtml;CustomPlugins.TagDecoratorGeneratorPlugin;{IgnoredExploratoryTestProjects}")]
     public void ExploratoryTestProjects(string testCase, string projectFile, string repositoryDirectory)
     {
         ValidateProject(testCase, projectFile, repositoryDirectory);
