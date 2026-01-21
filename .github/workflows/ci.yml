@@ -38,6 +38,8 @@ on:
 permissions:
   checks: write
 
+env:
+  REQNROLL_TEST_PIPELINEMODE: true
 
 jobs:
   build:
@@ -59,11 +61,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      # For a full NET 10.0 build, we also need MsBuild related to .NET 10 (requires VS 2026) is also available on the image
-      with:
-        dotnet-version: 10.0.x
     - id: versions
       name: Calculate versions
       shell: pwsh
@@ -149,7 +146,7 @@ jobs:
 
         # Calculate 'build_params'
         # configuration is handled in a special way during build, hence not included here
-        $buildParams = "-p:VersionSuffix=$versionSuffix -property:ReqnrollBuildNumber=$patchVersion"
+        $buildParams = "-v:quiet -p:VersionSuffix=$versionSuffix -property:ReqnrollBuildNumber=$patchVersion"
         Write-Output "build_params=$buildParams" >> $env:GITHUB_OUTPUT
         Write-Output "Build Params: $buildParams"
 
@@ -181,15 +178,10 @@ jobs:
       run: |
         cd Connectors
         .\build.ps1 -configuration ${{ steps.versions.outputs.product_configuration }} -additionalArgs "${{ steps.build_params.outputs.main_build_params }}"
-    - name: Install Test Report Dependencies
-      run: | 
-          dotnet add ./Tests/Reqnroll.VisualStudio.Specs/Reqnroll.VisualStudio.Specs.csproj package GitHubActionsTestLogger
-          dotnet add ./Tests/Reqnroll.VisualStudio.Tests/Reqnroll.VisualStudio.Tests.csproj package GitHubActionsTestLogger
-          dotnet add ./Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.Tests/Reqnroll.VisualStudio.ReqnrollConnector.Tests.csproj package GitHubActionsTestLogger
     - name: Add MsBuild to PATH
       uses: microsoft/setup-msbuild@v1.3
     - name: Build
-      run: msbuild -restore -property:DeployExtension=false -property:Configuration=${{ steps.versions.outputs.product_configuration }} ${{ steps.build_params.outputs.main_build_params }} 
+      run: msbuild -property:NuGetRestorePackages=false -property:DeployExtension=false -property:Configuration=${{ steps.versions.outputs.product_configuration }} ${{ steps.build_params.outputs.main_build_params }} 
     - name: Unit Tests
       run: dotnet test ./Tests/Reqnroll.VisualStudio.Tests/Reqnroll.VisualStudio.Tests.csproj ${{ steps.build_params.outputs.test_params }}
     - name: Review modified files
@@ -200,32 +192,85 @@ jobs:
         name: vsix-v${{ steps.versions.outputs.product_full_version }}
         if-no-files-found: error
         path: "Reqnroll.VisualStudio.Package/bin/${{ steps.versions.outputs.product_configuration }}/net481/*.vsix"
-    - uses: nuget/setup-nuget@v1.2
-    - name: Prepare Connector Tests
-      shell: pwsh
-      run: |
-        cd Tests/ExternalPackages
-        ./buildExternalPackages.ps1
-        cd PackagesForTests
-        nuget install packages.config
+    - name: Upload Connectors
+      uses: actions/upload-artifact@v4
+      with:
+        name: Connectors
+        if-no-files-found: error
+        path: Connectors/bin/${{ steps.versions.outputs.product_configuration }}
+    - name: Upload Connector Tests
+      uses: actions/upload-artifact@v4
+      with:
+        name: ConnectorTests
+        if-no-files-found: error
+        path: Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.Tests/bin/
+    - name: Upload Specs Tests
+      uses: actions/upload-artifact@v4
+      with:
+        name: SpecsTests
+        if-no-files-found: error
+        path: |
+          Tests/Reqnroll.VisualStudio.Specs/bin/
+          !Tests/Reqnroll.VisualStudio.Specs/bin/**/Connectors/
+
+  connector-tests:
+    runs-on: windows-latest
+    needs: build
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Download Connector Tests
+      uses: actions/download-artifact@v4
+      with:
+        name: ConnectorTests
+        path: Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.Tests/bin/
+    - name: Download Connectors
+      uses: actions/download-artifact@v4
+      with:
+        name: Connectors
+        path: Connectors/bin/${{ needs.build.outputs.product_configuration }}
     - name: Connector Tests
-      run: dotnet test ./Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.Tests/Reqnroll.VisualStudio.ReqnrollConnector.Tests.csproj ${{ steps.build_params.outputs.test_params }}
-    - name: Specs Tests
-      run: >
-        dotnet test ./Tests/Reqnroll.VisualStudio.Specs/Reqnroll.VisualStudio.Specs.csproj 
-        --filter "Category!=quarantine"
-        ${{ steps.build_params.outputs.test_params }} 
+      run: dotnet test ./Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.Tests/bin/${{ needs.build.outputs.product_configuration }}/*/Reqnroll.VisualStudio.ReqnrollConnector.Tests.dll ${{ needs.build.outputs.test_params }}
     - name: Upload Test Result TRX Files
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: build-trx-v${{ steps.versions.outputs.product_full_version }}
+        name: connector-tests-trx-v${{ needs.build.outputs.product_full_version }}
+        if-no-files-found: error
+        path: "**/*.trx"
+
+  specs-tests:
+    runs-on: windows-latest
+    needs: build
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Download Specs Tests
+      uses: actions/download-artifact@v4
+      with:
+        name: SpecsTests
+        path: Tests/Reqnroll.VisualStudio.Specs/bin/
+    - name: Download Connectors
+      uses: actions/download-artifact@v4
+      with:
+        name: Connectors
+        path: Tests/Reqnroll.VisualStudio.Specs/bin/${{ needs.build.outputs.product_configuration }}/net481/Connectors
+    - name: Specs Tests
+      run: >
+        dotnet test ./Tests/Reqnroll.VisualStudio.Specs/bin/${{ needs.build.outputs.product_configuration }}/*/Reqnroll.VisualStudio.Specs.dll 
+        --filter "Category!=quarantine"
+        ${{ needs.build.outputs.test_params }}
+    - name: Upload Test Result TRX Files
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: specs-tests-trx-v${{ needs.build.outputs.product_full_version }}
         if-no-files-found: error
         path: "**/*.trx"
         
   release:
     runs-on: windows-latest
-    needs: [build]
+    needs: [build, connector-tests, specs-tests]
     environment: production_environment
     if: github.ref == 'refs/heads/main' && needs.build.outputs.deploy_packages == 'true'
     permissions:
