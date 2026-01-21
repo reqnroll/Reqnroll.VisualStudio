@@ -28,7 +28,8 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
         var loadedDependencyContext = DependencyContext.Load(TestAssembly);
         _dependencyContext = loadedDependencyContext ?? DependencyContext.Default!;
         _log.Info(loadedDependencyContext == null ? "Default dependency context used" : "Dependency context (.deps.json) loaded");
-        _shortFrameworkName = FrameworkMonikerConverter.TryGetShortFrameworkName(_dependencyContext.Target.Framework, out string value) ? value : 
+        _shortFrameworkName = FrameworkMonikerConverter.TryGetShortFrameworkName(_dependencyContext.Target.Framework, out string value) ? value :
+            //NOTE: Using the default context's framework name as fallback cause incorrect framework name for .NET Framework projects, where there is no deps.json file. Currently, for those the framework name of the connector itself is used (e.g. net10.0). In DiscoveryExecutor we calculate the correct framework name from the assembly attributes, maybe we should update it here... (but then NugetCacheAssemblyResolver should get only a provider, not the value)
             FrameworkMonikerConverter.GetShortFrameworkName(DependencyContext.Default!.Target.Framework); // use the framework name of the connector itself as fallback
         _log.Info($"Target framework: {_dependencyContext.Target.Framework}/{_shortFrameworkName}");
         _rids = GetRids(GetRuntimeFallbacks()).ToArray();
