@@ -11,6 +11,8 @@ public class ExternalSampleTests
 {
     private const string ConnectorConfiguration = "Debug";
     private const string TargetFrameworkToBeUsedForNet4Projects = "net10.0";
+    private static readonly string LatestReqnrollVersion = NuGetPackageVersionDetector.DetectLatestPackage("Reqnroll", Console.WriteLine) ?? "1.0.0";
+
     protected readonly ITestOutputHelper TestOutputHelper;
 
     public ExternalSampleTests(ITestOutputHelper testOutputHelper)
@@ -26,7 +28,7 @@ public class ExternalSampleTests
     }
 
     private const string IgnoredExploratoryTestProjects =
-        "SpecFlowCompatibilityProject.Net472;CleanReqnrollProject.Net481.x86";
+        "SpecFlowCompatibilityProject.Net472;CleanReqnrollProject.Net481.x86;VsExtConnectorTestSamples";
 
     [Theory]
     [MemberData(nameof(GetProjectsForRepository), "https://github.com/reqnroll/Reqnroll.ExploratoryTestProjects", $"BigReqnrollProject;SpecFlowProject;OldProjectFileFormat.Empty;ReqnrollFormatters.CustomizedHtml;{IgnoredExploratoryTestProjects}")]
@@ -217,7 +219,7 @@ public class ExternalSampleTests
         var updateScript = Path.Combine(repositoryDirectory, "update-versions.ps1");
         if (File.Exists(updateScript))
         {
-            RunProcessStatic(repositoryDirectory, "powershell", $"-ExecutionPolicy Bypass -File \"{updateScript}\" 3.3.2");
+            RunProcessStatic(repositoryDirectory, "powershell", $"-ExecutionPolicy Bypass -File \"{updateScript}\" {LatestReqnrollVersion}");
         }
 
         return repositoryDirectory;
