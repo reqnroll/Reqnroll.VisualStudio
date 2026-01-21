@@ -38,6 +38,8 @@ on:
 permissions:
   checks: write
 
+env:
+  REQNROLL_TEST_PIPELINEMODE: true
 
 jobs:
   build:
@@ -181,11 +183,6 @@ jobs:
       run: |
         cd Connectors
         .\build.ps1 -configuration ${{ steps.versions.outputs.product_configuration }} -additionalArgs "${{ steps.build_params.outputs.main_build_params }}"
-    - name: Install Test Report Dependencies
-      run: | 
-          dotnet add ./Tests/Reqnroll.VisualStudio.Specs/Reqnroll.VisualStudio.Specs.csproj package GitHubActionsTestLogger
-          dotnet add ./Tests/Reqnroll.VisualStudio.Tests/Reqnroll.VisualStudio.Tests.csproj package GitHubActionsTestLogger
-          dotnet add ./Tests/Connector/Reqnroll.VisualStudio.ReqnrollConnector.Tests/Reqnroll.VisualStudio.ReqnrollConnector.Tests.csproj package GitHubActionsTestLogger
     - name: Add MsBuild to PATH
       uses: microsoft/setup-msbuild@v1.3
     - name: Build
