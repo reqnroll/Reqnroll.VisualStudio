@@ -186,6 +186,12 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
 
     private CompilationLibrary GetRequestedLibrary(AssemblyName assemblyName)
     {
+        // Using a x.y.z path allows finding the library in NuGet cache folders.
+        // This causes problems with System.* assemblies (e.g. System.Text.Encodings.Web in .NET 8.0), so we use the full version string for those.
+        string path = !assemblyName.Name!.StartsWith("System.", StringComparison.InvariantCultureIgnoreCase) ?
+                Path.Combine(assemblyName.Name!, $"{assemblyName.Version!.Major}.{assemblyName.Version!.Minor}.{assemblyName.Version!.MajorRevision}".ToString()) :
+                Path.Combine(assemblyName.Name!, $"{assemblyName.Version}".ToString());
+
         // This reference might help finding dependencies that are otherwise not listed in the
         // deps.json file of the test assembly. E.g. Microsoft.AspNetCore.Hosting.Abstractions in the ReqOverflow.Specs.API project of the https://github.com/reqnroll/Sample-ReqOverflow sample
         return new CompilationLibrary(
@@ -196,7 +202,7 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
             new[] {assemblyName.Name + ".dll"},
             Array.Empty<Dependency>(),
             true,
-            Path.Combine(assemblyName.Name!, $"{assemblyName.Version!.Major}.{assemblyName.Version!.Minor}.{assemblyName.Version!.MajorRevision}".ToString()),
+            path,
             string.Empty);
     }
 
