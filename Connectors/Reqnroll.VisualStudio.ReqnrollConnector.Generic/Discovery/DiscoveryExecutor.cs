@@ -64,7 +64,7 @@ public class DiscoveryExecutor
         }
         catch (Exception ex)
         {
-            return CreateErrorResult(analytics, $"Could not transform discovery result.", ex);
+            return CreateErrorResult(analytics, "Could not transform discovery result.", ex);
         }
 
         return new DiscoveryResult
