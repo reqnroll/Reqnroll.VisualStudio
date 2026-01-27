@@ -2,11 +2,14 @@
 
 namespace Reqnroll.VisualStudio.Tests.Editor.Commands;
 
+[UseReporter /*(typeof(VisualStudioReporter))*/]
+[UseApprovalSubdirectory("../ApprovalTestData")]
 public class DefineStepsCommandTests : CommandTestBase<DefineStepsCommand>
 {
     public DefineStepsCommandTests(ITestOutputHelper testOutputHelper)
         : base(testOutputHelper, (ps, tp) =>
-                new DefineStepsCommand(ps.IdeScope, new StubBufferTagAggregatorFactoryService(tp), tp),
+                new DefineStepsCommand(ps.IdeScope, new StubBufferTagAggregatorFactoryService(tp), tp,
+                    new StubEditorConfigOptionsProvider()),
             "ShowProblem: User Notification: ")
     {
     }
@@ -66,5 +69,80 @@ public class DefineStepsCommandTests : CommandTestBase<DefineStepsCommand>
         createdStepDefinitionContent.Should().Contain(expression);
 
         await BindingRegistryIsModified(expression);
+    }
+
+    [Theory]
+    [InlineData(ProjectType.Reqnroll, NamespaceStyle.BlockScoped)]
+    [InlineData(ProjectType.Reqnroll, NamespaceStyle.FileScoped)]
+    [InlineData(ProjectType.SpecFlow, NamespaceStyle.BlockScoped)]
+    [InlineData(ProjectType.SpecFlow, NamespaceStyle.FileScoped)]
+    public void GenerateStepDefinitionClass(ProjectType projectType, NamespaceStyle namespaceStyle)
+    {
+        // Arrange
+        // Snippet should have single indentation (4 spaces) which will be used for file-scoped namespaces
+        // and will have extra indentation added for block-scoped namespaces
+        var snippet = """
+            [When(@"I press add")]
+            public void WhenIPressAdd()
+            {
+                throw new PendingStepException();
+            }
+        """;
+        const string className = "Feature1StepDefinitions";
+        const string @namespace = "MyNamespace.MyProject";
+
+        var projectTraits = GetProjectTraits(projectType);
+        var csharpConfig = new CSharpCodeGenerationConfiguration
+        {
+            NamespaceDeclarationStyle = GetNamespaceStyleValue(namespaceStyle)
+        };
+
+        // Act
+        var result = DefineStepsCommand.GenerateStepDefinitionClass(
+            snippet, className, @namespace, projectTraits, csharpConfig, "    ", Environment.NewLine);
+
+        // Assert
+        VerifyWithScenario(result, projectType, namespaceStyle);
+    }
+
+    private static void VerifyWithScenario(string result, ProjectType projectType, NamespaceStyle namespaceStyle)
+    {
+        var scenarioName = $"{projectType}_{namespaceStyle}";
+        using (ApprovalResults.ForScenario(scenarioName))
+        {
+            Approvals.Verify(result);
+        }
+    }
+
+    private static ReqnrollProjectTraits GetProjectTraits(ProjectType projectType)
+    {
+        return projectType switch
+        {
+            ProjectType.Reqnroll => ReqnrollProjectTraits.CucumberExpression | ReqnrollProjectTraits.MsBuildGeneration,
+            ProjectType.SpecFlow => ReqnrollProjectTraits.LegacySpecFlow | ReqnrollProjectTraits.CucumberExpression | ReqnrollProjectTraits.MsBuildGeneration,
+            _ => throw new ArgumentOutOfRangeException(nameof(projectType))
+        };
+    }
+
+    private static string GetNamespaceStyleValue(NamespaceStyle namespaceStyle)
+    {
+        return namespaceStyle switch
+        {
+            NamespaceStyle.BlockScoped => "block_scoped",
+            NamespaceStyle.FileScoped => "file_scoped",
+            _ => throw new ArgumentOutOfRangeException(nameof(namespaceStyle))
+        };
+    }
+
+    public enum ProjectType
+    {
+        Reqnroll,
+        SpecFlow
+    }
+
+    public enum NamespaceStyle
+    {
+        BlockScoped,
+        FileScoped
     }
 }

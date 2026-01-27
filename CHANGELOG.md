@@ -2,6 +2,7 @@
 
 ## Improvements:
 
+* Support file scoped namespace declarations when generating code (#140)
 * Improved handling of scope tag expressions, hook and scope errors (#150)
 * Improved logging for binding discovery (#154)
 
@@ -9,7 +10,7 @@
 
 * Fix: Binding discovery for .NET 10 projects that depend on an ASP.NET project and use the MSDI plugin (#156)
 
-*Contributors of this release (in alphabetical order):* @clrudolphi, @gasparnagy
+*Contributors of this release (in alphabetical order):* @304NotModified, @clrudolphi, @gasparnagy
 
 # v2025.3.395 - 2025-12-17
 
