@@ -2,4 +2,8 @@
   <Folder Name="/ReqnrollCalculator/">
     <Project Path="VsExtConnectorTestSamples.ReqnrollCalculator.Tests/VsExtConnectorTestSamples.ReqnrollCalculator.Tests.csproj" />
   </Folder>
+  <Folder Name="/AspNetAndMSDI/">
+    <Project Path="VsExtConnectorTestSamples.AspNetAndMSDI.App/VsExtConnectorTestSamples.AspNetAndMSDI.App.csproj" />
+    <Project Path="VsExtConnectorTestSamples.AspNetAndMSDI.Tests/VsExtConnectorTestSamples.AspNetAndMSDI.Tests.csproj" />
+  </Folder>
 </Solution>
