@@ -73,6 +73,8 @@ public class DiscoveryExecutor
             Hooks = discoveryResult.Hooks,
             SourceFiles = new Dictionary<string, string>(discoveryResult.SourceFiles),
             TypeNames = new Dictionary<string, string>(discoveryResult.TypeNames),
+            GenericBindingErrors = discoveryResult.GenericBindingErrors,
+            LogMessages = discoveryResult.TypeLoadErrors.Select(e => $"Type or method has been skipped: {e}").ToArray(),
             AnalyticsProperties = analytics.ToDictionary()
         };
     }

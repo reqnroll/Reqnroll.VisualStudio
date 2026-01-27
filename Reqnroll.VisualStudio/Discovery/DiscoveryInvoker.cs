@@ -102,6 +102,36 @@ internal class DiscoveryInvoker
             _discoveryResult = discoveryResultProvider.RunDiscovery(_testAssemblySource.FilePath,
                 _projectSettings.ReqnrollConfigFilePath, _projectSettings);
 
+            if (_discoveryResult.LogMessages is { Length: > 0 })
+            {
+                foreach (var logMessage in _discoveryResult.LogMessages)
+                {
+                    var lines = logMessage.Trim().Split(new[] {'\n', '\r'}, StringSplitOptions.RemoveEmptyEntries);
+                    _logger.LogInfo(lines[0]);
+                    if (lines.Length > 1)
+                    {
+                        _logger.LogVerbose($"Additional details:{Environment.NewLine}{string.Join(Environment.NewLine, lines.Skip(1))}");
+                    }
+                }
+            }
+
+            if (_discoveryResult.Warnings is { Length: > 0 })
+            {
+                foreach (string warning in _discoveryResult.Warnings)
+                {
+                    _logger.LogWarning(warning);
+                    _errorListServices.AddErrors(new[]
+                    {
+                        new DeveroomUserError
+                        {
+                            Category = DeveroomUserErrorCategory.Discovery,
+                            Message = warning,
+                            Type = TaskErrorCategory.Warning
+                        }
+                    });
+                }
+            }
+
             if (!_discoveryResult.IsFailed)
                 return this;
 
@@ -142,10 +172,30 @@ internal class DiscoveryInvoker
             _logger.LogInfo(
                 $"{_stepDefinitions.Length} step definitions and {_hooks.Length} hooks discovered for project {projectName}");
 
+            ReportGenericBindingErrors();
             ReportInvalidStepDefinitions();
             ReportInvalidHooks();
 
             return this;
+        }
+
+        private void ReportGenericBindingErrors()
+        {
+            if (_discoveryResult.GenericBindingErrors == null || !_discoveryResult.GenericBindingErrors.Any())
+                return;
+
+            _logger.LogWarning($"Generic binding errors found: {Environment.NewLine}" +
+                               string.Join(Environment.NewLine, _discoveryResult.GenericBindingErrors));
+
+            _errorListServices.AddErrors(
+                _discoveryResult.GenericBindingErrors
+                                .Select(errorMessage => new DeveroomUserError
+                                {
+                                    Category = DeveroomUserErrorCategory.Discovery,
+                                    Message = errorMessage,
+                                    Type = TaskErrorCategory.Error
+                                })
+            );
         }
 
         public ProjectBindingRegistry AndCreateBindingRegistry(IMonitoringService monitoringService)
