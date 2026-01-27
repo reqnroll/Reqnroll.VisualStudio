@@ -3,6 +3,7 @@
 ## Improvements:
 
 * Support file scoped namespace declarations when generating code (#140)
+* Report generic binding errors and log type load errors of binding discovery (#157)
 
 ## Bug fixes:
 
