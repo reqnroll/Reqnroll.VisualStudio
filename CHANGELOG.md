@@ -2,12 +2,14 @@
 
 ## Improvements:
 
-* Improved handling of scope tag expressions, hook and scope errors (#150)
-* Improved logging for binding discovery (#154)
+* Support file scoped namespace declarations when generating code (#140)
 
 ## Bug fixes:
 
-*Contributors of this release (in alphabetical order):* @clrudolphi, @gasparnagy
+* Improved handling of scope tag expressions, hook and scope errors (#150)
+* Improved logging for binding discovery (#154)
+
+*Contributors of this release (in alphabetical order):* @304NotModified, @clrudolphi, @gasparnagy
 
 # v2025.3.395 - 2025-12-17
 
