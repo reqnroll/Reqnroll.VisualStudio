@@ -55,9 +55,24 @@ public class EditorConfigOptionsProvider : IEditorConfigOptionsProvider
 
     private Document CreateAdHocDocumentByPath(string filePath)
     {
+        bool IsInProject(Project project)
+        {
+            if (project.FilePath == null)
+                return false;
+            var projectDir = Path.GetDirectoryName(project.FilePath);
+            if (projectDir == null) return false;
+            return Path.GetFullPath(filePath)
+                       .StartsWith(projectDir + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase);
+        }
+
         if (string.IsNullOrEmpty(filePath))
             return null;
-        var project = _visualStudioWorkspace.CurrentSolution.Projects.FirstOrDefault();
+
+        // We try to create the ad-hoc document in the project that contains (or would contain) the file,
+        // because otherwise the editorconfig options may not be correctly resolved.
+        var project = 
+            _visualStudioWorkspace.CurrentSolution.Projects.FirstOrDefault(IsInProject) ??
+            _visualStudioWorkspace.CurrentSolution.Projects.FirstOrDefault();
         if (project == null)
             return null;
         return project.AddDocument(filePath, string.Empty, filePath: filePath);
