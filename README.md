@@ -30,7 +30,7 @@ The extension can be used for the following frameworks:
 
 The extension can be installed directly from Visual Studio using the extension manager. See detailed instructions at the [Installation documentation page](https://go.reqnroll.net/doc-setup-vs).
 
-Please also help other users by rating the extension at the Visual Studio Marketplace: [Reqnroll for Visual Studio 2022](https://go.reqnroll.net/vs2022-extension).
+Please also help other users by rating the extension at the Visual Studio Marketplace: [Reqnroll for Visual Studio 2022 and 2026](https://go.reqnroll.net/vs2022-extension).
 
 ## Contributing
 
