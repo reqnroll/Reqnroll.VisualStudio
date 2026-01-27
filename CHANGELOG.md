@@ -3,11 +3,10 @@
 ## Improvements:
 
 * Support file scoped namespace declarations when generating code (#140)
-
-## Bug fixes:
-
 * Improved handling of scope tag expressions, hook and scope errors (#150)
 * Improved logging for binding discovery (#154)
+
+## Bug fixes:
 
 *Contributors of this release (in alphabetical order):* @304NotModified, @clrudolphi, @gasparnagy
 
