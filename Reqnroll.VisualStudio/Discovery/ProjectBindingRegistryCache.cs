@@ -120,7 +120,8 @@ public class ProjectBindingRegistryCache : IProjectBindingRegistryCache
             .Where(sd => sd.IsValid)
             .Select(sd => sd.Implementation.SourceLocation)
             .Where(sl =>
-                sl != null); //TODO: Handle step definitions without source locations better (https://app.asana.com/0/0/1201527573246078/f)
+                sl != null) //TODO: Handle step definitions without source locations better (https://app.asana.com/0/0/1201527573246078/f)
+            .OfType<SourceLocation>();
         _ideScope.CalculateSourceLocationTrackingPositions(sourceLocations);
     }
 
@@ -131,7 +132,7 @@ public class ProjectBindingRegistryCache : IProjectBindingRegistryCache
         foreach (var sourceLocation in bindingRegistry.StepDefinitions.Select(sd => sd.Implementation.SourceLocation)
                      .Where(sl => sl?.SourceLocationSpan != null))
         {
-            sourceLocation.SourceLocationSpan!.Dispose();
+            sourceLocation!.SourceLocationSpan!.Dispose();
             sourceLocation.SourceLocationSpan = null;
         }
 

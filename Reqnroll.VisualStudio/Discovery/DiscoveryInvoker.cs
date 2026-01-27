@@ -143,6 +143,7 @@ internal class DiscoveryInvoker
                 $"{_stepDefinitions.Length} step definitions and {_hooks.Length} hooks discovered for project {projectName}");
 
             ReportInvalidStepDefinitions();
+            ReportInvalidHooks();
 
             return this;
         }
@@ -189,6 +190,30 @@ internal class DiscoveryInvoker
                         Category = DeveroomUserErrorCategory.Discovery,
                         Message = sd.Error,
                         SourceLocation = sd.Implementation?.SourceLocation,
+                        Type = TaskErrorCategory.Error
+                    })
+            );
+        }
+
+
+        private void ReportInvalidHooks()
+        {
+            if (!_hooks.Any(h => !h.IsValid))
+                return;
+
+            _logger.LogWarning($"Invalid hooks found: {Environment.NewLine}" +
+                               string.Join(Environment.NewLine, _hooks
+                                   .Where(h => !h.IsValid)
+                                   .Select(h =>
+                                       $"  {h}: {h.Error} at {h.Implementation?.SourceLocation}")));
+
+            _errorListServices.AddErrors(
+                _hooks.Where(h => !h.IsValid)
+                    .Select(h => new DeveroomUserError
+                    {
+                        Category = DeveroomUserErrorCategory.Discovery,
+                        Message = h.Error,
+                        SourceLocation = h.Implementation?.SourceLocation,
                         Type = TaskErrorCategory.Error
                     })
             );

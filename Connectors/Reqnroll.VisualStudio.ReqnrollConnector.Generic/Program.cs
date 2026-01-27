@@ -1,10 +1,13 @@
-﻿var log = new ConsoleLogger();
+﻿using System.Reflection;
+using System.Runtime.Loader;
+using ReqnrollConnector;
+using ReqnrollConnector.Logging;
+
+var log = new ConsoleLogger();
 
 Assembly TestAssemblyFactory(AssemblyLoadContext context, string testAssemblyPath)
 {
     return context.LoadFromAssemblyPath(testAssemblyPath);
 }
 
-return new Runner(log)
-    .Run(args, TestAssemblyFactory)
-    .Map(result=>(int)result);
+return (int)new Runner(log).Run(args, TestAssemblyFactory);

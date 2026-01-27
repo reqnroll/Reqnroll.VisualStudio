@@ -142,7 +142,7 @@ public class BindingImporterTests
             expression: "my step", error: "this is an error"));
 
         result.SpecifiedExpression.Should().Be("my step");
-        result.Error.Should().Be("this is an error");
+        result.Error.Should().Be("Invalid step definition: this is an error");
         result.IsValid.Should().BeFalse();
     }
 
@@ -155,7 +155,7 @@ public class BindingImporterTests
         var result = sut.ImportStepDefinition(stepDefinition);
 
         result.Regex.Should().BeNull();
-        result.Error.Should().Be("this is an error");
+        result.Error.Should().Be("Invalid step definition: this is an error");
         result.IsValid.Should().BeFalse();
     }
 
@@ -264,4 +264,74 @@ public class BindingImporterTests
 
         result1.Implementation.Should().BeSameAs(result2.Implementation);
     }
+
+    [Fact]
+    public void Parses_step_definition_with_invalid_tag_scope()
+    {
+        var sut = CreateSut();
+        var result = sut.ImportStepDefinition(CreateStepDefinition(scope: new StepScope { Tag = "@foo ( wrong" }));
+
+        result.Should().NotBeNull();
+        result.IsValid.Should().BeFalse();
+        result.Scope.Should().NotBeNull();
+        result.Scope.IsValid.Should().BeFalse();
+        result.Scope.Error.Should().Contain("Invalid tag expression");
+        result.Error.Should().Contain("Invalid tag expression");
+    }
+
+    [Fact]
+    public void Parses_hook_with_invalid_tag_scope()
+    {
+        var sut = CreateSut();
+        var result = sut.ImportHook(CreateHook(scope: new StepScope { Tag = "@foo ( wrong" }));
+
+        result.Should().NotBeNull();
+        result.IsValid.Should().BeFalse();
+        result.Scope.Should().NotBeNull();
+        result.Scope.IsValid.Should().BeFalse();
+        result.Scope.Error.Should().Contain("Invalid tag expression");
+        result.Error.Should().Contain("Invalid tag expression");
+    }
+
+    [Fact]
+    public void Parses_step_definition_with_invalid_tag_scope_and_source_error()
+    {
+        var sut = CreateSut();
+        var result = sut.ImportStepDefinition(CreateStepDefinition(
+            scope: new StepScope { Tag = "@foo ( wrong" },
+            error: "source error"));
+
+        result.Should().NotBeNull();
+        result.IsValid.Should().BeFalse();
+        result.Error.Should().Be("Invalid step definition: source error");
+        result.Scope.Should().NotBeNull();
+        result.Scope.IsValid.Should().BeFalse();
+        result.Scope.Error.Should().Contain("Invalid tag expression");
+    }
+
+    [Fact]
+    public void Parses_hook_with_invalid_tag_scope_and_source_error()
+    {
+        var sut = CreateSut();
+        var result = sut.ImportHook(CreateHook(scope: new StepScope { Tag = "@foo ( wrong" }, error: "source error"));
+
+        result.Should().NotBeNull();
+        result.IsValid.Should().BeFalse();
+        result.Error.Should().Be("Invalid hook: source error");
+        result.Scope.Should().NotBeNull();
+        result.Scope.IsValid.Should().BeFalse();
+        result.Scope.Error.Should().Contain("Invalid tag expression");
+    }
+
+    private Hook CreateHook(string type = null, string sourceLocation = null,
+        StepScope scope = null, string method = null, int? hookOrder = null, string error = null) =>
+        new()
+        {
+            Method = method ?? "M1",
+            Type = type ?? "BeforeScenario",
+            SourceLocation = sourceLocation,
+            Scope = scope,
+            HookOrder = hookOrder,
+            Error = error
+        };
 }

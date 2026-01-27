@@ -8,8 +8,8 @@ public class ProjectHookBinding : ProjectBinding
     public HookType HookType { get; }
     public int HookOrder { get; }
 
-    public ProjectHookBinding(ProjectBindingImplementation implementation, Scope scope, HookType hookType, int? hookOrder) 
-        : base(implementation, scope)
+    public ProjectHookBinding(ProjectBindingImplementation implementation, Scope scope, HookType hookType, int? hookOrder, string error) 
+        : base(implementation, scope, error)
     {
         HookType = hookType;
         HookOrder = hookOrder ?? DefaultHookOrder;

@@ -34,7 +34,7 @@ public record ProjectBindingRegistry
     public HookMatchResult MatchScenarioToHooks(Scenario scenario, IGherkinDocumentContext context)
     {
         var hookMatches = Hooks
-            .Where(h => h.Match(scenario, context))
+            .Where(h => h.IsValid && h.Match(scenario, context))
             .OrderBy(h => h.HookType)
             .ThenBy(h => h.HookOrder)
             .ToArray();
@@ -224,7 +224,7 @@ public record ProjectBindingRegistry
     {
         var stepDefinitionParser = new StepDefinitionFileParser();
         var projectStepDefinitionBindings = await stepDefinitionParser.Parse(stepDefinitionFile);
-        return Where(binding => binding.Implementation.SourceLocation.SourceFile != stepDefinitionFile.FullName)
+        return Where(binding => binding.Implementation.SourceLocation?.SourceFile != stepDefinitionFile.FullName)
             .WithStepDefinitions(projectStepDefinitionBindings);
     }
 }

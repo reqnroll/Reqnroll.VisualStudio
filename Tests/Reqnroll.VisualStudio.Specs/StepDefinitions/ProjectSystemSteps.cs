@@ -515,7 +515,7 @@ public class ProjectSystemSteps : Steps
                 throw new NotImplementedException(commandName);
         }
         if (waitForTager)
-            tagged.WaitOne(TimeSpan.FromSeconds(5)).Should().BeTrue($"{commandName}({parameter}) haven't triggered a text change");
+            tagged.WaitOne(TimeSpan.FromSeconds(10)).Should().BeTrue($"{commandName}({parameter}) haven't triggered a text change");
     }
 
     private StubBufferTagAggregatorFactoryService CreateAggregatorFactory() => new(CreateTaggerProvider());

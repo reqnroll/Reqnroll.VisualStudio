@@ -1,8 +1,8 @@
+using Reqnroll.VisualStudio.ReqnrollConnector.Models;
+
 namespace Reqnroll.VisualStudio.ReqnrollConnector.Tests;
 
-[UseReporter /*(typeof(VisualStudioReporter))*/]
-[UseApprovalSubdirectory("ApprovalTestData")]
-public class GeneratedProjectTests : ApprovalTestBase
+public class GeneratedProjectTests : TestBase
 {
     private readonly ITestOutputHelper _testOutputHelper;
 
@@ -11,43 +11,80 @@ public class GeneratedProjectTests : ApprovalTestBase
         _testOutputHelper = testOutputHelper;
     }
 
-    public static string TempFolder
-    {
-        get
-        {
-            var configuredFolder = Environment.GetEnvironmentVariable("REQNROLL_TEST_TEMP");
-            return configuredFolder ?? Path.GetTempPath();
-        }
-    }
-
     [Theory]
-    [InlineData("DS_3.2.0_nunit_bt_992117478")]
-    public void Approval(string testName)
+    [InlineData("net8.0", "3.2.0", 1, 1, true)]
+    public void Should_generate_project(string targetFramework, string reqnrollPackageVersion, int featureFileCount, int scenarioPerFeatureFileCount, bool newProjectFormat)
     {
-        //arrange
-        var testData = ArrangeTestData<GeneratedProjectTestsData>(testName);
-
-        testData.GeneratorOptions.IsBuilt = true;
-        testData.GeneratorOptions._TargetFolder = Path.Combine(TempFolder, @"DeveroomTest\DS_{options}");
-        if (!string.IsNullOrWhiteSpace(testData.GeneratorOptions.FallbackNuGetPackageSource))
+        var generatorOptions = new GeneratorOptions
         {
-            var path = Assembly.GetExecutingAssembly().Location;
-            path = Path.Combine(Assembly.GetExecutingAssembly().Location, "..\\..\\..\\..\\..\\..", "ExternalPackages");
+            FeatureFileCount = featureFileCount,
+            ScenarioPerFeatureFileCount = scenarioPerFeatureFileCount,
+            NewProjectFormat = newProjectFormat,
+            TargetFramework = targetFramework,
+            ReqnrollPackageVersion = reqnrollPackageVersion,
+            IsBuilt = true
+        };
+
+        if (!string.IsNullOrWhiteSpace(generatorOptions.FallbackNuGetPackageSource))
+        {
+            var path = Path.Combine(Assembly.GetExecutingAssembly().Location, "..\\..\\..\\..\\..\\..", "ExternalPackages");
             path = Path.GetFullPath(path);
 
-            testData.GeneratorOptions.FallbackNuGetPackageSource = testData.GeneratorOptions.FallbackNuGetPackageSource.Replace("{ExternalPackages}", path);
+            generatorOptions.FallbackNuGetPackageSource = generatorOptions.FallbackNuGetPackageSource.Replace("{ExternalPackages}", path);
         }
-        var projectGenerator = testData.GeneratorOptions.CreateProjectGenerator(s => _testOutputHelper.WriteLine(s));
+        var projectGenerator = generatorOptions.CreateProjectGenerator(s => _testOutputHelper.WriteLine(s));
 
         projectGenerator.Generate();
 
-        //act
-        var result = Invoke(projectGenerator.TargetFolder, projectGenerator.GetOutputAssemblyPath(),
-            testData.ConfigFile);
+        var result = Invoke(projectGenerator.TargetFolder, projectGenerator.GetOutputAssemblyPath(), null);
 
-        //assert
-        Assert(result, projectGenerator.TargetFolder);
+        result.ExitCode.Should().Be(0, result.StdError);
+
+        var discoveryResult = ExtractDiscoveryResult(result.StdOutput);
+
+        discoveryResult.ConnectorType.Should().NotBeEmpty();
+        discoveryResult.ReqnrollVersion.Should().NotBeEmpty();
+        discoveryResult.ErrorMessage.Should().BeNullOrEmpty();
+        discoveryResult.StepDefinitions.Should().NotBeEmpty();
+        discoveryResult.SourceFiles.Should().NotBeEmpty();
+
+        discoveryResult.AnalyticsProperties.Should().NotBeNull();
+        discoveryResult.AnalyticsProperties.Should().ContainKeys(
+            "Connector",
+            "ImageRuntimeVersion",
+            "TargetFramework",
+            "SFFile",
+            "SFFileVersion",
+            "SFProductVersion",
+            "TypeNames",
+            "SourcePaths",
+            "StepDefinitions",
+            "Hooks");
+
+        discoveryResult.Warnings.Should().BeNullOrEmpty();
     }
 
-    private record GeneratedProjectTestsData(string? ConfigFile, GeneratorOptions GeneratorOptions);
+    private static DiscoveryResult ExtractDiscoveryResult(string stdOutput)
+    {
+        var json = ExtractJson(stdOutput);
+        var deserialized = DeserializeObject<DiscoveryResult>(json);
+        deserialized.Should().NotBeNull($"Cannot deserialize discovery result: {json}");
+        return deserialized;
+    }
+
+    private static string ExtractJson(string stdOutput)
+    {
+        const string startMarker = ">>>>>>>>>>";
+        const string endMarker = "<<<<<<<<<<";
+        var start = stdOutput.IndexOf(startMarker, StringComparison.Ordinal);
+        if (start >= 0)
+        {
+            start += startMarker.Length;
+            var end = stdOutput.IndexOf(endMarker, start, StringComparison.Ordinal);
+            if (end >= 0)
+                return stdOutput.Substring(start, end - start).Trim();
+        }
+
+        return stdOutput.Trim();
+    }
 }

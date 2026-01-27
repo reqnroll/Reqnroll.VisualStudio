@@ -1,10 +1,13 @@
+using Microsoft.Extensions.DependencyModel;
+using Microsoft.Extensions.DependencyModel.Resolution;
+
 namespace ReqnrollConnector.AssemblyLoading;
 
 public class NugetCacheAssemblyResolver : ICompilationAssemblyResolver
 {
-    public bool TryResolveAssemblyPaths(CompilationLibrary library, List<string> assemblies)
+    public bool TryResolveAssemblyPaths(CompilationLibrary library, List<string>? assemblies)
     {
-        if (library.Path == null)
+        if (library.Path == null || assemblies == null)
             return false;
 
         var nugetCachePath = NugetCacheExpandedPath();

@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace ReqnrollConnector.Logging;
 
 public abstract class Logger<T> : ILogger where T : TextWriter

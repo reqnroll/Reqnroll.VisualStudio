@@ -3,25 +3,33 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <AssemblyName>reqnroll-vs</AssemblyName>
-    <TargetFrameworks>net6.0;net7.0;net8.0;net9.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;net7.0;net8.0;net9.0;net10.0</TargetFrameworks>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\reqnroll.snk</AssemblyOriginatorKeyFile>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <RootNamespace>ReqnrollConnector</RootNamespace>
-    <_OutputCopyLocation>$(SolutionDir)Connectors\bin\$(configuration)\Reqnroll-Generic-$(TargetFramework)</_OutputCopyLocation>
+    <_OutputCopyLocation>$(MSBuildThisFileDirectory)..\bin\$(configuration)\Reqnroll-Generic-$(TargetFramework)</_OutputCopyLocation>
+    <NoWarn>NETSDK1138;NETSDK1233</NoWarn>
+    <!--
+    NETSDK1138: The target framework 'netXX.0' is out of support
+    NETSDK1233: Targeting .NET 10.0 or higher in Visual Studio 2022 17.14 is not supported.
+    -->
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="dnlib" Version="4.4.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="8.0.1" />
-    <PackageReference Include="System.Collections.Immutable" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="8.0.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Reqnroll.VisualStudio.ReqnrollConnector.Models\Reqnroll.VisualStudio.ReqnrollConnector.Models.csproj" />
   </ItemGroup>
 
-  <Target Name="CustomAfterBuild" AfterTargets="Build" Condition="$(configuration)=='Debug'">
+  <ItemGroup>
+    <Folder Include="Tests\" />
+  </ItemGroup>
+
+  <Target Name="CustomAfterBuild" AfterTargets="Build" Condition="$(configuration)=='Debug' and '$(TargetFramework)'!=''">
 
     <ItemGroup>
       <_FilesToCopy Include="$(OutputPath)\*" />

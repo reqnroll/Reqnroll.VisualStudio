@@ -1,70 +1,75 @@
+using ReqnrollConnector.CommandLineOptions;
+using ReqnrollConnector.Utils;
+
 namespace Reqnroll.VisualStudio.ReqnrollConnector.Tests;
 
-[UseReporter /*(typeof(VisualStudioReporter))*/]
-[UseApprovalSubdirectory("ApprovalTestData\\ConnectorOptionsParse")]
 public class ConnectorOptionsParseTests
 {
-    public static IEnumerable<LabeledTestData<(string[] args, string expected)>> TestCases =
-        new LabeledTestData<(string[] args, string expected)>[]
-        {
-            new("discovery assembly",
-                (new[] {"discovery", "../targetAssembly.dll"},
-                    @"DiscoveryOptions { DebugMode = False, AssemblyFile = <<targetPath>>\targetAssembly.dll, ConfigFile = , ConnectorFolder = <<connectorPath>> }")),
-            new("discovery assembly with configuration",
-                (new[] {"discovery", "../targetAssembly.dll", "../configuration.json"},
-                    @"DiscoveryOptions { DebugMode = False, AssemblyFile = <<targetPath>>\targetAssembly.dll, ConfigFile = <<targetPath>>\configuration.json, ConnectorFolder = <<connectorPath>> }")),
-            new("Missing arguments",
-                (Array.Empty<string>(),
-                    @"ArgumentException: Command is missing!")),
-            new("Invalid command",
-                (new[] {"xxx"},
-                    @"ArgumentException: Invalid command: xxx")),
-            new("debug",
-                (new[] {"discovery", "--debug", "../targetAssembly.dll"},
-                    @"DiscoveryOptions { DebugMode = True, AssemblyFile = <<targetPath>>\targetAssembly.dll, ConfigFile = , ConnectorFolder = <<connectorPath>> }")),
-            new("debug must be after command",
-                (new[] {"--debug", "yyy"},
-                    "ArgumentException: Invalid command: --debug")),
-            new("discovery command without arguments",
-                (new[] {"discovery"},
-                    "InvalidOperationException: Usage: discovery <test-assembly-path> [<configuration-file-path>]"))
-        };
-
-    private readonly ITestOutputHelper _testOutputHelper;
-
-    public ConnectorOptionsParseTests(ITestOutputHelper testOutputHelper)
+    [Fact]
+    public void Should_parse_discovery_with_assembly()
     {
-        _testOutputHelper = testOutputHelper;
+        var options = ConnectorOptions.Parse(new[] {"discovery", "../targetAssembly.dll"})
+            .Should().BeOfType<DiscoveryOptions>().Subject;
+
+        var assemblyPath = FileDetails.FromPath("../targetAssembly.dll").FullName;
+        var connectorFolder = new FileInfo(typeof(Runner).Assembly.Location).Directory!.FullName;
+
+        options.DebugMode.Should().BeFalse();
+        options.AssemblyFile.Should().Be(assemblyPath);
+        options.ConfigFile.Should().BeNull();
+        options.ConnectorFolder.Should().Be(connectorFolder);
     }
 
-    [Theory]
-    [LabeledMemberData(nameof(TestCases))]
-    public void Approval(LabeledTestData<(string[] args, string expected)> @case)
+    [Fact]
+    public void Should_parse_discovery_with_assembly_and_configuration()
     {
-        //arrange
-        NamerFactory.AdditionalInformation = @case.Label.Replace(' ', '_');
+        var options = ConnectorOptions.Parse(new[] {"discovery", "../targetAssembly.dll", "../configuration.json"})
+            .Should().BeOfType<DiscoveryOptions>().Subject;
 
-        //act
-        string resultAsString;
-        try
-        {
-            var result = ConnectorOptions.Parse(@case.Data.args);
-            resultAsString = result.ToString();
-        }
-        catch (Exception e)
-        {
-            resultAsString = e.GetType().Name +": "+ e.Message;
-        }
+        var assemblyPath = FileDetails.FromPath("../targetAssembly.dll").FullName;
+        var configPath = FileDetails.FromPath("../configuration.json").FullName;
+        var connectorFolder = new FileInfo(typeof(Runner).Assembly.Location).Directory!.FullName;
 
-        //assert
-        _testOutputHelper.WriteLine("---------------------------result- ----------------------------------");
-        _testOutputHelper.WriteLine(resultAsString);
-        resultAsString = resultAsString.Replace(FileDetails.FromPath("this").DirectoryName.Reduce("?"), "<<connectorPath>>");
-        resultAsString = resultAsString.Replace(FileDetails.FromPath("../this").DirectoryName.Reduce("?"), "<<targetPath>>");
-        _testOutputHelper.WriteLine("--------------------------scrubbed-----------------------------------");
-        _testOutputHelper.WriteLine(resultAsString);
-        _testOutputHelper.WriteLine("--------------------------expected-----------------------------------");
-        _testOutputHelper.WriteLine(@case.Data.expected);
-        Approvals.AssertText(@case.Data.expected, resultAsString);
+        options.DebugMode.Should().BeFalse();
+        options.AssemblyFile.Should().Be(assemblyPath);
+        options.ConfigFile.Should().Be(configPath);
+        options.ConnectorFolder.Should().Be(connectorFolder);
+    }
+
+    [Fact]
+    public void Should_parse_discovery_with_debug_flag()
+    {
+        var options = ConnectorOptions.Parse(new[] {"discovery", "--debug", "../targetAssembly.dll"})
+            .Should().BeOfType<DiscoveryOptions>().Subject;
+
+        options.DebugMode.Should().BeTrue();
+    }
+
+    [Fact]
+    public void Should_fail_when_command_missing()
+    {
+        var ex = Assert.Throws<ArgumentException>(() => ConnectorOptions.Parse(Array.Empty<string>()));
+        ex.Message.Should().Be("Command is missing!");
+    }
+
+    [Fact]
+    public void Should_fail_on_invalid_command()
+    {
+        var ex = Assert.Throws<ArgumentException>(() => ConnectorOptions.Parse(new[] {"xxx"}));
+        ex.Message.Should().Be("Invalid command: xxx");
+    }
+
+    [Fact]
+    public void Should_fail_when_debug_before_command()
+    {
+        var ex = Assert.Throws<ArgumentException>(() => ConnectorOptions.Parse(new[] {"--debug", "yyy"}));
+        ex.Message.Should().Be("Invalid command: --debug");
+    }
+
+    [Fact]
+    public void Should_fail_when_discovery_arguments_missing()
+    {
+        var ex = Assert.Throws<InvalidOperationException>(() => ConnectorOptions.Parse(new[] {"discovery"}));
+        ex.Message.Should().Be("Usage: discovery <test-assembly-path> [<configuration-file-path>]");
     }
 }

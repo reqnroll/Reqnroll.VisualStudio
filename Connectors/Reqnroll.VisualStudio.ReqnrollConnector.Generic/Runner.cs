@@ -1,3 +1,11 @@
+using System.Diagnostics;
+using System.Reflection;
+using System.Runtime.Loader;
+using ReqnrollConnector.CommandLineOptions;
+using ReqnrollConnector.Discovery;
+using ReqnrollConnector.Logging;
+using ReqnrollConnector.Utils;
+
 namespace ReqnrollConnector;
 
 public class Runner
@@ -17,27 +25,39 @@ public class Runner
         _log = log;
         _analytics = new AnalyticsContainer();
         _analytics.AddAnalyticsProperty("Connector", GetType().Assembly.ToString());
+        _analytics.AddAnalyticsProperty("ConnectorType", Path.GetFileName(Path.GetDirectoryName(GetType().Assembly.Location)!));
     }
 
     public ExecutionResult Run(string[] args, Func<AssemblyLoadContext, string, Assembly> testAssemblyFactory)
     {
         try
         {
-            return args
-                .Map(ConnectorOptions.Parse)
-                .Tie(DebugBreak)
-                .Tie(DumpOptions)
-                .Map(options => ExecuteDiscovery((DiscoveryOptions)options, testAssemblyFactory))
-                .Map(result => JsonSerialization.SerializeObject(result, _log))
-                .Map(JsonSerialization.MarkResult)
-                .Tie(PrintResult)
-                .Map(_=>ExecutionResult.Succeed);
+            var connectorOptions = ConnectorOptions.Parse(args);
+            DebugBreak(connectorOptions);
+            DumpOptions(connectorOptions);
+
+            if (connectorOptions is not DiscoveryOptions discoveryOptions)
+                throw new ArgumentException($"Not supported options: {connectorOptions}");
+
+            string resultJsonText = ExecuteDiscovery(testAssemblyFactory, discoveryOptions);
+            var marked = JsonSerialization.MarkResult(resultJsonText);
+            PrintResult(marked);
+            
+            return ExecutionResult.Succeed;
         }
         catch (Exception ex)
         {
             return HandleException(ex);
         }
     }
+
+    private string ExecuteDiscovery(Func<AssemblyLoadContext, string, Assembly> testAssemblyFactory, DiscoveryOptions discoveryOptions)
+    {
+        var result = DiscoveryExecutor.Execute(discoveryOptions, testAssemblyFactory, _log, _analytics);
+        var serialized = JsonSerialization.SerializeObjectCamelCase(result, _log);
+        return serialized;
+    }
+
     public void DebugBreak(ConnectorOptions options)
     {
         if (options.DebugMode)
@@ -46,9 +66,6 @@ public class Runner
 
     public void DumpOptions(ConnectorOptions options) => _log.Info(options.ToString());
 
-    public ConnectorResult ExecuteDiscovery(DiscoveryOptions options, Func<AssemblyLoadContext, string, Assembly> testAssemblyFactory)
-        => ReflectionExecutor.Execute(options, testAssemblyFactory, _log, _analytics);
-
     private void PrintResult(string result)
     {
         _log.Info(result);
@@ -56,10 +73,9 @@ public class Runner
  
     private ExecutionResult HandleException(Exception ex)
     {
-        return ex.Tie(e => _log.Error(e.ToString()))
-            .Map(e => e is ArgumentException 
-                        ? ExecutionResult.ArgumentError 
-                        : ExecutionResult.GenericError
-            );
+        _log.Error(ex.ToString());
+        return ex is ArgumentException 
+            ? ExecutionResult.ArgumentError 
+            : ExecutionResult.GenericError;
     }
 }

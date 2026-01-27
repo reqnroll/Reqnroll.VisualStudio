@@ -1,5 +1,0 @@
-{
-  "TargetFolder": "$(ApprovalTestData)\\Microsoft.AspNetCore.Mvc.Core",
-  "TestAssembly": "ReqnrollProject.dll",
-  "ConfigFile": null
-}

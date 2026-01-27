@@ -10,6 +10,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="GitHubActionsTestLogger" Version="2.4.1" Condition="'$(REQNROLL_TEST_PIPELINEMODE)' == 'true'">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="ApprovalTests" Version="5.9.0" /> <!-- cannot upgrade to 6.0 because of test execution issues -->
     <PackageReference Include="System.IO.Abstractions.TestingHelpers" Version="21.0.29" />
     <PackageReference Include="NSubstitute " Version="5.3.0" />

@@ -1,9 +1,4 @@
 ﻿using Microsoft.VisualStudio.Text.Classification;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Reqnroll.VisualStudio.SpecFlowExtensionDetection
 {
@@ -20,7 +15,7 @@ namespace Reqnroll.VisualStudio.SpecFlowExtensionDetection
         public IClassifier GetClassifier(ITextBuffer textBuffer)
         {
             _detectionService.CheckForSpecFlowExtension();
-            return null;
+            return null!;
         }
     }
 }

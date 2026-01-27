@@ -5,11 +5,14 @@ public class ProjectBinding
 {
     public Scope Scope { get; }
     public ProjectBindingImplementation Implementation { get; }
+    public virtual bool IsValid => Error == null && Scope?.IsValid != false;
+    public string Error { get; }
 
-    public ProjectBinding(ProjectBindingImplementation implementation, Scope scope)
+    public ProjectBinding(ProjectBindingImplementation implementation, Scope scope, string error = null)
     {
         Implementation = implementation;
         Scope = scope;
+        Error = error;
     }
 
     protected bool MatchScope(IGherkinDocumentContext context)

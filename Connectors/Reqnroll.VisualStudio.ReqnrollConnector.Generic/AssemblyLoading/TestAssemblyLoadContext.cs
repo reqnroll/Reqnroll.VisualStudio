@@ -1,4 +1,10 @@
-//TODO: using RuntimeEnvironment = Microsoft.DotNet.PlatformAbstractions.RuntimeEnvironment;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Runtime.Loader;
+using Microsoft.Extensions.DependencyModel;
+using Microsoft.Extensions.DependencyModel.Resolution;
+using ReqnrollConnector.Logging;
+using ReqnrollConnector.Utils;
 
 namespace ReqnrollConnector.AssemblyLoading;
 
@@ -8,6 +14,7 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
     private readonly DependencyContext _dependencyContext;
     private readonly ILogger _log;
     private readonly string[] _rids;
+    private readonly string _shortFrameworkName;
 
     public TestAssemblyLoadContext(
         string path,
@@ -18,13 +25,19 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
         _log = log;
         TestAssembly = testAssemblyFactory(this, path);
         _log.Info($"{TestAssembly} loaded");
-        _dependencyContext = DependencyContext.Load(TestAssembly) ?? DependencyContext.Default;
-        _log.Info($"{_dependencyContext} loaded");
+        var loadedDependencyContext = DependencyContext.Load(TestAssembly);
+        _dependencyContext = loadedDependencyContext ?? DependencyContext.Default!;
+        _log.Info(loadedDependencyContext == null ? "Default dependency context used" : "Dependency context (.deps.json) loaded");
+        _shortFrameworkName = FrameworkMonikerConverter.TryGetShortFrameworkName(_dependencyContext.Target.Framework, out string value) ? value :
+            //NOTE: Using the default context's framework name as fallback cause incorrect framework name for .NET Framework projects, where there is no deps.json file. Currently, for those the framework name of the connector itself is used (e.g. net10.0). In DiscoveryExecutor we calculate the correct framework name from the assembly attributes, maybe we should update it here... (but then NugetCacheAssemblyResolver should get only a provider, not the value)
+            FrameworkMonikerConverter.GetShortFrameworkName(DependencyContext.Default!.Target.Framework); // use the framework name of the connector itself as fallback
+        _log.Info($"Target framework: {_dependencyContext.Target.Framework}/{_shortFrameworkName}");
         _rids = GetRids(GetRuntimeFallbacks()).ToArray();
+        _log.Info($"RIDs: {string.Join(",", _rids)}");
 
         _assemblyResolver = new RuntimeCompositeCompilationAssemblyResolver(new ICompilationAssemblyResolver[]
         {
-            new AppBaseCompilationAssemblyResolver(Path.GetDirectoryName(TestAssembly.Location)),
+            new AppBaseCompilationAssemblyResolver(Path.GetDirectoryName(TestAssembly.Location)!),
             new ReferenceAssemblyPathResolver(),
             new PackageCompilationAssemblyResolver(),
             new AspNetCoreAssemblyResolver(),
@@ -36,16 +49,15 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
 
     private static IEnumerable<string> GetRids(RuntimeFallbacks runtimeGraph)
     {
-        return new[] {runtimeGraph.Runtime}.Concat(runtimeGraph.Fallbacks ?? Enumerable.Empty<string>());
+        return new[] {runtimeGraph.Runtime}.Concat(runtimeGraph.Fallbacks.Where(f => f!=null).OfType<string>());
     }
 
     private RuntimeFallbacks GetRuntimeFallbacks()
     {
         var ridGraph = _dependencyContext.RuntimeGraph.Any()
             ? _dependencyContext.RuntimeGraph
-            : DependencyContext.Default.RuntimeGraph;
+            : DependencyContext.Default!.RuntimeGraph;
 
-        //TODO: var rid = RuntimeEnvironment.GetRuntimeIdentifier();
         var rid = Environment.OSVersion.Platform.ToString();
 
         var fallbackRid = GetFallbackRid();
@@ -83,39 +95,58 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
     protected override Assembly Load(AssemblyName assemblyName)
     {
         _log.Info($"Loading {assemblyName}");
-        return FindRuntimeLibrary(assemblyName)
-            .MapOptional(LoadFromAssembly)
-            .Tie(lib => _log.Info($"Found runtime library:{lib}"))
-            .Or(() =>
+        
+        var runtimeLibrary = FindRuntimeLibrary(assemblyName);
+        if (runtimeLibrary != null)
+        {
+            var assembly = LoadFromAssembly(runtimeLibrary);
+            if (assembly != null)
             {
-                if (assemblyName.Version == null)
-                    assemblyName.Version = new Version(0,0);
+                _log.Info($"Found runtime library:{assembly}");
+                return assembly;
+            }
+        }
 
-                return GetRequestedLibrary(assemblyName)
-                    .Map(LoadFromAssembly)
-                    .Tie(lib => _log.Info($"Found requested library:{lib}"));
-            })
-            .Or(() =>
+        if (assemblyName.Version == null)
+            assemblyName.Version = new Version(0, 0);
+
+        var requestedLibrary = GetRequestedLibrary(assemblyName);
+        var requestedAssembly = LoadFromAssembly(requestedLibrary);
+        if (requestedAssembly != null)
+        {
+            _log.Info($"Found requested library:{requestedAssembly}");
+            return requestedAssembly;
+        }
+
+        if (assemblyName.Name != null &&
+            assemblyName.Name.StartsWith("System.", StringComparison.InvariantCultureIgnoreCase))
+            return null!;
+
+        var compilationLibraries = _dependencyContext.CompileLibraries
+            .Where(compileLibrary =>
+                string.Equals(compileLibrary.Name, assemblyName.Name, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        foreach (var compileLibrary in compilationLibraries)
+        {
+            var compilationAssembly = LoadFromAssembly(compileLibrary);
+            if (compilationAssembly != null)
             {
-                if (assemblyName.Name != null &&
-                    assemblyName.Name.StartsWith("System.", StringComparison.InvariantCultureIgnoreCase))
-                    return None.Value;
-                return _dependencyContext.CompileLibraries.Where(
-                        compileLibrary =>
-                            string.Equals(compileLibrary.Name, assemblyName.Name, StringComparison.OrdinalIgnoreCase))
-                    .SelectOptional(LoadFromAssembly)
-                    .FirstOrNone()
-                    .Tie(lib => _log.Info($"Found compilation library:{lib}"));
-            })
-            .Reduce(() => null!);
+                _log.Info($"Found compilation library:{compilationAssembly}");
+                return compilationAssembly;
+            }
+        }
+
+        _log.Info($"Could not find {assemblyName}, reverting to default loading...");
+        return null!;
     }
 
-    private Option<CompilationLibrary> FindRuntimeLibrary(AssemblyName assemblyName)
+    private CompilationLibrary? FindRuntimeLibrary(AssemblyName assemblyName)
     {
         if (assemblyName.Name == null)
-            return None.Value;
+            return null;
 
-        return _dependencyContext.RuntimeLibraries
+        var filteredLibraries = _dependencyContext.RuntimeLibraries
             .Select(runtimeLibrary =>
                 (runtimeLibrary, foundAssets: SelectAssets(runtimeLibrary.RuntimeAssemblyGroups)
                     .Where(asset => asset.Contains(assemblyName.Name, StringComparison.OrdinalIgnoreCase)
@@ -123,19 +154,23 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
                                         StringComparison.OrdinalIgnoreCase)
                     ).ToList()))
             .Where(filtered => filtered.foundAssets.Any())
-            .SelectOptional(filtered =>
-            {
-                var (runtimeLibrary, foundAssets) = filtered;
-                return (Option<CompilationLibrary>) new CompilationLibrary(
-                    runtimeLibrary.Type,
-                    runtimeLibrary.Name,
-                    runtimeLibrary.Version,
-                    runtimeLibrary.Hash,
-                    foundAssets,
-                    runtimeLibrary.Dependencies,
-                    runtimeLibrary.Serviceable);
-            })
-            .FirstOrNone();
+            .ToList();
+
+        foreach (var filtered in filteredLibraries)
+        {
+            var (runtimeLibrary, foundAssets) = filtered;
+            var compilationLibrary = new CompilationLibrary(
+                runtimeLibrary.Type,
+                runtimeLibrary.Name,
+                runtimeLibrary.Version,
+                runtimeLibrary.Hash,
+                foundAssets,
+                runtimeLibrary.Dependencies,
+                runtimeLibrary.Serviceable);
+            return compilationLibrary;
+        }
+
+        return null;
     }
 
     private IEnumerable<string> SelectAssets(IReadOnlyList<RuntimeAssetGroup> runtimeAssetGroups)
@@ -153,10 +188,10 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
     private CompilationLibrary GetRequestedLibrary(AssemblyName assemblyName)
     {
         // This reference might help finding dependencies that are otherwise not listed in the
-        // deps.json file of the test assembly. E.g. Microsoft.AspNetCore.Http.Features in the Reqnroll ASP.NET MVC sample
+        // deps.json file of the test assembly. E.g. Microsoft.AspNetCore.Hosting.Abstractions in the ReqOverflow.Specs.API project of the https://github.com/reqnroll/Sample-ReqOverflow sample
         return new CompilationLibrary(
             "package",
-            assemblyName.Name,
+            assemblyName.Name!,
             $"{assemblyName.Version}",
             null, //hash
             new[] {assemblyName.Name + ".dll"},
@@ -166,26 +201,31 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
             string.Empty);
     }
 
-    private Option<Assembly> LoadFromAssembly(CompilationLibrary library)
+    private Assembly? LoadFromAssembly(CompilationLibrary library)
     {
         try
         {
-            return ResolveAssemblyPath(library)
-                .Map(LoadFromAssemblyPath);
+            var assemblyPath = ResolveAssemblyPath(library);
+            if (assemblyPath != null)
+            {
+                var assembly = LoadFromAssemblyPath(assemblyPath);
+                return assembly;
+            }
+            return null;
         }
         catch (Exception)
         {
-            return None.Value;
+            return null;
         }
     }
 
-    private Option<string> ResolveAssemblyPath(CompilationLibrary library)
+    private string? ResolveAssemblyPath(CompilationLibrary library)
     {
         var assemblies = new List<string>();
         _assemblyResolver.TryResolveAssemblyPaths(library, assemblies);
         var resolveAssemblyPath = assemblies.FirstOrDefault(a => !IsRefsPath(a));
         if (!File.Exists(resolveAssemblyPath))
-            return None.Value;
+            return null;
         return resolveAssemblyPath;
     }
 
