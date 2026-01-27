@@ -1,7 +1,4 @@
 #nullable disable
-
-using System.Text;
-
 namespace Reqnroll.VisualStudio.Editor.Commands;
 
 [Export(typeof(IDeveroomFeatureEditorCommand))]
@@ -108,7 +105,7 @@ public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEdi
         switch (viewModel.Result)
         {
             case CreateStepDefinitionsDialogResult.Create:
-                SaveAsStepDefinitionClass(projectScope, combinedSnippet, viewModel.ClassName, indent, newLine, textView);
+                SaveAsStepDefinitionClass(projectScope, combinedSnippet, viewModel.ClassName, indent, newLine);
                 break;
             case CreateStepDefinitionsDialogResult.CopyToClipboard:
                 Logger.LogVerbose($"Copy to clipboard: {combinedSnippet}");
@@ -121,7 +118,7 @@ public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEdi
     }
 
     private void SaveAsStepDefinitionClass(IProjectScope projectScope, string combinedSnippet, string className,
-        string indent, string newLine, IWpfTextView textView)
+        string indent, string newLine)
     {
         string targetFolder = projectScope.ProjectFolder;
         var projectSettings = projectScope.GetProjectSettings();
@@ -131,7 +128,7 @@ public class DefineStepsCommand : DeveroomEditorCommandBase, IDeveroomFeatureEdi
         if (IdeScope.FileSystem.Directory.Exists(stepDefinitionsFolder))
         {
             targetFolder = stepDefinitionsFolder;
-            fileNamespace = fileNamespace + ".StepDefinitions";
+            fileNamespace += ".StepDefinitions";
         }
 
         // Get C# code generation configuration from EditorConfig using target .cs file path

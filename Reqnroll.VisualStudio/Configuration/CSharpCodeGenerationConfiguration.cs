@@ -7,7 +7,7 @@ public class CSharpCodeGenerationConfiguration
     /// Uses file-scoped namespaces when set to "file_scoped", otherwise uses block-scoped namespaces.
     /// </summary>
     [EditorConfigSetting("csharp_style_namespace_declarations")]
-    public string NamespaceDeclarationStyle { get; set; } = "block_scoped";
+    public string? NamespaceDeclarationStyle { get; set; } = "block_scoped";
 
     /// <summary>
     /// Determines if file-scoped namespaces should be used based on the EditorConfig setting.
