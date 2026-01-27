@@ -3,9 +3,9 @@
     <AdditionalFilesToIncludeForProject>
       <Value>Features\**.feature</Value>
       <Value>..\ExternalPackages\**.*</Value>
+      <Value>..\..\Connectors\bin\Debug\Reqnroll-*\**.*</Value>
     </AdditionalFilesToIncludeForProject>
     <BuildLogVerbosity>Quiet</BuildLogVerbosity>
-    <BuildSdk>8.0.101</BuildSdk>
     <CopiedProjectDependencyPathsRelativeToSolutionDirectory>
       <Value>Tests\Reqnroll.SampleProjectGenerator.Core\Reqnroll.SampleProjectGenerator.Core.csproj</Value>
     </CopiedProjectDependencyPathsRelativeToSolutionDirectory>
