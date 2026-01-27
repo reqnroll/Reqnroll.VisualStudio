@@ -1,0 +1,5 @@
+<Solution>
+  <Folder Name="/ReqnrollCalculator/">
+    <Project Path="VsExtConnectorTestSamples.ReqnrollCalculator.Tests/VsExtConnectorTestSamples.ReqnrollCalculator.Tests.csproj" />
+  </Folder>
+</Solution>
