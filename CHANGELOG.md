@@ -2,6 +2,14 @@
 
 ## Improvements:
 
+## Bug fixes:
+
+*Contributors of this release (in alphabetical order):* 
+
+# v2026.1.477 - 2026-01-28
+
+## Improvements:
+
 * Support file scoped namespace declarations when generating code (#140)
 * Improved handling of scope tag expressions, hook and scope errors (#150)
 * Improved logging for binding discovery (#154)
