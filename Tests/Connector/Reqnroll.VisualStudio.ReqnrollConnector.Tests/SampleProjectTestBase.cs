@@ -5,7 +5,11 @@ namespace Reqnroll.VisualStudio.ReqnrollConnector.Tests;
 
 public abstract class SampleProjectTestBase
 {
+#if DEBUG
     private const string ConnectorConfiguration = "Debug";
+#else
+    private const string ConnectorConfiguration = "Release";
+#endif
     private const string TargetFrameworkToBeUsedForNet4Projects = "net10.0";
     private static readonly string LatestReqnrollVersion = NuGetPackageVersionDetector.DetectLatestPackage("Reqnroll", Console.WriteLine) ?? "1.0.0";
 
