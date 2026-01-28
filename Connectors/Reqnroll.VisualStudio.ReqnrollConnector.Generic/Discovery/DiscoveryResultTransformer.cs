@@ -36,6 +36,14 @@ internal class DiscoveryResultTransformer
                     .OrderBy(sd => sd.SourceLocation)
                     .ToArray();
 
+        string[] GetErrorsWithPrefix(string prefix) => 
+            bindingData.Errors?
+                .Where(e => e.StartsWith(prefix))
+                .Select(e => e.Substring(prefix.Length).Trim())
+                .ToArray() ?? Array.Empty<string>();
+
+        var typeLoadErrors = GetErrorsWithPrefix("TypeLoadError:");
+        var genericBindingErrors = GetErrorsWithPrefix("BindingError:");
 
         analytics.AddAnalyticsProperty("TypeNames", typeNamesToKey.Count.ToString());
         analytics.AddAnalyticsProperty("SourcePaths", sourceFilesToKey.Count.ToString());
@@ -46,7 +54,9 @@ internal class DiscoveryResultTransformer
             stepDefinitions,
             hooks,
             ReverseDictionary(sourceFilesToKey),
-            ReverseDictionary(typeNamesToKey)
+            ReverseDictionary(typeNamesToKey),
+            genericBindingErrors,
+            typeLoadErrors
         );
     }
 

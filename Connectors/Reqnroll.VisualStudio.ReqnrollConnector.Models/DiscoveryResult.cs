@@ -7,4 +7,5 @@ public class DiscoveryResult : ConnectorResult
     public Hook[] Hooks { get; set; } = Array.Empty<Hook>();
     public Dictionary<string, string> SourceFiles { get; set; }
     public Dictionary<string, string> TypeNames { get; set; }
+    public string[] GenericBindingErrors { get; set; }
 }
