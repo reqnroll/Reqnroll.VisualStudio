@@ -19,9 +19,11 @@
   <ItemGroup>
     <PackageReference Include="dnlib" Version="4.4.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="8.0.2" />
+    <PackageReference Include="StreamJsonRpc" Version="2.20.11" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Reqnroll.VisualStudio.Connector.Protocol\Reqnroll.VisualStudio.Connector.Protocol.csproj" />
     <ProjectReference Include="..\Reqnroll.VisualStudio.ReqnrollConnector.Models\Reqnroll.VisualStudio.ReqnrollConnector.Models.csproj" />
   </ItemGroup>
 

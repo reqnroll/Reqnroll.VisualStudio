@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.31606.5
+# Visual Studio Version 18
+VisualStudioVersion = 18.2.11430.68 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reqnroll.VisualStudio.Package", "Reqnroll.VisualStudio.Package\Reqnroll.VisualStudio.Package.csproj", "{00920A0A-A73C-487F-BC41-9B92F2F0EBD7}"
 EndProject
@@ -62,6 +62,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reqnroll.VisualStudio.ReqnrollConnector.Generic", "Connectors\Reqnroll.VisualStudio.ReqnrollConnector.Generic\Reqnroll.VisualStudio.ReqnrollConnector.Generic.csproj", "{B1CC6338-BA6D-4268-BA34-204082046AD9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reqnroll.VisualStudio.ReqnrollConnector.Tests", "Tests\Connector\Reqnroll.VisualStudio.ReqnrollConnector.Tests\Reqnroll.VisualStudio.ReqnrollConnector.Tests.csproj", "{2CB993A2-0A17-4B8F-AF3D-885913DBF170}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reqnroll.VisualStudio.Connector.Protocol", "Connectors\Reqnroll.VisualStudio.Connector.Protocol\Reqnroll.VisualStudio.Connector.Protocol.csproj", "{521D2483-52E4-228D-A150-115939C724FB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -210,6 +212,16 @@ Global
 		{2CB993A2-0A17-4B8F-AF3D-885913DBF170}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2CB993A2-0A17-4B8F-AF3D-885913DBF170}.TestDebug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2CB993A2-0A17-4B8F-AF3D-885913DBF170}.TestDebug|Any CPU.Build.0 = Debug|Any CPU
+		{521D2483-52E4-228D-A150-115939C724FB}.Debug_x86|Any CPU.ActiveCfg = Debug|Any CPU
+		{521D2483-52E4-228D-A150-115939C724FB}.Debug_x86|Any CPU.Build.0 = Debug|Any CPU
+		{521D2483-52E4-228D-A150-115939C724FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{521D2483-52E4-228D-A150-115939C724FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{521D2483-52E4-228D-A150-115939C724FB}.Release_x86|Any CPU.ActiveCfg = Release|Any CPU
+		{521D2483-52E4-228D-A150-115939C724FB}.Release_x86|Any CPU.Build.0 = Release|Any CPU
+		{521D2483-52E4-228D-A150-115939C724FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{521D2483-52E4-228D-A150-115939C724FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{521D2483-52E4-228D-A150-115939C724FB}.TestDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{521D2483-52E4-228D-A150-115939C724FB}.TestDebug|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -225,6 +237,7 @@ Global
 		{2A412F65-68C7-4A5D-AFCF-74E928C40C21} = {11E7849D-8059-417F-BEB2-7B576B7993F3}
 		{B1CC6338-BA6D-4268-BA34-204082046AD9} = {B9F019ED-754C-4D7E-90ED-7D54A50B38EB}
 		{2CB993A2-0A17-4B8F-AF3D-885913DBF170} = {3710808B-7098-4236-9053-FDB52CBB51E0}
+		{521D2483-52E4-228D-A150-115939C724FB} = {B9F019ED-754C-4D7E-90ED-7D54A50B38EB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2F4914B0-F8E8-4745-979B-5F36DFA8013A}

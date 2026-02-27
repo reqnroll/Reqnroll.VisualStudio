@@ -7,6 +7,13 @@ public static class ProjectScopeServicesExtensions
     {
         projectScope.GetDeveroomConfigurationProvider();
         projectScope.GetProjectSettingsProvider();
+        projectScope.GetReqnrollExtensionServicesManager();
+    }
+
+    public static ReqnrollExtensionServicesManager GetReqnrollExtensionServicesManager(this IProjectScope projectScope)
+    {
+        return projectScope.Properties.GetOrCreateSingletonProperty(
+            () => new ReqnrollExtensionServicesManager(projectScope));
     }
 
     public static IDiscoveryService GetDiscoveryService(this IProjectScope projectScope)
@@ -14,7 +21,15 @@ public static class ProjectScopeServicesExtensions
         return projectScope.Properties.GetOrCreateSingletonProperty(() =>
         {
             var ideScope = projectScope.IdeScope;
-            var discoveryResultProvider = new DiscoveryResultProvider(projectScope);
+            var classicProvider = new DiscoveryResultProvider(projectScope);
+            var configuration = projectScope.GetDeveroomConfiguration();
+
+            // Wrap the classic provider with a per-service-creation proxy when enabled;
+            // the ReqnrollExtensionServicesManager singleton is shared across all proxies.
+            IDiscoveryResultProvider discoveryResultProvider = configuration.UseConnectorService
+                ? new DiscoveryServiceProxy(projectScope.GetReqnrollExtensionServicesManager(), classicProvider)
+                : classicProvider;
+
             var bindingRegistryCache = new ProjectBindingRegistryCache(ideScope);
             IDiscoveryService discoveryService =
                 new DiscoveryService(projectScope, discoveryResultProvider, bindingRegistryCache);

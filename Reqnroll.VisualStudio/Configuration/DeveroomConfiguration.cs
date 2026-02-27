@@ -17,6 +17,7 @@ public class DeveroomConfiguration
     // old settings to be reviewed
     public ProcessorArchitectureSetting ProcessorArchitecture { get; set; } = ProcessorArchitectureSetting.AutoDetect;
     public bool DebugConnector { get; set; }
+    public bool UseConnectorService { get; set; }
     public string DefaultFeatureLanguage { get; set; } = "en-US";
     public string ConfiguredBindingCulture { get; set; } = null;
     public string BindingCulture => ConfiguredBindingCulture ?? DefaultFeatureLanguage;
@@ -53,6 +54,7 @@ public class DeveroomConfiguration
         Equals(Editor, other.Editor) &&
         Equals(BindingDiscovery, other.BindingDiscovery) &&
         ProcessorArchitecture == other.ProcessorArchitecture && DebugConnector == other.DebugConnector &&
+        UseConnectorService == other.UseConnectorService &&
         string.Equals(DefaultFeatureLanguage, other.DefaultFeatureLanguage) &&
         string.Equals(ConfiguredBindingCulture, other.ConfiguredBindingCulture);
 
@@ -76,6 +78,7 @@ public class DeveroomConfiguration
             hashCode = (hashCode * 397) ^ (BindingDiscovery != null ? BindingDiscovery.GetHashCode() : 0);
             hashCode = (hashCode * 397) ^ (int) ProcessorArchitecture;
             hashCode = (hashCode * 397) ^ DebugConnector.GetHashCode();
+            hashCode = (hashCode * 397) ^ UseConnectorService.GetHashCode();
             hashCode = (hashCode * 397) ^ (DefaultFeatureLanguage != null ? DefaultFeatureLanguage.GetHashCode() : 0);
             hashCode = (hashCode * 397) ^
                        (ConfiguredBindingCulture != null ? ConfiguredBindingCulture.GetHashCode() : 0);

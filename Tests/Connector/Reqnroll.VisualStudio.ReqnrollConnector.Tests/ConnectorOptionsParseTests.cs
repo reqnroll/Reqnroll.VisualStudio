@@ -72,4 +72,64 @@ public class ConnectorOptionsParseTests
         var ex = Assert.Throws<InvalidOperationException>(() => ConnectorOptions.Parse(new[] {"discovery"}));
         ex.Message.Should().Be("Usage: discovery <test-assembly-path> [<configuration-file-path>]");
     }
+
+    // --- Service command tests ---
+
+    [Fact]
+    public void Should_parse_service_with_required_args()
+    {
+        var options = ConnectorOptions.Parse(new[]
+            {
+                "service", "--control-pipe", "my-pipe", "--assembly", "../targetAssembly.dll"
+            })
+            .Should().BeOfType<ServiceOptions>().Subject;
+
+        options.DebugMode.Should().BeFalse();
+        options.ControlPipeName.Should().Be("my-pipe");
+        options.AssemblyFile.Should().Be("../targetAssembly.dll");
+        options.ConfigFile.Should().BeNull();
+    }
+
+    [Fact]
+    public void Should_parse_service_with_config()
+    {
+        var options = ConnectorOptions.Parse(new[]
+            {
+                "service", "--control-pipe", "my-pipe", "--assembly", "../targetAssembly.dll",
+                "--config", "../config.json"
+            })
+            .Should().BeOfType<ServiceOptions>().Subject;
+
+        options.ControlPipeName.Should().Be("my-pipe");
+        options.AssemblyFile.Should().Be("../targetAssembly.dll");
+        options.ConfigFile.Should().Be("../config.json");
+    }
+
+    [Fact]
+    public void Should_parse_service_with_debug_flag()
+    {
+        var options = ConnectorOptions.Parse(new[]
+            {
+                "service", "--debug", "--control-pipe", "my-pipe", "--assembly", "../targetAssembly.dll"
+            })
+            .Should().BeOfType<ServiceOptions>().Subject;
+
+        options.DebugMode.Should().BeTrue();
+    }
+
+    [Fact]
+    public void Should_fail_when_service_control_pipe_missing()
+    {
+        var ex = Assert.Throws<ArgumentException>(() =>
+            ConnectorOptions.Parse(new[] {"service", "--assembly", "../targetAssembly.dll"}));
+        ex.Message.Should().Contain("--control-pipe");
+    }
+
+    [Fact]
+    public void Should_fail_when_service_assembly_missing()
+    {
+        var ex = Assert.Throws<ArgumentException>(() =>
+            ConnectorOptions.Parse(new[] {"service", "--control-pipe", "my-pipe"}));
+        ex.Message.Should().Contain("--assembly");
+    }
 }

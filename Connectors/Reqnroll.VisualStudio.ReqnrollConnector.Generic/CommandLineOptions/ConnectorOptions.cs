@@ -3,6 +3,7 @@ namespace ReqnrollConnector.CommandLineOptions;
 public record ConnectorOptions(bool DebugMode)
 {
     public const string DiscoveryCommandName = "discovery";
+    public const string ServiceCommandName = "service";
 
     public static ConnectorOptions Parse(string[] args)
     {
@@ -24,6 +25,7 @@ public record ConnectorOptions(bool DebugMode)
         return commandName switch
         {
             DiscoveryCommandName => DiscoveryOptions.Parse(commandArgs, debugMode),
+            ServiceCommandName => ServiceOptions.Parse(commandArgs, debugMode),
             _ => throw new ArgumentException($"Invalid command: {commandName}")
         };
     }

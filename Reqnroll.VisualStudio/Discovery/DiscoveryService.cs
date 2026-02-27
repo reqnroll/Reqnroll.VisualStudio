@@ -5,6 +5,7 @@ public class DiscoveryService : IDiscoveryService
     private readonly IDeveroomLogger _logger;
     private readonly IProjectScope _projectScope;
     private readonly IProjectSettingsProvider _projectSettingsProvider;
+    private readonly IDiscoveryResultProvider _discoveryResultProvider;
     private protected readonly DiscoveryInvoker DiscoveryInvoker;
 
     public DiscoveryService(IProjectScope projectScope, IDiscoveryResultProvider discoveryResultProvider,
@@ -13,6 +14,7 @@ public class DiscoveryService : IDiscoveryService
         _projectScope = projectScope;
         _logger = _projectScope.IdeScope.Logger;
         _projectSettingsProvider = _projectScope.GetProjectSettingsProvider();
+        _discoveryResultProvider = discoveryResultProvider;
         _projectSettingsProvider.WeakSettingsInitialized += ProjectSystemOnProjectsBuilt;
         _projectScope.IdeScope.WeakProjectOutputsUpdated += ProjectSystemOnProjectsBuilt;
         BindingRegistryCache = bindingRegistryCacheCache;
@@ -34,6 +36,7 @@ public class DiscoveryService : IDiscoveryService
     {
         _projectScope.IdeScope.WeakProjectsBuilt -= ProjectSystemOnProjectsBuilt;
         _projectSettingsProvider.SettingsInitialized -= ProjectSystemOnProjectsBuilt;
+        (_discoveryResultProvider as IDisposable)?.Dispose();
     }
 
     public void TriggerDiscovery([CallerMemberName] string callerMemberName = "?")
