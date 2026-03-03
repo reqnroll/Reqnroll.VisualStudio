@@ -7,11 +7,19 @@ namespace ReqnrollConnector.SourceDiscovery;
 public class SymbolReaderCache
 {
     private readonly ILogger _log;
+    private readonly Func<Assembly, string?> _pathResolver;
     private readonly Dictionary<Assembly, DeveroomSymbolReader?> _symbolReaders = new(2);
 
-    public SymbolReaderCache(ILogger log)
+    /// <param name="pathResolver">
+    /// Optional delegate that maps an <see cref="Assembly"/> to its on-disk path.
+    /// Defaults to <c>Assembly.Location</c>. Supply a custom resolver when the
+    /// assembly was loaded via <see cref="System.Runtime.Loader.AssemblyLoadContext.LoadFromStream"/>
+    /// and <c>Assembly.Location</c> is therefore empty.
+    /// </param>
+    public SymbolReaderCache(ILogger log, Func<Assembly, string?>? pathResolver = null)
     {
         _log = log;
+        _pathResolver = pathResolver ?? (a => string.IsNullOrEmpty(a.Location) ? null : a.Location);
     }
 
     public DeveroomSymbolReader? this[Assembly assembly] => GetOrCreateSymbolReader(assembly);
@@ -21,14 +29,22 @@ public class SymbolReaderCache
         if (_symbolReaders.TryGetValue(assembly, out var symbolReader))
             return symbolReader;
 
-        var primaryReader = CreateSymbolReader(assembly.Location);
+        var path = _pathResolver(assembly);
+        if (string.IsNullOrEmpty(path))
+        {
+            _log.Info($"No on-disk path for {assembly.GetName().Name}; symbol reader unavailable.");
+            _symbolReaders.Add(assembly, null);
+            return null;
+        }
+
+        var primaryReader = CreateSymbolReader(path);
         if (primaryReader != null)
         {
             _symbolReaders.Add(assembly, primaryReader);
             return primaryReader;
         }
 
-        var secondaryReader = CreateSymbolReader(new Uri(assembly.Location).LocalPath);
+        var secondaryReader = CreateSymbolReader(new Uri(path).LocalPath);
         if (secondaryReader != null)
         {
             _symbolReaders.Add(assembly, secondaryReader);
@@ -47,9 +63,7 @@ public class SymbolReaderCache
         foreach (var reader in readerOptions)
         {
             if (reader != null)
-            {
                 return reader;
-            }
         }
         
         return null;

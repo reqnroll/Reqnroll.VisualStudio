@@ -15,10 +15,15 @@ namespace ReqnrollConnector.Discovery;
 public class DiscoveryExecutor
 {
     public static DiscoveryResult Execute(DiscoveryOptions options,
-        Func<AssemblyLoadContext, string, Assembly> testAssemblyFactory, ILogger log, IAnalyticsContainer analytics)
+    Func<AssemblyLoadContext, string, Assembly> testAssemblyFactory, ILogger log, IAnalyticsContainer analytics)
+    {
+        var testAssemblyContext = new TestAssemblyLoadContext(options.AssemblyFile, testAssemblyFactory, log);
+        return Execute(options, testAssemblyFactory, log, analytics, testAssemblyContext);
+    }
+    public static DiscoveryResult Execute(DiscoveryOptions options,
+        Func<AssemblyLoadContext, string, Assembly> testAssemblyFactory, ILogger log, IAnalyticsContainer analytics, TestAssemblyLoadContext testAssemblyContext)
     {
         log.Info($"Loading {options.AssemblyFile}");
-        var testAssemblyContext = new TestAssemblyLoadContext(options.AssemblyFile, testAssemblyFactory, log);
         analytics.AddAnalyticsProperty("ImageRuntimeVersion", testAssemblyContext.TestAssembly.ImageRuntimeVersion);
 
         var targetFramework = GetTargetFramework(testAssemblyContext.TestAssembly);
@@ -59,7 +64,11 @@ public class DiscoveryExecutor
         try
         {
             var transformer = new DiscoveryResultTransformer();
-            var sourceLocationProvider = new SourceLocationProvider(testAssemblyContext, testAssemblyContext.TestAssembly, log);
+            var sourceLocationProvider = new SourceLocationProvider(
+                testAssemblyContext,
+                testAssemblyContext.TestAssembly,
+                options.AssemblyFile,   // <- provides path when Assembly.Location is ""
+                log);
             discoveryResult = transformer.Transform(bindingData, sourceLocationProvider, analytics);
         }
         catch (Exception ex)

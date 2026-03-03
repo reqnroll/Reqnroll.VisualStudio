@@ -12,11 +12,28 @@ internal class SourceLocationProvider : ISourceLocationProvider
     private readonly AssemblyLoadContext _assemblyLoadContext;
     private readonly Assembly _testAssembly;
 
-    public SourceLocationProvider(AssemblyLoadContext assemblyLoadContext, Assembly testAssembly, ILogger log)
+    /// <param name="testAssemblyPath">
+    /// The original on-disk path of the test assembly. Required when the assembly
+    /// was loaded via <c>LoadFromStream</c> and <c>Assembly.Location</c> is empty.
+    /// </param>
+    public SourceLocationProvider(
+        AssemblyLoadContext assemblyLoadContext,
+        Assembly testAssembly,
+        string? testAssemblyPath,
+        ILogger log)
     {
-        _symbolReaders = new SymbolReaderCache(log);
         _assemblyLoadContext = assemblyLoadContext;
         _testAssembly = testAssembly;
+
+        // When the test assembly was loaded via LoadFromStream its Location is "".
+        // Supply a resolver so SymbolReaderCache can still locate the file on disk.
+        Func<Assembly, string?>? pathResolver = string.IsNullOrEmpty(testAssemblyPath)
+            ? null
+            : a => (a == _testAssembly && string.IsNullOrEmpty(a.Location))
+                ? testAssemblyPath
+                : (string.IsNullOrEmpty(a.Location) ? null : a.Location);
+
+        _symbolReaders = new SymbolReaderCache(log, pathResolver);
     }
 
     public SourceLocation? GetSourceLocation(BindingSourceMethodData bindingMethod)
@@ -34,7 +51,6 @@ internal class SourceLocationProvider : ISourceLocationProvider
 
         var sequencePoints = reader.ReadMethodSymbol(bindingMethod.MetadataToken.Value);
 
-        // Find start and end sequence points
         var (startSequencePoint, endSequencePoint) = sequencePoints.Aggregate(
             (startSequencePoint: (MethodSymbolSequencePoint?)null,
                 endSequencePoint: (MethodSymbolSequencePoint?)null),
@@ -46,10 +62,14 @@ internal class SourceLocationProvider : ISourceLocationProvider
             }
         );
 
-        // Extract the points
         if (startSequencePoint != null && endSequencePoint != null)
         {
-            return new SourceLocation(startSequencePoint.SourcePath, startSequencePoint.StartLine, startSequencePoint.StartColumn, endSequencePoint.EndLine, endSequencePoint.EndColumn);
+            return new SourceLocation(
+                startSequencePoint.SourcePath,
+                startSequencePoint.StartLine,
+                startSequencePoint.StartColumn,
+                endSequencePoint.EndLine,
+                endSequencePoint.EndColumn);
         }
 
         return null;

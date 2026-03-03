@@ -25,24 +25,47 @@ public class TestAssemblyLoadContext : AssemblyLoadContext
         _log = log;
         TestAssembly = testAssemblyFactory(this, path);
         _log.Info($"{TestAssembly} loaded");
-        var loadedDependencyContext = DependencyContext.Load(TestAssembly);
+
+        // When loaded via LoadFromStream, Assembly.Location is ""; load the
+        // .deps.json manually from the known on-disk path instead.
+        var loadedDependencyContext = LoadDependencyContextFromPath(path)
+                                     ?? DependencyContext.Load(TestAssembly);
         _dependencyContext = loadedDependencyContext ?? DependencyContext.Default!;
         _log.Info(loadedDependencyContext == null ? "Default dependency context used" : "Dependency context (.deps.json) loaded");
+
         _shortFrameworkName = FrameworkMonikerConverter.TryGetShortFrameworkName(_dependencyContext.Target.Framework, out string value) ? value :
-            //NOTE: Using the default context's framework name as fallback cause incorrect framework name for .NET Framework projects, where there is no deps.json file. Currently, for those the framework name of the connector itself is used (e.g. net10.0). In DiscoveryExecutor we calculate the correct framework name from the assembly attributes, maybe we should update it here... (but then NugetCacheAssemblyResolver should get only a provider, not the value)
-            FrameworkMonikerConverter.GetShortFrameworkName(DependencyContext.Default!.Target.Framework); // use the framework name of the connector itself as fallback
+            FrameworkMonikerConverter.GetShortFrameworkName(DependencyContext.Default!.Target.Framework);
         _log.Info($"Target framework: {_dependencyContext.Target.Framework}/{_shortFrameworkName}");
         _rids = GetRids(GetRuntimeFallbacks()).ToArray();
         _log.Info($"RIDs: {string.Join(",", _rids)}");
 
         _assemblyResolver = new RuntimeCompositeCompilationAssemblyResolver(new ICompilationAssemblyResolver[]
         {
-            new AppBaseCompilationAssemblyResolver(Path.GetDirectoryName(TestAssembly.Location)!),
+            // Use the constructor `path` arg — TestAssembly.Location is ""
+            // when the assembly was loaded via LoadFromStream.
+            new AppBaseCompilationAssemblyResolver(Path.GetDirectoryName(path)!),
             new ReferenceAssemblyPathResolver(),
             new PackageCompilationAssemblyResolver(),
             new AspNetCoreAssemblyResolver(),
             new NugetCacheAssemblyResolver(_shortFrameworkName)
         }, _log);
+    }
+
+    /// <summary>
+    /// Loads the <see cref="DependencyContext"/> from the <c>.deps.json</c> file
+    /// adjacent to <paramref name="assemblyPath"/>. This is required when the
+    /// assembly was loaded via <see cref="AssemblyLoadContext.LoadFromStream"/>
+    /// because <c>Assembly.Location</c> is empty and
+    /// <see cref="DependencyContext.Load"/> cannot locate the file automatically.
+    /// </summary>
+    private static DependencyContext? LoadDependencyContextFromPath(string assemblyPath)
+    {
+        var depsJsonPath = Path.ChangeExtension(assemblyPath, ".deps.json");
+        if (!File.Exists(depsJsonPath))
+            return null;
+
+        using var stream = File.OpenRead(depsJsonPath);
+        return new DependencyContextJsonReader().Read(stream);
     }
 
     public Assembly TestAssembly { get; }

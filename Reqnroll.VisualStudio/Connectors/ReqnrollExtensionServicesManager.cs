@@ -59,6 +59,9 @@ public class ReqnrollExtensionServicesManager : IDisposable
         _projectSettingsProvider = projectScope.GetProjectSettingsProvider();
         _projectSettingsProvider.WeakSettingsInitialized += OnProjectOutputsUpdated;
         _projectScope.IdeScope.WeakProjectOutputsUpdated += OnProjectOutputsUpdated;
+
+        _projectScope.IdeScope.FireAndForgetOnBackgroundThread(
+            ct => Launch());
     }
 
     /// <summary>
@@ -78,18 +81,23 @@ public class ReqnrollExtensionServicesManager : IDisposable
 
     internal IDeveroomLogger Logger => _logger;
 
-    public void EnsureServiceRunning(ProjectSettings projectSettings)
+    internal async Task Launch()
+    {
+        var projectSettings = _projectSettingsProvider.GetProjectSettings();
+        EnsureServiceRunning(projectSettings);
+    }
+    public bool EnsureServiceRunning(ProjectSettings projectSettings)
     {
         if (_serviceRpc != null && _registration != null)
-            return;
+            return true;
 
         _lock.Wait();
+        bool settingsAlreadyAvailable = false;
         try
         {
             if (_serviceRpc != null && _registration != null)
-                return;
+                return true;
 
-            // Start control plane if not already running
             if (!_controlPlaneStarted)
             {
                 _controlPlaneStarted = true;
@@ -97,27 +105,47 @@ public class ReqnrollExtensionServicesManager : IDisposable
                     ct => _controlPlane.StartAsync(ct));
             }
 
-            // Launch the service process
             LaunchServiceProcess(projectSettings);
 
-            // Wait for registration from the service
             if (!_registrationTcs.Task.Wait(_registrationTimeout))
             {
                 _logger.LogWarning("Connector service did not register within timeout");
                 KillServiceProcess();
-                return;
+                return false;
             }
 
             var registration = _registrationTcs.Task.Result;
             _registration = registration;
 
-            // Connect to the service pipe
             ConnectToServicePipe(registration.ServicePipeName);
+
+            // If project settings were already initialized before this service
+            // started, WeakSettingsInitialized has already fired and will NOT
+            // fire again — so lifecycle/reload would never be sent, leaving the
+            // service without a ReqnrollServiceAPIEndpoint.Initialize() call.
+            // Record this now (before releasing the lock) and send below.
+            settingsAlreadyAvailable = !_projectSettingsProvider.GetProjectSettings().IsUninitialized;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning($"Failed to start/connect to connector service: {ex.Message}");
+            KillServiceProcess();
+            return false;
         }
         finally
         {
             _lock.Release();
         }
+
+        // Send the compensating Reload outside the lock so it doesn't
+        // extend the lock-hold window with a synchronous RPC call.
+        if (settingsAlreadyAvailable)
+        {
+            _logger.LogInfo("Settings were already initialized; sending initial lifecycle/reload.");
+            OnProjectOutputsUpdated(this, EventArgs.Empty);
+        }
+
+        return true;
     }
 
     private void LaunchServiceProcess(ProjectSettings projectSettings)
@@ -167,6 +195,12 @@ public class ReqnrollExtensionServicesManager : IDisposable
         // Layer 2 resilience: process handle monitoring
         _serviceProcess.Exited += OnServiceProcessExited;
         _serviceProcess.Start();
+
+        // Subscribe to output/error events
+        _serviceProcess.OutputDataReceived += ServiceHostOutput;
+        _serviceProcess.ErrorDataReceived += ServiceHostError;
+        _serviceProcess.BeginOutputReadLine();
+        _serviceProcess.BeginErrorReadLine();
 
         _logger.LogInfo($"Connector service process started (PID: {_serviceProcess.Id})");
     }
@@ -289,6 +323,10 @@ public class ReqnrollExtensionServicesManager : IDisposable
         {
             if (_serviceProcess is { HasExited: false })
             {
+                // Unsubscribe from output/error events
+                _serviceProcess.OutputDataReceived -= ServiceHostOutput;
+                _serviceProcess.ErrorDataReceived -= ServiceHostError;
+
                 _serviceProcess.Kill();
                 _logger.LogInfo("Killed connector service process");
             }
@@ -346,5 +384,18 @@ public class ReqnrollExtensionServicesManager : IDisposable
         KillServiceProcess();
         _controlPlane.Dispose();
         _lock.Dispose();
+    }
+
+    // Example event handlers (add these to your class)
+    private void ServiceHostOutput(object? sender, DataReceivedEventArgs e)
+    {
+        if (!string.IsNullOrEmpty(e.Data))
+            _logger.LogInfo($"[Connector STDOUT] {e.Data}");
+    }
+
+    private void ServiceHostError(object? sender, DataReceivedEventArgs e)
+    {
+        if (!string.IsNullOrEmpty(e.Data))
+            _logger.LogWarning($"[Connector STDERR] {e.Data}");
     }
 }

@@ -7,7 +7,12 @@ public static class ProjectScopeServicesExtensions
     {
         projectScope.GetDeveroomConfigurationProvider();
         projectScope.GetProjectSettingsProvider();
-        projectScope.GetReqnrollExtensionServicesManager();
+        var m = projectScope.GetReqnrollExtensionServicesManager();
+        if (m.EnsureServiceRunning(projectScope.GetProjectSettings()))
+        {
+            var configuration = projectScope.GetDeveroomConfiguration();
+            configuration.UseConnectorService = true;
+        };
     }
 
     public static ReqnrollExtensionServicesManager GetReqnrollExtensionServicesManager(this IProjectScope projectScope)

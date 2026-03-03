@@ -19,7 +19,18 @@ public class DnLibDeveroomSymbolReader : DeveroomSymbolReader
     public static DeveroomSymbolReader Create(ILogger log, string assemblyPath)
     {
         log.Info($"Creating {nameof(DnLibDeveroomSymbolReader)}");
-        var moduleDefMd = ModuleDefMD.Load(assemblyPath);
+
+        // Read bytes then release the file handle immediately so MSBuild can
+        // overwrite the output assembly. ModuleDefMD.Load(byte[]) keeps the
+        // module in memory without holding an OS file lock.
+        var assemblyBytes = File.ReadAllBytes(assemblyPath);
+        var options = new ModuleCreationOptions();
+
+        var pdbPath = Path.ChangeExtension(assemblyPath, ".pdb");
+        if (File.Exists(pdbPath))
+            options.PdbFileOrData = File.ReadAllBytes(pdbPath);
+
+        var moduleDefMd = ModuleDefMD.Load(assemblyBytes, options);
         return new DnLibDeveroomSymbolReader(moduleDefMd);
     }
 

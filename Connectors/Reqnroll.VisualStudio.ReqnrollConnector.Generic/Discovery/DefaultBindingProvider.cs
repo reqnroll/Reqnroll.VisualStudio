@@ -26,7 +26,7 @@ public class DefaultBindingProvider: IBindingProvider
     private string GetBindingsJson(TestAssemblyLoadContext testAssemblyContext, Assembly testAssembly, string? configFileContent)
     {
         var reqnrollAssembly = testAssemblyContext.LoadFromAssemblyName(new AssemblyName("Reqnroll"));
-        var bindingProviderServiceType = reqnrollAssembly.GetType("Reqnroll.Bindings.Provider.BindingProviderService", true)!;
+        var bindingProviderServiceType = reqnrollAssembly.GetType("Reqnroll.ServiceAPI.ReqnrollServiceAPIEndpoint", true)!;
         var bindingJson = bindingProviderServiceType.ReflectionCallStaticMethod<string>("DiscoverBindings", new[] { typeof(Assembly), typeof(string) }, testAssembly, configFileContent);
         return bindingJson;
     }
