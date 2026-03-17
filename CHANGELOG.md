@@ -3,8 +3,9 @@
 ## Improvements:
 
 ## Bug fixes:
+* Fix #133 - Project Templates are broken for .NET Framework
 
-*Contributors of this release (in alphabetical order):* 
+*Contributors of this release (in alphabetical order):* @clrudolphi
 
 # v2026.1.477 - 2026-01-28
 
