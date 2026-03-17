@@ -3,8 +3,9 @@
 ## Improvements:
 
 ## Bug fixes:
-
-*Contributors of this release (in alphabetical order):* 
+* Fix: TUnit projects should not include a package reference to Microsoft.NET.Test.Sdk (#134)
+* 
+*Contributors of this release (in alphabetical order):* @clrudolphi
 
 # v2026.1.477 - 2026-01-28
 
