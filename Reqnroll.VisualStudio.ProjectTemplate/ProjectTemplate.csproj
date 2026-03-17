@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$dotnetframework$</TargetFramework>
+    <TargetFramework>$dotnetframework$</TargetFramework>$if$ ('$isnetframework$' == 'False')
     <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>$if$ ('$rootnamespace$' != '')
+    <ImplicitUsings>enable</ImplicitUsings>$endif$$if$ ('$rootnamespace$' != '')
     <RootNamespace>$rootnamespace$</RootNamespace>$endif$
   </PropertyGroup>
 

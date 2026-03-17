@@ -28,6 +28,8 @@ public class AddNewReqnrollProjectViewModel : INotifyPropertyChanged
         }
     }
 
+    public bool IsNetFramework => DotNetFramework.StartsWith("net4", StringComparison.InvariantCultureIgnoreCase);
+
     public string UnitTestFramework { get; set; } = MsTest;
     // FluentAssertions suggestion is temporarily hidden from the UI as it is not free for commercial use anymore. 
     // See https://xceed.com/fluent-assertions-faq/

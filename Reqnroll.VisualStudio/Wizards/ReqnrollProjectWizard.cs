@@ -44,6 +44,7 @@ public class ReqnrollProjectWizard : IDeveroomWizard
 
         // Add custom parameters.
         wizardRunParameters.ReplacementsDictionary.Add("$dotnetframework$", viewModel.DotNetFramework);
+        wizardRunParameters.ReplacementsDictionary.Add(WizardRunParameters.IsNetFrameworkKey, viewModel.IsNetFramework.ToString(CultureInfo.InvariantCulture));
         wizardRunParameters.ReplacementsDictionary.Add("$unittestframework$", viewModel.UnitTestFramework);
         wizardRunParameters.ReplacementsDictionary.Add("$fluentassertionsincluded$",
             viewModel.FluentAssertionsIncluded.ToString(CultureInfo.InvariantCulture));
