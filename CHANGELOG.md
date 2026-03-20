@@ -3,7 +3,8 @@
 ## Improvements:
 
 ## Bug fixes:
-* Fix #133 - Project Templates are broken for .NET Framework
+* Fix: Project Templates are broken for .NET Framework (#133)
+* Fix: TUnit projects should not include a package reference to Microsoft.NET.Test.Sdk (#134)
 
 *Contributors of this release (in alphabetical order):* @clrudolphi
 
