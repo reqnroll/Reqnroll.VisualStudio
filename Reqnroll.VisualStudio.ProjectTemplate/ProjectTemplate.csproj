@@ -4,11 +4,12 @@
     <TargetFramework>$dotnetframework$</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>$if$ ('$rootnamespace$' != '')
-    <RootNamespace>$rootnamespace$</RootNamespace>$endif$
+    <RootNamespace>$rootnamespace$</RootNamespace>$endif$$if$ ('$unittestframework$' == 'TUnit')
+    <OutputType>Exe</OutputType>$endif$
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />$if$ ('$unittestframework$' == 'xUnit')
+  <ItemGroup>$if$ ('$unittestframework$' != 'TUnit')
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />$endif$$if$ ('$unittestframework$' == 'xUnit')
     <PackageReference Include="Reqnroll.xUnit" Version="3.2.0" />
     <PackageReference Include="xunit" Version="2.9.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.3" />$endif$$if$ ('$unittestframework$' == 'xUnit.v3')
@@ -21,8 +22,8 @@
     <PackageReference Include="Reqnroll.MsTest" Version="3.2.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="3.10.2" />
     <PackageReference Include="MSTest.TestFramework" Version="3.10.2" />$endif$$if$ ('$unittestframework$' == 'TUnit')
-    <PackageReference Include="Reqnroll.TUnit" Version="3.2.0" />
-    <PackageReference Include="TUnit" Version="0.55.23" />$endif$$if$ ('$fluentassertionsincluded$' == 'True')
+    <PackageReference Include="Reqnroll.TUnit" Version="3.3.0" />
+    <PackageReference Include="TUnit" Version="1.19.74" />$endif$$if$ ('$fluentassertionsincluded$' == 'True')
     <PackageReference Include="FluentAssertions" Version="7.2.0" />$endif$
   </ItemGroup>
 
