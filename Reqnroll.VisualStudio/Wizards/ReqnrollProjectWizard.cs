@@ -50,6 +50,33 @@ public class ReqnrollProjectWizard : IDeveroomWizard
             viewModel.FluentAssertionsIncluded.ToString(CultureInfo.InvariantCulture));
         wizardRunParameters.ReplacementsDictionary.Add("$rootnamespace$", rootNamespace);
 
+        if (!viewModel.IsNetFramework)
+        {
+            // For .NET 8+ projects, we will create a set of global usings to be inserted in to the project file. This is in leiu of adding a `GlobalUsings.cs` file.
+            var globalUsings = new StringBuilder();
+            switch (viewModel.UnitTestFramework)
+            {
+                case "MSTest":
+                    globalUsings.AppendLine("    <Using Include=\"Microsoft.VisualStudio.TestTools.UnitTesting\" />");
+                    break;
+                case "NUnit":
+                    globalUsings.AppendLine("    <Using Include=\"NUnit.Framework\" />");
+                    break;
+                case "xUnit":
+                case "XUnit.v3":
+                    globalUsings.AppendLine("    <Using Include=\"Xunit\" />");
+                    break;
+                // For TUnit, no global using is required.
+                default:
+                    break;
+            }
+            if (viewModel.FluentAssertionsIncluded)
+            {
+                globalUsings.AppendLine("    <Using Include=\"FluentAssertions\" />");
+            }
+            wizardRunParameters.ReplacementsDictionary.Add("$globalUsings$", globalUsings.ToString());
+        }
+
         return true;
     }
 }

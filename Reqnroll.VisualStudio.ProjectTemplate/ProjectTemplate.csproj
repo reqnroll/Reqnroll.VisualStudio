@@ -30,6 +30,8 @@
   <ItemGroup>
     <Folder Include="Drivers\" />
     <Folder Include="Support\" />
-  </ItemGroup>
-
+  </ItemGroup>$if$ ('$isnetframework$' == 'False')
+  <ItemGroup>
+    <Using Include="Reqnroll" />
+$globalUsings$  </ItemGroup>$endif$
 </Project>

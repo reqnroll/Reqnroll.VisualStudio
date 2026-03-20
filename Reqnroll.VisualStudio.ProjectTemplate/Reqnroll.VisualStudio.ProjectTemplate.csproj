@@ -17,12 +17,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="ImplicitUsings.cs" />
     <Compile Remove="StepDefinitions\CalculatorStepDefinitions.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="ImplicitUsings.cs" />
     <None Include="StepDefinitions\CalculatorStepDefinitions.cs" />
     <None Include="ProjectTemplate.csproj" />
   </ItemGroup>
