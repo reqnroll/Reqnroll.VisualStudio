@@ -5,6 +5,7 @@ public class WizardRunParameters
     public const string CustomToolSettingKey = "$customtool$";
     public const string BuildActionKey = "$buildaction$";
     public const string CopyToOutputDirectoryKey = "$copytooutputdir$";
+    public const string IsNetFrameworkKey = "$isnetframework$";
 
     public WizardRunParameters(bool isAddNewItem, IProjectScope projectScope, IIdeScope ideScope, string templateFolder,
         string targetFolder, string targetFileName, Dictionary<string, string> replacementsDictionary)

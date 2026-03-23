@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$dotnetframework$</TargetFramework>
+    <TargetFramework>$dotnetframework$</TargetFramework>$if$ ('$isnetframework$' == 'False')
     <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>$if$ ('$rootnamespace$' != '')
+    <ImplicitUsings>enable</ImplicitUsings>$endif$$if$ ('$rootnamespace$' != '')
     <RootNamespace>$rootnamespace$</RootNamespace>$endif$$if$ ('$unittestframework$' == 'TUnit')
     <OutputType>Exe</OutputType>$endif$
   </PropertyGroup>
@@ -30,6 +30,8 @@
   <ItemGroup>
     <Folder Include="Drivers\" />
     <Folder Include="Support\" />
-  </ItemGroup>
-
+  </ItemGroup>$if$ ('$isnetframework$' == 'False')
+  <ItemGroup>
+    <Using Include="Reqnroll" />
+$globalUsings$  </ItemGroup>$endif$
 </Project>

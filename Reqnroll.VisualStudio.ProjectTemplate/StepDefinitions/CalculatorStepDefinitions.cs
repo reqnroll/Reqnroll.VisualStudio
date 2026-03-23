@@ -1,3 +1,5 @@
+$if$ ('$isnetframework$' == 'True')
+using Reqnroll;$endif$
 namespace $safeprojectname$.StepDefinitions;
 
 ﻿[Binding]
