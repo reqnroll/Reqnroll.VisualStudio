@@ -21,7 +21,7 @@
     <PackageReference Include="NUnit3TestAdapter" Version="6.2.0" />$endif$$if$ ('$unittestframework$' == 'MSTest')
     <PackageReference Include="Reqnroll.MsTest" Version="3.3.3" />
     <PackageReference Include="MSTest.TestAdapter" Version="4.1.0" />
-    <PackageReference Include="MSTest.TestFramework" Version="4.1.2" />$endif$$if$ ('$unittestframework$' == 'TUnit')
+    <PackageReference Include="MSTest.TestFramework" Version="4.1.0" />$endif$$if$ ('$unittestframework$' == 'TUnit')
     <PackageReference Include="Reqnroll.TUnit" Version="3.3.3" />
     <PackageReference Include="TUnit" Version="1.20.0" />$endif$$if$ ('$fluentassertionsincluded$' == 'True')
     <PackageReference Include="FluentAssertions" Version="7.2.0" />$endif$
