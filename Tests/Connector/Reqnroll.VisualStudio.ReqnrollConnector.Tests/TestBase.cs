@@ -1,3 +1,4 @@
+using ReqnrollConnector.AssemblyLoading;
 using ReqnrollConnector.CommandLineOptions;
 using ReqnrollConnector.Utils;
 
@@ -72,7 +73,7 @@ public class TestBase
         var consoleRunner = new Runner(logger);
         var resultCode = consoleRunner.Run(
             psiEx.Arguments.Split(' '),
-            (ctx, path) => testAssembly ??= ctx.LoadFromAssemblyPath(path));
+            new TestAssemblyContextFactory());
         var result = new ProcessResult((int)resultCode, logger[LogLevel.Info], logger[LogLevel.Error], TimeSpan.Zero);
         return result;
     }

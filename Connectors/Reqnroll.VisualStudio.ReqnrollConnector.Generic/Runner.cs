@@ -1,6 +1,5 @@
 using System.Diagnostics;
-using System.Reflection;
-using System.Runtime.Loader;
+using ReqnrollConnector.AssemblyLoading;
 using ReqnrollConnector.CommandLineOptions;
 using ReqnrollConnector.Discovery;
 using ReqnrollConnector.Logging;
@@ -28,7 +27,7 @@ public class Runner
         _analytics.AddAnalyticsProperty("ConnectorType", Path.GetFileName(Path.GetDirectoryName(GetType().Assembly.Location)!));
     }
 
-    public ExecutionResult Run(string[] args, Func<AssemblyLoadContext, string, Assembly> testAssemblyFactory)
+    public ExecutionResult Run(string[] args, ITestAssemblyContextFactory testAssemblyContextFactory)
     {
         try
         {
@@ -39,7 +38,7 @@ public class Runner
             if (connectorOptions is not DiscoveryOptions discoveryOptions)
                 throw new ArgumentException($"Not supported options: {connectorOptions}");
 
-            string resultJsonText = ExecuteDiscovery(testAssemblyFactory, discoveryOptions);
+            string resultJsonText = ExecuteDiscovery(testAssemblyContextFactory, discoveryOptions);
             var marked = JsonSerialization.MarkResult(resultJsonText);
             PrintResult(marked);
             
@@ -51,9 +50,9 @@ public class Runner
         }
     }
 
-    private string ExecuteDiscovery(Func<AssemblyLoadContext, string, Assembly> testAssemblyFactory, DiscoveryOptions discoveryOptions)
+    private string ExecuteDiscovery(ITestAssemblyContextFactory testAssemblyContextFactory, DiscoveryOptions discoveryOptions)
     {
-        var result = DiscoveryExecutor.Execute(discoveryOptions, testAssemblyFactory, _log, _analytics);
+        var result = DiscoveryExecutor.Execute(discoveryOptions, testAssemblyContextFactory, _log, _analytics);
         var serialized = JsonSerialization.SerializeObjectCamelCase(result, _log);
         return serialized;
     }

@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
-using System.Runtime.Loader;
 using Reqnroll.Bindings.Provider.Data;
+using ReqnrollConnector.AssemblyLoading;
 using ReqnrollConnector.Discovery;
 using ReqnrollConnector.Logging;
 
@@ -9,10 +9,10 @@ namespace ReqnrollConnector.SourceDiscovery;
 internal class SourceLocationProvider : ISourceLocationProvider
 {
     private readonly SymbolReaderCache _symbolReaders;
-    private readonly AssemblyLoadContext _assemblyLoadContext;
+    private readonly ITestAssemblyContext _assemblyLoadContext;
     private readonly Assembly _testAssembly;
 
-    public SourceLocationProvider(AssemblyLoadContext assemblyLoadContext, Assembly testAssembly, ILogger log)
+    public SourceLocationProvider(ITestAssemblyContext assemblyLoadContext, Assembly testAssembly, ILogger log)
     {
         _symbolReaders = new SymbolReaderCache(log);
         _assemblyLoadContext = assemblyLoadContext;

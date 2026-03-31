@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Reflection;
-using System.Runtime.Loader;
 using System.Runtime.Versioning;
 using Reqnroll.Bindings.Provider.Data;
 using Reqnroll.VisualStudio.ReqnrollConnector.Models;
@@ -15,10 +14,10 @@ namespace ReqnrollConnector.Discovery;
 public class DiscoveryExecutor
 {
     public static DiscoveryResult Execute(DiscoveryOptions options,
-        Func<AssemblyLoadContext, string, Assembly> testAssemblyFactory, ILogger log, IAnalyticsContainer analytics)
+        ITestAssemblyContextFactory testAssemblyContextFactory, ILogger log, IAnalyticsContainer analytics)
     {
         log.Info($"Loading {options.AssemblyFile}");
-        var testAssemblyContext = new TestAssemblyLoadContext(options.AssemblyFile, testAssemblyFactory, log);
+        var testAssemblyContext = testAssemblyContextFactory.Create(options.AssemblyFile, log);
         analytics.AddAnalyticsProperty("ImageRuntimeVersion", testAssemblyContext.TestAssembly.ImageRuntimeVersion);
 
         var targetFramework = GetTargetFramework(testAssemblyContext.TestAssembly);

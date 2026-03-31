@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyModel;
 using Microsoft.Extensions.DependencyModel.Resolution;
 using ReqnrollConnector.Logging;
 
-namespace ReqnrollConnector.AssemblyLoading;
+namespace ReqnrollConnector.AssemblyLoading.dotNET;
 
 public class RuntimeCompositeCompilationAssemblyResolver : ICompilationAssemblyResolver
 {
