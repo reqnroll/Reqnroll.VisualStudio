@@ -1,5 +1,6 @@
 using ReqnrollConnector.AssemblyLoading;
 using ReqnrollConnector.Logging;
+using ReqnrollConnector.Utils;
 using System.Reflection;
 using System.Runtime.Versioning;
 
@@ -28,6 +29,9 @@ public class NetCoreTestAssemblyContext : ITestAssemblyContext
             return tfa?.FrameworkName ?? "unknown";
         }
     }
+    public string TestAssemblyLocation => TestAssembly.Location;
+
+    public string TestAssemblyFullName => TestAssembly.FullName!;
 
     public Type GetTypeFromRemoteAssembly(string assemblyName, string typeName)
     {
@@ -38,5 +42,18 @@ public class NetCoreTestAssemblyContext : ITestAssemblyContext
     public Assembly LoadFromAssemblyName(AssemblyName assemblyNameObj)
     {
         return _context.LoadFromAssemblyName(assemblyNameObj);
+    }
+
+    public string InvokeReqnrollBindingDiscoveryMethod(string? configFileContent)
+    {
+        var bindingProviderServiceType = GetTypeFromRemoteAssembly("Reqnroll", "Reqnroll.Bindings.Provider.BindingProviderService");
+        var bindingJson = bindingProviderServiceType.ReflectionCallStaticMethod<string>("DiscoverBindings", new[] { typeof(Assembly), typeof(string) }, TestAssembly, configFileContent);
+        return bindingJson;
+    }
+
+    public string AssemblyLocationFromAssemblyName(string assemblyName)
+    {
+        var assembly = _context.LoadFromAssemblyName(new AssemblyName(assemblyName));
+        return assembly.Location;
     }
 }

@@ -1,12 +1,7 @@
 using System;
 using System.Linq;
 using dnlib.DotNet;
-using ReqnrollConnector.Logging;
-using ReqnrollConnector.AssemblyLoading.dotNET;
 using ILogger = ReqnrollConnector.Logging.ILogger;
-#if NETFRAMEWORK
-using ReqnrollConnector.AssemblyLoading.netFx;
-#endif
 
 namespace ReqnrollConnector.AssemblyLoading;
 
@@ -15,17 +10,16 @@ public class TestAssemblyContextFactory : ITestAssemblyContextFactory
     public ITestAssemblyContext Create(string assemblyPath, ILogger log)
     {
         var tfm = GetTargetFrameworkMoniker(assemblyPath);
-        if (tfm != null && tfm.StartsWith(".NETFramework", StringComparison.OrdinalIgnoreCase))
-        {
+        log.Log(new Logging.Log(Logging.LogLevel.Info, $"Determined target framework moniker for assembly '{assemblyPath}' is '{tfm ?? "null"}'."));
 #if NETFRAMEWORK
-            return new NetFxTestAssemblyContext(assemblyPath, log);
+        if (tfm != null && tfm.StartsWith(".NETFramework", StringComparison.OrdinalIgnoreCase))
+            return new netFx.NetFxTestAssemblyContext(assemblyPath, log);
+        throw new PlatformNotSupportedException($"The test assembly targets {tfm ?? "null"}, but the connector is running on .NET Framework.");
 #else
-            throw new PlatformNotSupportedException("The test assembly targets .NET Framework, but the connector is running on a different platform. " +
-                "Please ensure the connector is running on .NET Framework to load this assembly.");
+        if (tfm != null && tfm.StartsWith(".NETFramework", StringComparison.OrdinalIgnoreCase))
+            throw new PlatformNotSupportedException("The test assembly targets .NET Framework, but the connector is running on .NET Core+.");
+        return new dotNET.NetCoreTestAssemblyContext(assemblyPath, log);
 #endif
-        }
-        // Default to .NET Core/5+/6+ loader
-        return new NetCoreTestAssemblyContext(assemblyPath, log);
     }
 
     private static string? GetTargetFrameworkMoniker(string assemblyPath)
@@ -35,7 +29,7 @@ public class TestAssemblyContextFactory : ITestAssemblyContextFactory
             using var module = ModuleDefMD.Load(assemblyPath);
             var attr = module.Assembly.CustomAttributes
                 .FirstOrDefault(a => a.TypeFullName == "System.Runtime.Versioning.TargetFrameworkAttribute");
-            return attr?.ConstructorArguments.FirstOrDefault().Value as string;
+            return attr?.ConstructorArguments.FirstOrDefault().Value?.ToString();
         }
         catch
         {

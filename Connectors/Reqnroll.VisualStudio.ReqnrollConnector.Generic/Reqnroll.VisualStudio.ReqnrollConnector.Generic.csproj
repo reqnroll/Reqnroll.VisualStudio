@@ -16,6 +16,20 @@
     -->
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net48' Or '$(TargetFramework)' == 'net481'">
+    <IsNetFramework>true</IsNetFramework>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(IsNetFramework)' == ''">
+    <IsNetFramework>false</IsNetFramework>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(IsNetFramework)' == 'false' ">
+    <Compile Remove="AssemblyLoading\netFx\*.cs" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(IsNetFramework)' == 'true' ">
+    <Compile Remove="AssemblyLoading\dotNET\*.cs" />
+  </ItemGroup>
+  
   <ItemGroup>
     <PackageReference Include="dnlib" Version="4.4.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="8.0.2" />
@@ -23,6 +37,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Reqnroll.VisualStudio.ReqnrollConnector.Models\Reqnroll.VisualStudio.ReqnrollConnector.Models.csproj" />
+    <ProjectReference Include="..\Reqnroll.VisualStudio.ReqnrollConnector.Generic.NetFXAppDomainBridge\Reqnroll.VisualStudio.ReqnrollConnector.Generic.NetFXAppDomainBridge.csproj" 
+                      Condition=" '$(IsNetFramework)' == 'true' "/>
   </ItemGroup>
 
   <Target Name="CustomAfterBuild" AfterTargets="Build" Condition="$(configuration)=='Debug' and '$(TargetFramework)'!=''">
