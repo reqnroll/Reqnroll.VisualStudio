@@ -17,7 +17,7 @@ public class TestAssemblyContextFactory : ITestAssemblyContextFactory
         throw new PlatformNotSupportedException($"The test assembly targets {tfm ?? "null"}, but the connector is running on .NET Framework.");
 #else
         if (tfm != null && tfm.StartsWith(".NETFramework", StringComparison.OrdinalIgnoreCase))
-            throw new PlatformNotSupportedException("The test assembly targets .NET Framework, but the connector is running on .NET Core+.");
+            throw new PlatformNotSupportedException($"The test assembly targets {tfm ?? "null"}, but the connector is running on .NET Core+.");
         return new dotNET.NetCoreTestAssemblyContext(assemblyPath, log);
 #endif
     }

@@ -2,6 +2,8 @@ namespace Reqnroll.VisualStudio.Connectors;
 
 public class GenericOutProcReqnrollConnector : OutProcReqnrollConnector
 {
+    private const string ConnectorNet462 = @"Reqnroll-Generic-net462\reqnroll-vs.exe";
+    private const string ConnectorNet472 = @"Reqnroll-Generic-net472\reqnroll-vs.exe";
     private const string ConnectorNet481 = @"Reqnroll-Generic-net481\reqnroll-vs.exe";
     private const string ConnectorNet60 = @"Reqnroll-Generic-net6.0\reqnroll-vs.dll";
     private const string ConnectorNet70 = @"Reqnroll-Generic-net7.0\reqnroll-vs.dll";
@@ -37,15 +39,14 @@ public class GenericOutProcReqnrollConnector : OutProcReqnrollConnector
         var connector = _projectSettings.IsSpecFlowProject ?
             SpecFlowConnectorNet80 : ConnectorNet80;
 
-        if (_targetFrameworkMoniker.IsNetFramework && _targetFrameworkMoniker.HasVersion &&
-            _targetFrameworkMoniker.Version.Major == 4 && _targetFrameworkMoniker.Version.Minor == 8)
+        if (_targetFrameworkMoniker.IsNetFramework && _targetFrameworkMoniker.HasVersion) 
         {
-            connector = ConnectorNet481;
-        }
-        // TODO: add .NETFramework 4.6.2 and 4.7.2 connectors
-
-        if (_targetFrameworkMoniker.IsNetFramework)
-        {
+            connector = _targetFrameworkMoniker.Version.Minor switch
+            {
+                6 => ConnectorNet462,
+                7 => ConnectorNet472,
+                _ => ConnectorNet481,
+            };
             return Path.Combine(GetConnectorsFolder(), connector);
         }
 
