@@ -37,7 +37,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Reqnroll.VisualStudio.ReqnrollConnector.Models\Reqnroll.VisualStudio.ReqnrollConnector.Models.csproj" />
-    <ProjectReference Include="..\Reqnroll.VisualStudio.ReqnrollConnector.Generic.NetFXAppDomainBridge\Reqnroll.VisualStudio.ReqnrollConnector.Generic.NetFXAppDomainBridge.csproj" 
+    <ProjectReference Include="..\Reqnroll.VisualStudio.ReqnrollConnector.Generic.NetFX.Interfaces\Reqnroll.VisualStudio.ReqnrollConnector.Generic.NetFX.Interfaces.csproj"
+                      Condition=" '$(IsNetFramework)' == 'true' "/>
+    <ProjectReference Include="..\Reqnroll.VisualStudio.ReqnrollConnector.Generic.NetFX.Bridge\Reqnroll.VisualStudio.ReqnrollConnector.Generic.NetFX.Bridge.csproj" 
                       Condition=" '$(IsNetFramework)' == 'true' "/>
   </ItemGroup>
 

@@ -1,5 +1,5 @@
+using ReqnrollConnector.AssemblyLoading.netFXAppDomainInterfaces;
 using ReqnrollConnector.Utils;
-using System;
 using System.Reflection;
 using System.Runtime.Versioning;
 
@@ -11,12 +11,13 @@ namespace ReqnrollConnector.AssemblyLoading.netFx;
 /// Keep return types to primitives/strings where possible to avoid
 /// accidental cross-domain type-identity issues.
 /// </summary>
-public class NetFxAssemblyProxy : MarshalByRefObject
+public class NetFxAssemblyProxy : MarshalByRefObject, INetFxAssemblyProxy
 {
     private Assembly _testAssembly;
 
     public void Initialize(string assemblyPath)
     {
+
         _testAssembly = Assembly.LoadFrom(assemblyPath);
     }
 
@@ -37,10 +38,10 @@ public class NetFxAssemblyProxy : MarshalByRefObject
     public string TestAssemblyLocation => _testAssembly.Location;
     public string TestAssemblyFullName => _testAssembly.FullName;
 
-    public Assembly LoadAssemblyByName(string fullAssemblyName) =>
+    private Assembly LoadAssemblyByName(string fullAssemblyName) =>
             Assembly.Load(fullAssemblyName);
 
-    public Type GetType(string assemblyName, string typeName)
+    private Type GetType(string assemblyName, string typeName)
     {
         var asm = Assembly.Load(assemblyName);
         return asm.GetType(typeName, throwOnError: true);

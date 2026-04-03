@@ -9,9 +9,10 @@ namespace ReqnrollConnector.AssemblyLoading.netFx;
 public class NetFxTestAssemblyContext : ITestAssemblyContext, IDisposable
 {
     private readonly AppDomain _appDomain;
-    private readonly NetFxAssemblyProxy _proxy;
+    private readonly ReqnrollConnector.AssemblyLoading.netFXAppDomainInterfaces.INetFxAssemblyProxy _proxy;
     private readonly ILogger _log;
-    private const string BRIDGEASSEMBLYNAME = "Reqnroll.VisualStudio.ReqnrollConnector.Generic.NetFXAppDomainBridge";
+    private const string BRIDGEASSEMBLYNAME = "Reqnroll.VisualStudio.ReqnrollConnector.Generic.NetFX.Bridge";
+    private const string PROXYINTERFACEASSEMBLYNAME = "Reqnroll.VisualStudio.ReqnrollConnector.Generic.NetFX.Interfaces";
     private string _bridgeTargetDir = string.Empty;
     public NetFxTestAssemblyContext(string assemblyPath, ILogger log)
     {
@@ -20,11 +21,19 @@ public class NetFxTestAssemblyContext : ITestAssemblyContext, IDisposable
         // Get the directory of the currently executing assembly (the connector)
         string connectorDir = Path.GetDirectoryName(typeof(NetFxTestAssemblyContext).Assembly.Location);
         _bridgeTargetDir = Path.GetDirectoryName(assemblyPath);
+
+        // We will setup the AppDomain to have its base directory as the test assembly's directory;
+        // So we copy the bridge assembly (and its interface assemlby) there so that it can be found and loaded into the AppDomain when we create the proxy instance below.
         var bootstrapSrc = Path.Combine(connectorDir, BRIDGEASSEMBLYNAME + ".dll");
         var bootstrapDst = Path.Combine(_bridgeTargetDir, BRIDGEASSEMBLYNAME + ".dll");
 
         if (!File.Exists(bootstrapDst))
             File.Copy(bootstrapSrc, bootstrapDst);
+
+        var proxyInterfaceSrc = Path.Combine(connectorDir, PROXYINTERFACEASSEMBLYNAME + ".dll");
+        var proxyInterfaceDst = Path.Combine(_bridgeTargetDir, PROXYINTERFACEASSEMBLYNAME + ".dll");
+        if (!File.Exists(proxyInterfaceDst))
+            File.Copy(proxyInterfaceSrc, proxyInterfaceDst);
 
         var setup = new AppDomainSetup
         {
@@ -39,16 +48,9 @@ public class NetFxTestAssemblyContext : ITestAssemblyContext, IDisposable
 
         _log.Info($"AppDomain created: {_appDomain.FriendlyName}");
         // Bootstrap assembly is in targetDir (copied above), so this succeeds
-        var bootstrapper = (Reqnroll.VisualStudio.ReqnrollConnector.Generic.NetFXAppDomainBridge.DomainBootstrapper)_appDomain.CreateInstanceAndUnwrap(
+        _proxy = (ReqnrollConnector.AssemblyLoading.netFXAppDomainInterfaces.INetFxAssemblyProxy)_appDomain.CreateInstanceAndUnwrap(
             BRIDGEASSEMBLYNAME,
-            BRIDGEASSEMBLYNAME + ".DomainBootstrapper");
-
-        // Resolver now registered locally in child domain — no marshaling issues
-        bootstrapper.RegisterFallbackResolver(connectorDir);
-
-        _proxy = (NetFxAssemblyProxy)_appDomain.CreateInstanceAndUnwrap(
-            typeof(NetFxAssemblyProxy).Assembly.FullName,
-            typeof(NetFxAssemblyProxy).FullName);
+            "ReqnrollConnector.AssemblyLoading.netFx.NetFxAssemblyProxy");
 
         _proxy.Initialize(assemblyPath);
         _log.Info($"Proxy initialized for {assemblyPath}");
