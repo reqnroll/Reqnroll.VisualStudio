@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
-using System.Runtime.Loader;
 using Reqnroll.Bindings.Provider.Data;
+using ReqnrollConnector.AssemblyLoading;
 using ReqnrollConnector.Discovery;
 using ReqnrollConnector.Logging;
 
@@ -9,14 +9,12 @@ namespace ReqnrollConnector.SourceDiscovery;
 internal class SourceLocationProvider : ISourceLocationProvider
 {
     private readonly SymbolReaderCache _symbolReaders;
-    private readonly AssemblyLoadContext _assemblyLoadContext;
-    private readonly Assembly _testAssembly;
+    private readonly ITestAssemblyContext _assemblyLoadContext;
 
-    public SourceLocationProvider(AssemblyLoadContext assemblyLoadContext, Assembly testAssembly, ILogger log)
+    public SourceLocationProvider(ITestAssemblyContext assemblyLoadContext, ILogger log)
     {
         _symbolReaders = new SymbolReaderCache(log);
         _assemblyLoadContext = assemblyLoadContext;
-        _testAssembly = testAssembly;
     }
 
     public SourceLocation? GetSourceLocation(BindingSourceMethodData bindingMethod)
@@ -24,10 +22,9 @@ internal class SourceLocationProvider : ISourceLocationProvider
         if (bindingMethod.MetadataToken == null)
             return null;
 
-        var assemblyNameStr = bindingMethod.Assembly ?? _testAssembly.FullName!;
-        var assemblyNameObj = new AssemblyName(assemblyNameStr);
-        var assembly = _assemblyLoadContext.LoadFromAssemblyName(assemblyNameObj);
-        var reader = _symbolReaders[assembly];
+        var assemblyNameStr = bindingMethod.Assembly ?? _assemblyLoadContext.TestAssemblyFullName!;
+        var assemblyLocation = _assemblyLoadContext.AssemblyLocationFromAssemblyName(assemblyNameStr);
+        var reader = _symbolReaders[assemblyLocation];
 
         if (reader == null)
             return null;

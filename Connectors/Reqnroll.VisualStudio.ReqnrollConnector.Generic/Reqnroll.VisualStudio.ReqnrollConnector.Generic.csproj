@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <AssemblyName>reqnroll-vs</AssemblyName>
-    <TargetFrameworks>net6.0;net7.0;net8.0;net9.0;net10.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;net7.0;net8.0;net9.0;net10.0;net481;net462;net472</TargetFrameworks>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\reqnroll.snk</AssemblyOriginatorKeyFile>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
@@ -16,6 +16,20 @@
     -->
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net462' Or '$(TargetFramework)' == 'net472' Or '$(TargetFramework)' == 'net481'">
+    <IsNetFramework>true</IsNetFramework>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(IsNetFramework)' == ''">
+    <IsNetFramework>false</IsNetFramework>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(IsNetFramework)' == 'false' ">
+    <Compile Remove="AssemblyLoading\netFx\*.cs" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(IsNetFramework)' == 'true' ">
+    <Compile Remove="AssemblyLoading\dotNET\*.cs" />
+  </ItemGroup>
+  
   <ItemGroup>
     <PackageReference Include="dnlib" Version="4.4.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="8.0.2" />
@@ -23,6 +37,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Reqnroll.VisualStudio.ReqnrollConnector.Models\Reqnroll.VisualStudio.ReqnrollConnector.Models.csproj" />
+    <ProjectReference Include="..\Reqnroll.VisualStudio.ReqnrollConnector.Generic.NetFX.Interfaces\Reqnroll.VisualStudio.ReqnrollConnector.Generic.NetFX.Interfaces.csproj"
+                      Condition=" '$(IsNetFramework)' == 'true' "/>
+    <ProjectReference Include="..\Reqnroll.VisualStudio.ReqnrollConnector.Generic.NetFX.Bridge\Reqnroll.VisualStudio.ReqnrollConnector.Generic.NetFX.Bridge.csproj" 
+                      Condition=" '$(IsNetFramework)' == 'true' "/>
   </ItemGroup>
 
   <Target Name="CustomAfterBuild" AfterTargets="Build" Condition="$(configuration)=='Debug' and '$(TargetFramework)'!=''">

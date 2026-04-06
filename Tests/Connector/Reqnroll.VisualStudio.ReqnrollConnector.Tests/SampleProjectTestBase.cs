@@ -10,7 +10,7 @@ public abstract class SampleProjectTestBase
 #else
     private const string ConnectorConfiguration = "Release";
 #endif
-    private const string TargetFrameworkToBeUsedForNet4Projects = "net10.0";
+    private const string TargetFrameworkToBeUsedForNet4Projects = "net481";
     private static readonly string LatestReqnrollVersion = NuGetPackageVersionDetector.DetectLatestPackage("Reqnroll", Console.WriteLine) ?? "1.0.0";
 
     protected readonly ITestOutputHelper TestOutputHelper;
@@ -104,8 +104,11 @@ public abstract class SampleProjectTestBase
         File.Exists(connectorPath).Should().BeTrue($"Connector not found: {connectorPath}");
 
         var configArgument = configPath ?? string.Empty;
-        var args = $"exec \"{connectorPath}\" discovery \"{assemblyPath}\" \"{configArgument}\"";
-        var result = RunProcess(Path.GetDirectoryName(assemblyPath)!, "dotnet", args);
+        var executable = connectorPath.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) ? connectorPath : "dotnet";
+        var args = targetFramework.StartsWith("net4") ? 
+            $"discovery \"{assemblyPath}\" \"{configArgument}\"" :
+            $"exec \"{connectorPath}\" discovery \"{assemblyPath}\" \"{configArgument}\"";
+        var result = RunProcess(Path.GetDirectoryName(assemblyPath)!, executable, args);
 
         if (!string.IsNullOrEmpty(result.StdError))
         {
@@ -232,8 +235,9 @@ public abstract class SampleProjectTestBase
         if (targetFramework.StartsWith("net4"))
             targetFramework = TargetFrameworkToBeUsedForNet4Projects;
 
+        var executableName = targetFramework.StartsWith("net4") ? "reqnroll-vs.exe" : "reqnroll-vs.dll";
         var connectorDir = Path.Combine(GetSolutionRoot(), "Connectors", "bin", ConnectorConfiguration, $"Reqnroll-Generic-{targetFramework}");
-        return Path.Combine(connectorDir, "reqnroll-vs.dll");
+        return Path.Combine(connectorDir, executableName);
     }
 
     private static string GetSolutionRoot()

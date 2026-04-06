@@ -1,4 +1,5 @@
 using ReqnrollConnector.AssemblyLoading;
+using ReqnrollConnector.AssemblyLoading.dotNET;
 
 namespace Reqnroll.VisualStudio.ReqnrollConnector.Tests;
 
