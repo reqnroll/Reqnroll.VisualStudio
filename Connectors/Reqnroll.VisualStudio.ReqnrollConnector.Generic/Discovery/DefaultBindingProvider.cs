@@ -12,9 +12,9 @@ namespace ReqnrollConnector.Discovery;
 /// </summary>
 public class DefaultBindingProvider: IBindingProvider
 {
-    public BindingData DiscoverBindings(TestAssemblyLoadContext testAssemblyContext, Assembly testAssembly, string? configFileContent, ILogger log)
+    public BindingData DiscoverBindings(ITestAssemblyContext testAssemblyContext, string? configFileContent, ILogger log)
     {
-        string bindingJson = GetBindingsJson(testAssemblyContext, testAssembly, configFileContent);
+        string bindingJson = GetBindingsJson(testAssemblyContext, configFileContent);
         var bindingData = DeserializeBindingData(bindingJson, log);
         return bindingData;
     }
@@ -23,12 +23,14 @@ public class DefaultBindingProvider: IBindingProvider
     /// Calls the BindingProviderService.DiscoverBindings via reflection to get the bindings json.
     /// The result is a serialized json string representing the discovered bindings represented by the <see cref="BindingData"/> class.
     /// </summary>
-    private string GetBindingsJson(TestAssemblyLoadContext testAssemblyContext, Assembly testAssembly, string? configFileContent)
+    private string GetBindingsJson(ITestAssemblyContext testAssemblyContext, string? configFileContent)
     {
-        var reqnrollAssembly = testAssemblyContext.LoadFromAssemblyName(new AssemblyName("Reqnroll"));
-        var bindingProviderServiceType = reqnrollAssembly.GetType("Reqnroll.Bindings.Provider.BindingProviderService", true)!;
-        var bindingJson = bindingProviderServiceType.ReflectionCallStaticMethod<string>("DiscoverBindings", new[] { typeof(Assembly), typeof(string) }, testAssembly, configFileContent);
-        return bindingJson;
+        return testAssemblyContext.InvokeReqnrollBindingDiscoveryMethod(configFileContent);
+        //var reqnrollAssembly = testAssemblyContext.LoadFromAssemblyName(new AssemblyName("Reqnroll"));
+        //var bindingProviderServiceType = reqnrollAssembly.GetType("Reqnroll.Bindings.Provider.BindingProviderService", true)!;
+        //var bindingProviderServiceType = testAssemblyContext.GetTypeFromRemoteAssembly("Reqnroll", "Reqnroll.Bindings.Provider.BindingProviderService");
+        //var bindingJson = bindingProviderServiceType.ReflectionCallStaticMethod<string>("DiscoverBindings", new[] { typeof(Assembly), typeof(string) }, testAssembly, configFileContent);
+        //return bindingJson;
     }
 
     /// <summary>

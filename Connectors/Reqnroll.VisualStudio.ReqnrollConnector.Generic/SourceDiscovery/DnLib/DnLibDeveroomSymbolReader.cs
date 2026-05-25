@@ -1,4 +1,3 @@
-using System.Collections.Immutable;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 using dnlib.DotNet.Pdb;
@@ -28,7 +27,7 @@ public class DnLibDeveroomSymbolReader : DeveroomSymbolReader
         var resolvedMethod = _moduleDefMd.ResolveMethod((uint) (token & 0x00FFFFFF));
 
         if (resolvedMethod == null)
-            return ImmutableArray<MethodSymbolSequencePoint>.Empty;
+            return new List<MethodSymbolSequencePoint>();
 
         var stateClassType = GetStateClassType(resolvedMethod);
 
@@ -92,11 +91,11 @@ public class DnLibDeveroomSymbolReader : DeveroomSymbolReader
     private IEnumerable<MethodSymbolSequencePoint> GetSequencePointsFromMethodBody(MethodDef methodDef)
     {
         if (methodDef == null)
-            return ImmutableArray<MethodSymbolSequencePoint>.Empty;
+            return new List<MethodSymbolSequencePoint>();
 
         var cilBody = methodDef.MethodBody as CilBody;
         if (cilBody == null)
-            return ImmutableArray<MethodSymbolSequencePoint>.Empty;
+            return new List<MethodSymbolSequencePoint>();
 
         var sequencePoints = cilBody
             .Instructions

@@ -1,7 +1,4 @@
 using System.Diagnostics;
-using System.Reflection;
-using System.Runtime.Loader;
-using System.Runtime.Versioning;
 using Reqnroll.Bindings.Provider.Data;
 using Reqnroll.VisualStudio.ReqnrollConnector.Models;
 using ReqnrollConnector.AssemblyLoading;
@@ -15,17 +12,17 @@ namespace ReqnrollConnector.Discovery;
 public class DiscoveryExecutor
 {
     public static DiscoveryResult Execute(DiscoveryOptions options,
-        Func<AssemblyLoadContext, string, Assembly> testAssemblyFactory, ILogger log, IAnalyticsContainer analytics)
+        ITestAssemblyContextFactory testAssemblyContextFactory, ILogger log, IAnalyticsContainer analytics)
     {
         log.Info($"Loading {options.AssemblyFile}");
-        var testAssemblyContext = new TestAssemblyLoadContext(options.AssemblyFile, testAssemblyFactory, log);
-        analytics.AddAnalyticsProperty("ImageRuntimeVersion", testAssemblyContext.TestAssembly.ImageRuntimeVersion);
+        var testAssemblyContext = testAssemblyContextFactory.Create(options.AssemblyFile, log);
+        analytics.AddAnalyticsProperty("ImageRuntimeVersion", testAssemblyContext.TestAssemblyImageRuntimeVersion);
 
-        var targetFramework = GetTargetFramework(testAssemblyContext.TestAssembly);
+        var targetFramework = testAssemblyContext.TestAssemblyTargetFrameworkName;
         if (targetFramework != null)
             analytics.AddAnalyticsProperty("TargetFramework", targetFramework);
 
-        var reqnrollVersion = GetReqnrollVersion(testAssemblyContext.TestAssembly, log);
+        var reqnrollVersion = GetReqnrollVersion(testAssemblyContext.TestAssemblyLocation, log);
         if (reqnrollVersion != null)
         {
             analytics.AddAnalyticsProperty("SFFile", reqnrollVersion.InternalName ?? reqnrollVersion.FileName);
@@ -48,7 +45,7 @@ public class DiscoveryExecutor
         BindingData bindingData;
         try
         {
-            bindingData = bindingProvider.DiscoverBindings(testAssemblyContext, testAssemblyContext.TestAssembly, configFileContent, log);
+            bindingData = bindingProvider.DiscoverBindings(testAssemblyContext, configFileContent, log);
         }
         catch (Exception ex)
         {
@@ -59,7 +56,7 @@ public class DiscoveryExecutor
         try
         {
             var transformer = new DiscoveryResultTransformer();
-            var sourceLocationProvider = new SourceLocationProvider(testAssemblyContext, testAssemblyContext.TestAssembly, log);
+            var sourceLocationProvider = new SourceLocationProvider(testAssemblyContext, log);
             discoveryResult = transformer.Transform(bindingData, sourceLocationProvider, analytics);
         }
         catch (Exception ex)
@@ -87,13 +84,6 @@ public class DiscoveryExecutor
         return bindingProvider;
     }
 
-    private static string? GetTargetFramework(Assembly testAssembly)
-    {
-        var targetFrameworkAttribute = testAssembly.CustomAttributes
-            .FirstOrDefault(a => a.AttributeType == typeof(TargetFrameworkAttribute));
-        return targetFrameworkAttribute?.ConstructorArguments.First().ToString().Trim('\"');
-    }
-
     private static string? LoadConfigFileContent(string? configFilePath)
     {
         if (string.IsNullOrEmpty(configFilePath))
@@ -106,10 +96,10 @@ public class DiscoveryExecutor
         return File.ReadAllText(configFile.FullName);
     }
 
-    private static FileVersionInfo? GetReqnrollVersion(Assembly testAssembly, ILogger log)
+    private static FileVersionInfo? GetReqnrollVersion(string testAssemblyLocation, ILogger log)
     {
         var reqnrollAssemblyPath =
-            Path.Combine(Path.GetDirectoryName(testAssembly.Location) ?? ".", "Reqnroll.dll");
+            Path.Combine(Path.GetDirectoryName(testAssemblyLocation) ?? ".", "Reqnroll.dll");
         if (File.Exists(reqnrollAssemblyPath))
             return GetReqnrollVersionInfo(reqnrollAssemblyPath, log);
 

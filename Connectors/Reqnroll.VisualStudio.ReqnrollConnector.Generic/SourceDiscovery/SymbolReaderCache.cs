@@ -7,35 +7,35 @@ namespace ReqnrollConnector.SourceDiscovery;
 public class SymbolReaderCache
 {
     private readonly ILogger _log;
-    private readonly Dictionary<Assembly, DeveroomSymbolReader?> _symbolReaders = new(2);
+    private readonly Dictionary<string, DeveroomSymbolReader?> _symbolReaders = new(2);
 
     public SymbolReaderCache(ILogger log)
     {
         _log = log;
     }
 
-    public DeveroomSymbolReader? this[Assembly assembly] => GetOrCreateSymbolReader(assembly);
+    public DeveroomSymbolReader? this[string assemblyLocation] => GetOrCreateSymbolReader(assemblyLocation);
 
-    private DeveroomSymbolReader? GetOrCreateSymbolReader(Assembly assembly)
+    private DeveroomSymbolReader? GetOrCreateSymbolReader(string assemblyLocation)
     {
-        if (_symbolReaders.TryGetValue(assembly, out var symbolReader))
+        if (_symbolReaders.TryGetValue(assemblyLocation, out var symbolReader))
             return symbolReader;
 
-        var primaryReader = CreateSymbolReader(assembly.Location);
+        var primaryReader = CreateSymbolReader(assemblyLocation);
         if (primaryReader != null)
         {
-            _symbolReaders.Add(assembly, primaryReader);
+            _symbolReaders.Add(assemblyLocation, primaryReader);
             return primaryReader;
         }
 
-        var secondaryReader = CreateSymbolReader(new Uri(assembly.Location).LocalPath);
+        var secondaryReader = CreateSymbolReader(new Uri(assemblyLocation).LocalPath);
         if (secondaryReader != null)
         {
-            _symbolReaders.Add(assembly, secondaryReader);
+            _symbolReaders.Add(assemblyLocation, secondaryReader);
             return secondaryReader;
         }
 
-        _symbolReaders.Add(assembly, null);
+        _symbolReaders.Add(assemblyLocation, null);
         return null;
     }
 

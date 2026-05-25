@@ -1,6 +1,7 @@
 # [vNext]
 
 ## Improvements:
+* Connector improved to better support .NET Framework solutions.
 
 ## Bug fixes:
 * Fix: Project Templates are broken for .NET Framework (#133)

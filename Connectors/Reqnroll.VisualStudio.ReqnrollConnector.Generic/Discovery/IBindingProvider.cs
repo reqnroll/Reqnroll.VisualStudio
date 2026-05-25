@@ -7,5 +7,5 @@ namespace ReqnrollConnector.Discovery;
 
 public interface IBindingProvider
 {
-    BindingData DiscoverBindings(TestAssemblyLoadContext testAssemblyContext, Assembly testAssembly, string? configFileContent, ILogger log);
+    BindingData DiscoverBindings(ITestAssemblyContext testAssemblyContext, string? configFileContent, ILogger log);
 }

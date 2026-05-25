@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyModel.Resolution;
 using ReqnrollConnector.Logging;
 using ReqnrollConnector.Utils;
 
-namespace ReqnrollConnector.AssemblyLoading;
+namespace ReqnrollConnector.AssemblyLoading.dotNET;
 
 public class TestAssemblyLoadContext : AssemblyLoadContext
 {
