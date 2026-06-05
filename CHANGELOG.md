@@ -5,6 +5,7 @@
 ## Bug fixes:
 * Fix: Project Templates are broken for .NET Framework (#133)
 * Fix: TUnit projects should not include a package reference to Microsoft.NET.Test.Sdk (#134)
+* Fix: Regex modifiers are interfere with parameter identification in regex Step Expressions (#173)
 
 *Contributors of this release (in alphabetical order):* @clrudolphi
 
