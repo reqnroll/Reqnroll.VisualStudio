@@ -271,3 +271,4 @@ launchSettings.json
 
 /Tests/ExternalPackages/Reqnroll*.nupkg
 /.ncrunch/cache/
+/.claude/settings.local.json
