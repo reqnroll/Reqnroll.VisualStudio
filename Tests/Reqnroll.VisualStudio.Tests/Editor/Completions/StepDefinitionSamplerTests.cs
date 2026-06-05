@@ -35,6 +35,7 @@ public class StepDefinitionSamplerTests
         "I have entered [int] and [???] into the calculator", "System.Int32")]
     [InlineData("I have entered (.*) and ([^\"]*) into the calculator",
         "I have entered [int] and [string] into the calculator", "System.Int32", "System.String")]
+    [InlineData("(?i:a)nd (.*) into the calculator", "(?i:a)nd [int] into the calculator", "System.Int32")]
     public void Emits_param_placeholders(string regex, string expectedResult, params string[] paramType)
     {
         var sut = new StepDefinitionSampler();
@@ -80,6 +81,9 @@ public class StepDefinitionSamplerTests
     [InlineData(@"foo. (\d+) bar")]
     [InlineData(@"foo* (\d+) bar")]
     [InlineData(@"foo+ (\d+) bar")]
+    // Should pass through regex modifiers without trying to parse them as parameters
+    [InlineData(@"(?i)foo bar")]
+    [InlineData(@"(?i:f)oo bar")]
     public void Falls_back_to_regex(string regex)
     {
         var sut = new StepDefinitionSampler();
