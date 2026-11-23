@@ -12,12 +12,14 @@ public class Hook
     public string Error { get; set; }
 
     public string SourceLocation { get; set; }
+    public BindingNavigationTarget NavigationTarget { get; set; }
 
     #region Equality
 
     protected bool Equals(Hook other)
     {
-        return Type == other.Type && HookOrder == other.HookOrder && Method == other.Method && Equals(Scope, other.Scope) && Error == other.Error && SourceLocation == other.SourceLocation;
+        return Type == other.Type && HookOrder == other.HookOrder && Method == other.Method && Equals(Scope, other.Scope) && Error == other.Error && SourceLocation == other.SourceLocation &&
+               Equals(NavigationTarget, other.NavigationTarget);
     }
 
     public override bool Equals(object obj)
@@ -37,6 +39,7 @@ public class Hook
             hashCode = (hashCode * 397) ^ (Method != null ? Method.GetHashCode() : 0);
             hashCode = (hashCode * 397) ^ (Scope != null ? Scope.GetHashCode() : 0);
             hashCode = (hashCode * 397) ^ (SourceLocation != null ? SourceLocation.GetHashCode() : 0);
+            hashCode = (hashCode * 397) ^ (NavigationTarget?.GetHashCode() ?? 0);
             return hashCode;
         }
     }

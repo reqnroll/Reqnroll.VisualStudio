@@ -1,6 +1,7 @@
 # [vNext]
 
 ## Improvements:
+* Support Go To Step Definition and Go To Hooks for external bindings in Reqnroll 2+ projects through Visual Studio's native source navigation (#179).
 
 ## Bug fixes:
 * Fix: Project Templates are broken for .NET Framework (#133)

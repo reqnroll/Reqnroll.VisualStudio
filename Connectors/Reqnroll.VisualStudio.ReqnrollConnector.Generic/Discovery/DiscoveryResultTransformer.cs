@@ -25,14 +25,18 @@ internal class DiscoveryResultTransformer
 
         string GetTypeNameKey(string typeName) => GetKey(typeNamesToKey, typeName);
 
+        BindingNavigationTarget? GetNavigationTarget(BindingSourceData? source) =>
+            source == null ? null :
+                (sourceLocationProvider as IBindingNavigationTargetProvider)?.GetNavigationTarget(source.Method);
+
         var stepDefinitions = bindingData.StepDefinitions
-                                         .Select(sdb => CreateStepDefinition(sdb, GetTypeNameKey, GetSourceLocation))
+                                         .Select(sdb => CreateStepDefinition(sdb, GetTypeNameKey, GetSourceLocation, GetNavigationTarget))
                                          .OrderBy(sd => sd.SourceLocation)
                                          .ToArray();
 
         var hooks = bindingData.
                     Hooks
-                    .Select(sdb => CreateHook(sdb, GetSourceLocation))
+                    .Select(sdb => CreateHook(sdb, GetSourceLocation, GetNavigationTarget))
                     .OrderBy(sd => sd.SourceLocation)
                     .ToArray();
 
@@ -68,7 +72,8 @@ internal class DiscoveryResultTransformer
     private StepDefinition CreateStepDefinition(
         StepDefinitionData stepDefinitionData,
         Func<string, string> getTypeNameKey,
-        Func<BindingSourceData?, string?> getSourceLocation)
+        Func<BindingSourceData?, string?> getSourceLocation,
+        Func<BindingSourceData?, BindingNavigationTarget?> getNavigationTarget)
     {
         var stepDefinition = new StepDefinition
         {
@@ -79,13 +84,15 @@ internal class DiscoveryResultTransformer
             Scope = GetScope(stepDefinitionData.Scope),
             Expression = GetSourceExpression(stepDefinitionData),
             Error = stepDefinitionData.Error,
-            SourceLocation = getSourceLocation(stepDefinitionData.Source)
+            SourceLocation = getSourceLocation(stepDefinitionData.Source),
+            NavigationTarget = getNavigationTarget(stepDefinitionData.Source)
         };
 
         return stepDefinition;
     }
 
-    private Hook CreateHook(HookData sdb, Func<BindingSourceData?, string?> getSourceLocation)
+    private Hook CreateHook(HookData sdb, Func<BindingSourceData?, string?> getSourceLocation,
+        Func<BindingSourceData?, BindingNavigationTarget?> getNavigationTarget)
     {
         var stepDefinition = new Hook
         {
@@ -94,7 +101,8 @@ internal class DiscoveryResultTransformer
             Method = GetMethodReference(sdb.Source?.Method),
             Scope = GetScope(sdb.Scope),
             SourceLocation = getSourceLocation(sdb.Source),
-            Error = sdb.Error
+            Error = sdb.Error,
+            NavigationTarget = getNavigationTarget(sdb.Source)
         };
         return stepDefinition;
     }

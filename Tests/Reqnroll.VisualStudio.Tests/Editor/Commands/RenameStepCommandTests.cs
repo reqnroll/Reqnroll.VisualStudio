@@ -419,4 +419,59 @@ public class RenameStepCommandTests : CommandTestBase<RenameStepCommand>
         viewModel?.StepText.Should().Be(expectedExpression);
         ThereWereNoWarnings();
     }
+
+    private (RenameStepCommand command, RenameStepCommandContext ctx) ArrangeStepDefinitionSourceContext()
+    {
+        var taggerProvider = CreateTaggerProvider(ProjectScope.IdeScope);
+        var command = new RenameStepCommand(ProjectScope.IdeScope,
+            new StubBufferTagAggregatorFactoryService(taggerProvider), taggerProvider);
+        return (command, new RenameStepCommandContext(ProjectScope.IdeScope, taggerProvider));
+    }
+
+    [Fact]
+    public void Step_definition_source_that_is_not_available_in_editor_is_not_renamed()
+    {
+        var (command, ctx) = ArrangeStepDefinitionSourceContext();
+        var outsideSource = Path.Combine(Path.GetTempPath(), "OutsideSolution", "Steps.cs");
+
+        var result = command.TryInitializeFromStepDefinitionSource(ctx, new SourceLocation(outsideSource, 3, 5));
+
+        result.Should().BeFalse();
+        ctx.IsErroneous.Should().BeTrue();
+        ctx.TextBufferOfStepDefinitionClass.Should().BeNull();
+        ctx.Issues.Should().ContainSingle(i => i.Description.Contains("not available in the editor"));
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(4)]
+    public void Step_definition_source_with_outdated_line_is_not_renamed(int line)
+    {
+        var (command, ctx) = ArrangeStepDefinitionSourceContext();
+        var filePath = Path.Combine(ProjectScope.ProjectFolder, "Steps.cs");
+        CreateTextView(new TestText("line1", "line2", "line3"), VsContentTypes.CSharp, filePath);
+
+        var result = command.TryInitializeFromStepDefinitionSource(ctx, new SourceLocation(filePath, line, 1));
+
+        result.Should().BeFalse();
+        ctx.Issues.Should().ContainSingle(i => i.Description.Contains("out of date"));
+    }
+
+    [Theory]
+    [InlineData(2, 3, 2)]
+    [InlineData(2, 99, 5)] // column clamped to the end of the line
+    public void Trigger_point_is_set_from_step_definition_source(int line, int column, int expectedColumnOffset)
+    {
+        var (command, ctx) = ArrangeStepDefinitionSourceContext();
+        var filePath = Path.Combine(ProjectScope.ProjectFolder, "Steps.cs");
+        var textView = CreateTextView(new TestText("line1", "line2", "line3"), VsContentTypes.CSharp, filePath);
+
+        var result = command.TryInitializeFromStepDefinitionSource(ctx, new SourceLocation(filePath, line, column));
+
+        result.Should().BeTrue();
+        ctx.IsErroneous.Should().BeFalse();
+        ctx.TextBufferOfStepDefinitionClass.Should().BeSameAs(textView.TextBuffer);
+        var expectedLine = textView.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(line - 1);
+        ctx.TriggerPointOfStepDefinitionClass.Position.Should().Be(expectedLine.Start.Position + expectedColumnOffset);
+    }
 }

@@ -95,9 +95,49 @@ public abstract class DeveroomEditorCommandBase : IDeveroomEditorCommand
         return configuration;
     }
 
-    protected void PerformJump<TResult>(object match, TResult result, ProjectBindingImplementation implementation, Action<TResult> continueWithAfterJump)
+    protected void PerformJump<TResult>(object match, TResult result, ProjectBindingImplementation implementation,
+        Action<TResult> continueWithAfterJump, IProjectScope projectScope = null)
     {
         var sourceLocation = implementation?.SourceLocation;
+        if (sourceLocation != null)
+        {
+            Logger.LogInfo($"Jumping to {match} at {sourceLocation}");
+            if (IdeScope.Actions.NavigateTo(sourceLocation))
+            {
+                continueWithAfterJump?.Invoke(result);
+                return;
+            }
+        }
+
+        if (implementation != null && projectScope != null &&
+            implementation.NavigationTarget != null &&
+            IdeScope.Actions is IBindingNavigation navigation)
+        {
+            IdeScope.FireAndForget(async () =>
+            {
+                var navigated = await navigation.NavigateToBindingAsync(implementation, projectScope);
+                await IdeScope.RunOnUiThread(() =>
+                {
+                    if (!navigated)
+                        IdeScope.Actions.ShowProblem(
+                            "Visual Studio could not navigate to the external binding. Enable navigation to " +
+                            "decompiled sources in Visual Studio and check the referenced assembly.");
+                    else if (continueWithAfterJump != null)
+                        IdeScope.Actions.ShowProblem("External binding sources are for navigation only and cannot be renamed.");
+                    Finished.Set();
+                });
+            }, ex =>
+            {
+                Logger.LogWarning($"Cannot navigate to external binding: {ex.Message}");
+                IdeScope.RunOnUiThread(() =>
+                {
+                    IdeScope.Actions.ShowProblem("Unable to navigate to the external binding source.");
+                    Finished.Set();
+                });
+            });
+            return;
+        }
+
         if (sourceLocation == null)
         {
             Logger.LogWarning($"Cannot jump to {match}: no source location");
@@ -105,18 +145,10 @@ public abstract class DeveroomEditorCommandBase : IDeveroomEditorCommand
             return;
         }
 
-        Logger.LogInfo($"Jumping to {match} at {sourceLocation}");
-        if (IdeScope.Actions.NavigateTo(sourceLocation))
-        {
-            continueWithAfterJump?.Invoke(result);
-        }
-        else
-        {
-            Logger.LogWarning(
-                $"Cannot jump to {match}: invalid source file or position. Try to build the project to refresh positions.");
-            IdeScope.Actions.ShowProblem(
-                $"Unable to jump to the step definition. Invalid source file or file position.{Environment.NewLine}{sourceLocation}");
-        }
+        Logger.LogWarning(
+            $"Cannot jump to {match}: invalid source file or position. Try to build the project to refresh positions.");
+        IdeScope.Actions.ShowProblem(
+            $"Unable to jump to the step definition. Invalid source file or file position.{Environment.NewLine}{sourceLocation}");
     }
 
     #region Helper methods

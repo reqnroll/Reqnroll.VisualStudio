@@ -45,14 +45,11 @@ public class RenameStepCommand : DeveroomEditorCommandBase, IDeveroomCodeEditorC
                 if (projectStepDefinitionBinding == null || sourceLocation == null)
                     return;
                 ctx.StepDefinitionBinding = projectStepDefinitionBinding;
-                IdeScope.GetTextBuffer(sourceLocation, out var textBuffer);
-                ctx.TextBufferOfStepDefinitionClass = textBuffer;
-                var stepDefLine =
-                    ctx.TextBufferOfStepDefinitionClass.CurrentSnapshot.GetLineFromLineNumber(
-                        sourceLocation.SourceFileLine - 1);
-                ctx.TriggerPointOfStepDefinitionClass = new SnapshotPoint(
-                    ctx.TextBufferOfStepDefinitionClass.CurrentSnapshot,
-                    stepDefLine.Start.Position + sourceLocation.SourceFileColumn - 1);
+                if (!TryInitializeFromStepDefinitionSource(ctx, sourceLocation))
+                {
+                    ShowProblem(ctx);
+                    return;
+                }
 
                 InvokeCommandFromStepDefinitionClass(ctx);
             });
@@ -62,6 +59,36 @@ public class RenameStepCommand : DeveroomEditorCommandBase, IDeveroomCodeEditorC
         ctx.TriggerPointOfStepDefinitionClass = textView.Caret.Position.BufferPosition;
         ctx.TextBufferOfStepDefinitionClass = textView.TextBuffer;
         InvokeCommandFromStepDefinitionClass(ctx);
+        return true;
+    }
+
+    /// <summary>
+    ///     Navigation may succeed for sources that are not editable project items (e.g. a step definition source file
+    ///     outside the solution), so the editor buffer has to be checked explicitly before any edit is attempted.
+    ///     Whether the buffer belongs to a Reqnroll project is validated afterwards by <see cref="ValidateCallerProject"/>.
+    /// </summary>
+    internal bool TryInitializeFromStepDefinitionSource(RenameStepCommandContext ctx, SourceLocation sourceLocation)
+    {
+        if (!IdeScope.GetTextBuffer(sourceLocation, out var textBuffer) || textBuffer == null)
+        {
+            ctx.AddCriticalProblem(
+                $"Unable to rename step: the step definition source file is not available in the editor: {sourceLocation.SourceFile}");
+            return false;
+        }
+
+        var snapshot = textBuffer.CurrentSnapshot;
+        var lineIndex = sourceLocation.SourceFileLine - 1;
+        if (lineIndex < 0 || lineIndex >= snapshot.LineCount)
+        {
+            ctx.AddCriticalProblem(
+                "Unable to rename step: the step definition position is out of date. Try to build the project to refresh positions.");
+            return false;
+        }
+
+        var stepDefLine = snapshot.GetLineFromLineNumber(lineIndex);
+        var column = Math.Max(0, Math.Min(sourceLocation.SourceFileColumn - 1, stepDefLine.Length));
+        ctx.TextBufferOfStepDefinitionClass = textBuffer;
+        ctx.TriggerPointOfStepDefinitionClass = new SnapshotPoint(snapshot, stepDefLine.Start.Position + column);
         return true;
     }
 

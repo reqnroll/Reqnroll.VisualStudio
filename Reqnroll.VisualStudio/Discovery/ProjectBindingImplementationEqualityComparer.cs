@@ -8,7 +8,8 @@ public class ProjectBindingImplementationEqualityComparer : IEqualityComparer<Pr
 
         return x.Method == y.Method &&
                x.ParameterTypes.SequenceEqual(y.ParameterTypes) &&
-               Equals(x.SourceLocation, y.SourceLocation);
+               Equals(x.SourceLocation, y.SourceLocation) &&
+               Equals(x.NavigationTarget, y.NavigationTarget);
     }
 
     public int GetHashCode(ProjectBindingImplementation obj)
@@ -24,6 +25,7 @@ public class ProjectBindingImplementationEqualityComparer : IEqualityComparer<Pr
                 hash = hash * 23 + (paramType?.GetHashCode() ?? 0);
 
             hash = hash * 23 + (obj.SourceLocation?.GetHashCode() ?? 0);
+            hash = hash * 23 + (obj.NavigationTarget?.GetHashCode() ?? 0);
             return hash;
         }
     }
