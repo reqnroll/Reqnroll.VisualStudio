@@ -38,11 +38,13 @@ public class BindingImporter
             var scope = ParseScope(stepDefinition.Scope);
             var parameterTypes = ParseParameterTypes(stepDefinition.ParamTypes);
 
-            if (!_implementations.TryGetValue(stepDefinition.Method, out var implementation))
+            var implementationKey = GetImplementationKey(stepDefinition.Method, stepDefinition.NavigationTarget);
+            if (!_implementations.TryGetValue(implementationKey, out var implementation))
             {
                 implementation =
-                    new ProjectBindingImplementation(stepDefinition.Method, parameterTypes, sourceLocation);
-                _implementations.Add(stepDefinition.Method, implementation);
+                    new ProjectBindingImplementation(stepDefinition.Method, parameterTypes, sourceLocation,
+                        stepDefinition.NavigationTarget);
+                _implementations.Add(implementationKey, implementation);
             }
 
             return new ProjectStepDefinitionBinding(stepDefinitionType, regex, scope, implementation,
@@ -65,11 +67,12 @@ public class BindingImporter
             var sourceLocation = ParseSourceLocation(hook.SourceLocation);
             var scope = ParseScope(hook.Scope);
 
-            if (!_implementations.TryGetValue(hook.Method, out var implementation))
+            var implementationKey = GetImplementationKey(hook.Method, hook.NavigationTarget);
+            if (!_implementations.TryGetValue(implementationKey, out var implementation))
             {
                 implementation =
-                    new ProjectBindingImplementation(hook.Method, null, sourceLocation);
-                _implementations.Add(hook.Method, implementation);
+                    new ProjectBindingImplementation(hook.Method, null, sourceLocation, hook.NavigationTarget);
+                _implementations.Add(implementationKey, implementation);
             }
 
             return new ProjectHookBinding(implementation, scope, hookType, hook.HookOrder, GetBindingError(hook.Error, scope, "hook"));
@@ -80,6 +83,9 @@ public class BindingImporter
             return null;
         }
     }
+
+    private static string GetImplementationKey(string method, BindingNavigationTarget target) =>
+        target == null ? method : target.AssemblyIdentity + "|" + target.DocumentationCommentId;
 
     private string GetBindingError(string error, Scope scope, string bindingType)
     {

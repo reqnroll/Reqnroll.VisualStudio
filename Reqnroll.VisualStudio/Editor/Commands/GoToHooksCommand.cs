@@ -44,17 +44,18 @@ public class GoToHooksCommand : DeveroomEditorCommandBase, IDeveroomFeatureEdito
             Logger.LogVerbose($"Linked to {hookMatchResult.Items.Length} hooks.");
             IdeScope.Actions.ShowSyncContextMenu(GoToHooksPopupHeader, hookMatchResult.Items.Select(hook =>
                 new ContextMenuItem(hook.ToString(),
-                    _ => { PerformGoToHook(hook, continueWithAfterJump); }, GetIcon(hook))
+                    _ => { PerformGoToHook(hook, continueWithAfterJump, IdeScope.GetProject(textView.TextBuffer)); }, GetIcon(hook))
             ).ToArray());
         }
 
         return true;
     }
 
-    private void PerformGoToHook(ProjectHookBinding hook, Action<ProjectBinding>? continueWithAfterJump)
+    private void PerformGoToHook(ProjectHookBinding hook, Action<ProjectBinding>? continueWithAfterJump,
+        IProjectScope? projectScope)
     {
         MonitoringService.MonitorCommandGoToHook();
-        PerformJump(hook, hook, hook.Implementation, continueWithAfterJump);
+        PerformJump(hook, hook, hook.Implementation, continueWithAfterJump, projectScope);
     }
 
     private string? GetIcon(ProjectHookBinding hook)

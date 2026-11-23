@@ -25,6 +25,12 @@ public interface ISourceLocationProvider
     SourceLocation? GetSourceLocation(BindingSourceMethodData bindingMethod);
 }
 
+public interface IBindingNavigationTargetProvider
+{
+    Reqnroll.VisualStudio.ReqnrollConnector.Models.BindingNavigationTarget? GetNavigationTarget(
+        BindingSourceMethodData bindingMethod);
+}
+
 // ReSharper disable once UnusedMember.Global
 public class NullSourceLocationProvider : ISourceLocationProvider
 {

@@ -1,9 +1,10 @@
 #nullable disable
 using System.Windows.Controls;
+using Microsoft.VisualStudio.LanguageServices;
 
 namespace Reqnroll.VisualStudio.ProjectSystem;
 
-public class VsIdeActions : VsIdeActionsBase, IIdeActions
+public class VsIdeActions : VsIdeActionsBase, IIdeActions, IBindingNavigation
 {
     public VsIdeActions(IVsIdeScope ideScope) : base(ideScope)
     {
@@ -39,6 +40,7 @@ public class VsIdeActions : VsIdeActionsBase, IIdeActions
         var projectItem = dte.Solution.FindProjectItem(trackedSourceFile);
         if (projectItem == null)
             return false;
+
         if (!projectItem.IsOpen)
             projectItem.Open();
 
@@ -49,6 +51,36 @@ public class VsIdeActions : VsIdeActionsBase, IIdeActions
 
         // try to navigate to the first column instead
         return GoToLine(projectItem, navigatePosition.Item1, 1);
+    }
+
+    public async Task<bool> NavigateToBindingAsync(ProjectBindingImplementation implementation, IProjectScope projectScope)
+    {
+        await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+        var workspace = VsUtils.ResolveMefDependency<VisualStudioWorkspace>(IdeScope.ServiceProvider);
+        var projects = workspace?.CurrentSolution.Projects.Where(p =>
+            string.Equals(p.FilePath, projectScope.ProjectFullName, StringComparison.OrdinalIgnoreCase)).ToArray();
+        if (projects == null || projects.Length != 1)
+        {
+            Logger.LogWarning("Cannot navigate to external source: the originating Roslyn project is not uniquely available.");
+            return false;
+        }
+
+        var project = projects[0];
+        var symbol = await Task.Run(async () =>
+        {
+            var compilation = await project.GetCompilationAsync().ConfigureAwait(false);
+            return compilation == null ? null :
+                BindingNavigationSymbolResolver.Resolve(compilation, implementation.NavigationTarget);
+        }).ConfigureAwait(false);
+        if (symbol == null)
+        {
+            Logger.LogWarning("Cannot navigate to external source: no exact referenced method matches the connector identity.");
+            return false;
+        }
+
+        // VS chooses Source Link, embedded source or decompilation according to its own settings.
+        await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+        return await workspace.TryGoToDefinitionAsync(symbol, project, CancellationToken.None);
     }
 
     private Tuple<int, int> GetNavigatePosition(SourceLocation sourceLocation)

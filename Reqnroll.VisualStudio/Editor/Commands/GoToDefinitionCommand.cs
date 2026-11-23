@@ -72,7 +72,8 @@ public class GoToDefinitionCommand : DeveroomEditorCommandBase, IDeveroomFeature
             case MatchResultType.Defined:
             case MatchResultType.Ambiguous:
 
-                PerformJump(match, match.MatchedStepDefinition, match.MatchedStepDefinition?.Implementation, continueWithAfterJump);
+                PerformJump(match, match.MatchedStepDefinition, match.MatchedStepDefinition?.Implementation,
+                    continueWithAfterJump, IdeScope.GetProject(textBuffer));
                 break;
         }
     }
